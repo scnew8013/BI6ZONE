@@ -1,0 +1,410 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>apps</title>
+    <link rel="icon" href="https://files.catbox.moe/fhlylz.png" type="image/png">
+
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SZN69N4SEF"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-SZN69N4SEF');
+</script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROdNIejFmjeKC5u6Xq2yqOCa5y-uJseTCTfA&s') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            font-family: Arial, sans-serif;
+            opacity: 0;
+            animation: fadeIn 1s ease-in forwards;
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .icons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .icon-container {
+            width: 60px;
+            height: 60px;
+            background-color: black;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            box-shadow: 0 0 10px white;
+        }
+        .icon-container:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 20px white;
+        }
+        .icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .coolBlobIdk {
+            position: fixed;
+            bottom: -30%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 400px;
+            background: linear-gradient(135deg, rgba(50, 50, 50, 0.8), rgba(200, 200, 200, 0.6));
+            border-radius: 50%;
+            filter: blur(100px);
+            box-shadow: 0 0 120px rgba(200, 200, 200, 0.5);
+        }
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        .title {
+            margin-top: 100px;
+            font-size: 48px;
+            font-weight: bold;
+            text-transform: lowercase;
+            color: white;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
+            text-align: center;
+            transition: transform 0.3s ease-in-out;
+        }
+        .title:hover {
+            transform: scale(1.2);
+        }
+        .rectangle-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 40px;
+        }
+        .rectangle {
+            width: 400px;
+            height: 250px;
+            background-color: black;
+            border-radius: 15px;
+            box-shadow: 0 0 20px white;
+            position: relative;
+            transition: transform 0.3s ease-in-out;
+            cursor: pointer;
+        }
+        .rectangle:hover {
+            transform: scale(1.05);
+        }
+        .rectangle img {
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            object-fit: cover;
+        }
+        .new-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 60px;
+            height: 30px;
+            background-color: #28a745;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-size: 14px;
+            color: white;
+            font-weight: bold;
+            text-shadow: 0 0 10px white;
+            box-shadow: 0 0 10px #28a745;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .new-badge:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="coolBlobIdk"></div>
+    <div class="title">apps</div>
+    <div class="icons">
+        <a href="https://bi66ie619.github.io/g.html" target="_blank" class="icon-container"><img src="https://static-00.iconduck.com/assets.00/console-controller-icon-2048x2048-pmmusn7m.png" alt="Games" class="icon"></a>
+        <a href="https://bi66ie619.github.io/a.html" target="_blank" class="icon-container"><img src="https://img.icons8.com/ios7/600/FFFFFF/apple-app-store--v2.png" alt="Apps" class="icon"></a>
+        <a href="https://bi66ie619.github.io/e.html" target="_blank" class="icon-container"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0_6HUhLshuftA_sDchc5pEGqTBPa41EO6Xw&s" alt="Exploits" class="icon"></a>
+        <a href="https://bi66ie619.github.io/es.html" target="_blank" class="icon-container"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRclWJCEIPuuU-0DeRx9HfoSWM4y8Ei59lGhQ&s" alt="Extras" class="icon"></a>
+        <a href="https://bi66ie619.github.io/s.html" target="_blank" class="icon-container"><img src="https://img.icons8.com/m_rounded/512/FFFFFF/settings.png" alt="Settings" class="icon"></a>
+    </div>
+    <div class="rectangle-container">
+        <div class="rectangle" onclick="window.open('/a/snapchat', '_blank')">
+            <img src="https://miro.medium.com/v2/resize:fit:1400/1*Vq5VQWL1hKsVyrfo7cVKoA.jpeg" alt="Image 2">
+            <div class="game-name">snapchat</div>
+        </div>
+        <div class="rectangle" onclick="window.open('/a/youtube.html', '_blank')">
+            <img src="https://lh3.googleusercontent.com/3zkP2SYe7yYoKKe47bsNe44yTgb4Ukh__rBbwXwgkjNRe4PykGG409ozBxzxkrubV7zHKjfxq6y9ShogWtMBMPyB3jiNps91LoNH8A=s500" alt="Image 2">
+            <div class="game-name">youtube</div>
+        </div>
+        <div class="rectangle" onclick="window.open('/a/google.html', '_blank')">
+            <img src="https://media.wired.com/photos/5926ffe47034dc5f91bed4e8/master/pass/google-logo.jpg" alt="Image 2">
+            <div class="game-name">google</div>
+        </div>
+    </div>
+     <div class="rectangle-container">
+        <div class="rectangle" onclick="window.open('/a/pinterest.html', '_blank')">
+            <img src="https://www.notta.ai/pictures/pinterest-statistics-cover.png" alt="Image 2">
+            <div class="game-name">pinterest</div>
+        </div>
+        <div class="rectangle" onclick="window.open('/a/y8.html', '_blank')">
+            <img src="https://play-lh.googleusercontent.com/HDM9SZ44_fEMODThQZhGRD4rM0dg0CQMVYZ1_nVIdNkuz3MASA-7JOgdaDvqzgw0J3ux=w600-h300-pc0xffffff-pd" alt="Image 2">
+            <div class="game-name">y8</div>
+        </div>
+        <div class="rectangle" onclick="window.open('/a/nowgg.html', '_blank')">
+            <img src="https://static1.anpoimages.com/wordpress/wp-content/uploads/2024/07/now-gg-logo-pink.jpg" alt="Image 2">
+            <div class="game-name">nowgg</div>
+        </div>
+    </div>
+     <div class="rectangle-container">
+        <div class="rectangle" onclick="window.open('/a/voicemod.html', '_blank')">
+            <img src="https://mms.businesswire.com/media/20220511005172/en/1450807/23/Voicemod_Vertical_Lockup_Black_RGB_%282%29.jpg" alt="Image 2">
+            <div class="game-name">voicemod</div>
+        </div>
+        <div class="rectangle" onclick="window.open('/a/easyfungg.html', '_blank')">
+            <img src="https://www.24-7pressrelease.com/attachments/051/press_release_distribution_0513207_207175.jpg" alt="Image 2">
+            <div class="game-name">easyfungg</div>
+        </div>
+        <div class="rectangle" onclick="window.open('/a/poki.html', '_blank')">
+            <img src="https://i0.wp.com/pune.news/wp-content/uploads/2024/03/Poki-Games.webp?resize=800%2C422&ssl=1" alt="Image 2">
+            <div class="game-name">poki</div>
+        </div>
+    </div>
+     <div class="rectangle-container">
+        <div class="rectangle" onclick="window.open('/a/blooket-bot.html', '_blank')">
+            <img src="https://assets.isu.pub/document-structure/230422140116-1d92882e4c1ca33d6a1242a62c0a3fe1/v1/c115525bad9ab99d57b4cb48844fa720.jpeg" alt="Image 2">
+            <div class="game-name">blooket bot</div>
+        </div>
+        <div class="rectangle" onclick="window.open('/a/instagram.html', '_blank')">
+            <img src="https://logocreator.io/wp-content/uploads/2023/11/hero-image.fill_.size_1200x675.v1650318899.png" alt="Image 2">
+            <div class="game-name">instagram</div>
+        </div>
+        <div class="rectangle" onclick="window.open('/a/x.html', '_blank')">
+            <img src="https://pimpmytype.com/wp-content/uploads/2023/08/twitter-x-app-icon-1400x788.png" alt="Image 2">
+            <div class="game-name">x</div>
+        </div>
+    </div>
+     <div class="rectangle-container">
+        <div class="rectangle" onclick="window.open('/a/geforce-now.html', '_blank')">
+            <img src="https://s3.amazonaws.com/cms.ipressroom.com/219/files/20237/64e3dc1a3d6332319b2dfd35_NVIDIA-logo-white-16x9/NVIDIA-logo-white-16x9_thmb.png" alt="Image 2">
+            <div class="game-name">GeForce Now</div>
+        </div>
+        <div class="rectangle" onclick="window.open('/a/itch-io.html', '_blank')">
+            <img src="https://sm.pcmag.com/pcmag_me/review/i/itchio/itchio_79mj.jpg" alt="Image 2">
+            <div class="game-name">itch.io</div>
+        </div>
+        <div class="rectangle" onclick="window.open('/a/crazy-games.html', '_blank')">
+            <img src="https://bleedingcool.com/wp-content/uploads/2024/06/CrazyGames-Banner-Logo-1200x675.jpg" alt="Image 2">
+            <div class="game-name">crazy games</div>
+        </div>
+    </div>
+     <div class="rectangle-container">
+        <div class="rectangle" onclick="window.open('/a/spotify.html', '_blank')">
+            <img src="https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/2024-spotify-brand-assets-media-kit.jpg" alt="Image 2">
+            <div class="game-name">spotify</div>
+        </div>
+        <div class="rectangle" onclick="window.open('/a/disney-plus.html', '_blank')">
+            <img src="https://platform.theverge.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/25357066/Disney__Logo_March_2024.png?quality=90&strip=all&crop=0%2C3.4613147178592%2C100%2C93.077370564282&w=1200" alt="Image 2">
+            <div class="game-name">disney+</div>
+        </div>
+        <div class="rectangle" onclick="window.open('/a/netflix.html', '_blank')">
+            <img src="https://images.ctfassets.net/y2ske730sjqp/1aONibCke6niZhgPxuiilC/2c401b05a07288746ddf3bd3943fbc76/BrandAssets_Logos_01-Wordmark.jpg?w=940" alt="Image 2">
+            <div class="game-name">netflix</div>
+        </div>
+    </div>
+     <div class="rectangle-container">
+        <div class="rectangle" onclick="window.open('/a/tiktok.html', '_blank')">
+            <img src="https://www.menosfios.com/wp-content/uploads/2022/03/tiktok-cover-logo.jpg" alt="Image 2">
+            <div class="game-name">tiktok</div>
+        </div>
+        <div class="rectangle" onclick="window.open('/a/bing.html', '_blank')">
+            <img src="https://www.searchenginejournal.com/wp-content/uploads/2017/05/bing-site-search.png" alt="Image 2">
+            <div class="game-name">bing</div>
+        </div>
+        <div class="rectangle" onclick="window.open('/a/amazon.html', '_blank')">
+            <img src="https://1000logos.net/wp-content/uploads/2016/10/Amazon-logo-meaning.jpg" alt="Image 2">
+            <div class="game-name">amazon</div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        particlesJS("particles-js", {
+            "particles": {
+                "number": { "value": 100, "density": { "enable": false } },
+                "color": { "value": "#aaa" },
+                "shape": { "type": "circle" },
+                "opacity": { "value": 0.5, "random": true },
+                "size": { "value": 4, "random": true },
+                "move": { "enable": true, "speed": 8, "direction": "random" }
+            },
+            "interactivity": {
+                "events": { "onhover": { "enable": true, "mode": "repulse" } }
+            }
+        });
+    </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8PERVFVWRG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8PERVFVWRG');
+</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-8PERVFVWRG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8PERVFVWRG');
+</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-8PERVFVWRG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8PERVFVWRG');
+</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-8PERVFVWRG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8PERVFVWRG');
+</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-8PERVFVWRG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8PERVFVWRG');
+</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-8PERVFVWRG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8PERVFVWRG');
+</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-8PERVFVWRG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8PERVFVWRG');
+</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-8PERVFVWRG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8PERVFVWRG');
+</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-8PERVFVWRG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8PERVFVWRG');
+</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-8PERVFVWRG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8PERVFVWRG');
+</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-8PERVFVWRG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8PERVFVWRG');
+</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-8PERVFVWRG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8PERVFVWRG');
+</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-8PERVFVWRG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8PERVFVWRG');
+</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-8PERVFVWRG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8PERVFVWRG');
+</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-8PERVFVWRG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8PERVFVWRG');
+</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-8PERVFVWRG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8PERVFVWRG');
+</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-8PERVFVWRG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8PERVFVWRG');
+</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-8PERVFVWRG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8PERVFVWRG');
+</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-8PERVFVWRG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8PERVFVWRG');
+</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-8PERVFVWRG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8PERVFVWRG');
+</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-8PERVFVWRG"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8PERVFVWRG');
+</script>
+</body>
+</html>

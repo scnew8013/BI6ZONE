@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>games</title>
+    <link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/png">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SZN69N4SEF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-SZN69N4SEF');
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROdNIejFmjeKC5u6Xq2yqOCa5y-uJseTCTfA&s') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            font-family: Arial, sans-serif;
+            opacity: 0;
+            animation: fadeIn 1s ease-in forwards;
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .coolBlobIdk {
+            position: fixed;
+            bottom: -30%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 400px;
+            background: linear-gradient(135deg, rgba(50, 50, 50, 0.8), rgba(200, 200, 200, 0.6));
+            border-radius: 50%;
+            filter: blur(100px);
+            box-shadow: 0 0 120px rgba(200, 200, 200, 0.5);
+        }
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        .title {
+            margin-top: 100px;
+            font-size: 48px;
+            font-weight: bold;
+            text-transform: lowercase;
+            color: white;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
+            text-align: center;
+            transition: transform 0.3s ease-in-out;
+        }
+        .title:hover {
+            transform: scale(1.2);
+        }
+        .icons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .icon-container {
+            width: 60px;
+            height: 60px;
+            background-color: black;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            box-shadow: 0 0 10px white;
+        }
+        .icon-container:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 20px white;
+        }
+        .icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .rectangle-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 40px;
+        }
+        .rectangle {
+            width: 400px;
+            height: 250px;
+            background-color: black;
+            border-radius: 15px;
+            box-shadow: 0 0 20px white;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out;
+        }
+        .rectangle:hover {
+            transform: scale(1.05);
+        }
+        .rectangle img {
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            object-fit: cover;
+            transition: filter 0.3s ease-in-out;
+        }
+        .rectangle:hover img {
+            filter: blur(5px) brightness(0.5);
+        }
+        .game-name {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            color: white;
+            text-align: left;
+            font-weight: bold;
+            letter-spacing: -0.5px;
+            text-transform: lowercase;
+        }
+        .rectangle:hover .game-name {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="coolBlobIdk"></div>
+    <div class="title">games</div>
+    <div class="icons">
+        <a href="https://bi66ie619.github.io/g.html" target="_blank" class="icon-container"><img src="https://static-00.iconduck.com/assets.00/console-controller-icon-2048x2048-pmmusn7m.png" alt="Games" class="icon"></a>
+        <a href="https://bi66ie619.github.io/a.html" target="_blank" class="icon-container"><img src="https://img.icons8.com/ios7/600/FFFFFF/apple-app-store--v2.png" alt="Apps" class="icon"></a>
+        <a href="https://bi66ie619.github.io/e.html" target="_blank" class="icon-container"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0_6HUhLshuftA_sDchc5pEGqTBPa41EO6Xw&s" alt="Exploits" class="icon"></a>
+        <a href="https://bi66ie619.github.io/es.html" target="_blank" class="icon-container"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRclWJCEIPuuU-0DeRx9HfoSWM4y8Ei59lGhQ&s" alt="Extras" class="icon"></a>
+        <a href="https://bi66ie619.github.io/s.html" target="_blank" class="icon-container"><img src="https://img.icons8.com/m_rounded/512/FFFFFF/settings.png" alt="Settings" class="icon"></a>
+    </div>
+    <div class="rectangle-container">
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/subway-surfers.html', '_blank')">
+        <img src="https://subwaysurfers.com/media/f2ldlfpi/subwaysurfers_01.png" alt="subway surfers">
+        <div class="game-name">subway surfers</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/minecraft.html', '_blank')">
+        <img src="https://gaming-cdn.com/images/news/articles/7191/cover/minecraft-gets-a-new-artwork-cover66856ea7d02ad.jpg" alt="minecraft">
+        <div class="game-name">minecraft</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/block-blast.html', '_blank')">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDbz7CYwoe4wulDfOJ5Z5sUZOCiX0QfzRhqQ&s" alt="block blast">
+        <div class="game-name">block blast</div>
+    </div>
+</div>
+<div class="rectangle-container">
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/fruit-ninja.html', '_blank')">
+        <img src="https://preteen-ministry.net/cdn/shop/products/Fruit_Ninja_-_Cover_1024x.jpg?v=1507262323" alt="Fruit Ninja">
+        <div class="game-name">Fruit Ninja</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/crossy-road.html', '_blank')">
+        <img src="https://static1.squarespace.com/static/5e3bb512203ccf3516032e33/t/616f889f61fabc726422fa0c/1634699424702/CR_AndroidTV_01.png" alt="Crossy Road">
+        <div class="game-name">Crossy Road</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/monkey-mart.html', '_blank')">
+        <img src="https://defold.com/images/games/monkeymart-half.png" alt="Monkey Mart">
+        <div class="game-name">Monkey Mart</div>
+    </div>
+</div>
+<div class="rectangle-container">
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/lazy-jump-3d.html', '_blank')">
+        <img src="https://play-lh.googleusercontent.com/49tmTkafs_EYS--F6LA83IsiTGqjwhfayLuNACFlMM-EDhOJO4ijMa_3jhWl9aee4Q" alt="Lazy Jump 3D">
+        <div class="game-name">Lazy Jump 3D</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/bubble-shooter.html', '_blank')">
+        <img src="https://i.ytimg.com/vi/npfxxsxj_ho/maxresdefault.jpg" alt="Bubble Shooter">
+        <div class="game-name">Bubble Shooter</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/stair-race-3d.html', '_blank')">
+        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj0jI9UiKYmsYw6malhXwMKmrZLb8lf-ni4WqhhIdXbBXqa3h3hnGeUYiWrIoVIHCWPkkaRcCZxXc__3ULMJwLVy-OeVZEdfjr00AX2Dig3qEKDeDD2huF9w8Bf_ial889CrhLh9fs60_5tnEKRbUyr_AxKytDnUElO9gKFI591cKKigI-t8WP1VY7NCQ/w1280-h720-p-k-no-nu/Stair%20Race%203D%20.jpg" alt="Stair Race 3D">
+        <div class="game-name">Stair Race 3D</div>
+    </div>
+</div>
+<div class="rectangle-container">
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/granny-offline.html', '_blank')">
+        <img src="https://m.media-amazon.com/images/M/MV5BOGI1ZTI2NmQtZWRkOS00OWE5LThiZjItMjA2MzYzNzNlMzMyXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" alt="Granny Offline">
+        <div class="game-name">Granny Offline</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/granny-2.html', '_blank')">
+        <img src="https://i.ytimg.com/vi/M2oAjzvjljw/maxresdefault.jpg" alt="Granny 2">
+        <div class="game-name">Granny 2</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/baldis-basics.html', '_blank')">
+        <img src="https://i.ytimg.com/vi/EmyYCa_BC9s/maxresdefault.jpg" alt="Baldi's Basics">
+        <div class="game-name">Baldi's Basics</div>
+    </div>
+</div>
+<div class="rectangle-container">
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/1v1-lol.html', '_blank')">
+        <img src="https://fiverr-res.cloudinary.com/images/q_auto,f_auto/gigs2/200042732/original/024f8a22e06d58c1eed316a539687253e49625c1/ill-edit-your-1v1-lol-videos-and-give-you-thumbnails.jpg" alt="1v1 LOL">
+        <div class="game-name">1v1 LOL</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/paper-io-2.html', '_blank')">
+        <img src="https://tcf.admeen.org/game/17500/17069/400x246/paper-io-2.webp" alt="Paper Io 2">
+        <div class="game-name">Paper Io 2</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/super-hot.html', '_blank')">
+        <img src="https://i.ytimg.com/vi/bkzwi0Y-mWk/maxresdefault.jpg" alt="Super Hot">
+        <div class="game-name">Super Hot</div>
+    </div>
+</div>
+<div class="rectangle-container">
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/basket-random.html', '_blank')">
+        <img src="https://play-lh.googleusercontent.com/6AN9KKe5M9udzoQA1J00dc6po5dNY9JInI_ewDKcPXocPjEHWTqJV0d2CwSWxYRhTh4=w526-h296-rw" alt="Basket Random">
+        <div class="game-name">Basket Random</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/drift-hunters.html', '_blank')">
+        <img src="https://i.ytimg.com/vi/xjdLbUxmV_o/maxresdefault.jpg" alt="Drift Hunters">
+        <div class="game-name">Drift Hunters</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/drift-boss.html', '_blank')">
+        <img src="https://pbs.twimg.com/media/EMfeE2oXkAAUTBE.jpg" alt="Drift Boss">
+        <div class="game-name">Drift Boss</div>
+    </div>
+</div>
+<div class="rectangle-container">
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/roblox-only-up.html', '_blank')">
+        <img src="https://i.ytimg.com/vi/iWQTsM7fbkg/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLCHSqTpwti_EaS_Aj1PQJc84C5qqA" alt="Roblox Only Up">
+        <div class="game-name">Roblox Only Up</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/minecraft-parkour.html', '_blank')">
+        <img src="https://i.ytimg.com/vi/zuyYcuDpCxs/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLBH8p_cirtAcNNcst20Om5JkP2o6w" alt="Minecraft Parkour">
+        <div class="game-name">Minecraft Parkour</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/drive-mad.html', '_blank')">
+        <img src="https://i.ytimg.com/vi/Bx3bt6HnOSs/hq720.jpg?sqp=-oaymwExCK4FEIIDSFryq4qpAyMIARUAAIhCGAHwAQH4Ab4HgALQBYoCDAgAEAEYMiBnKHIwDw==&rs=AOn4CLBvQgoYjUrnam3ck28CT-S_vlX_mQ" alt="Drive Mad">
+        <div class="game-name">Drive Mad</div>
+    </div>
+</div>
+<div class="rectangle-container">
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/shell-shockers.html', '_blank')">
+        <img src="https://staticg.sportskeeda.com/editor/2024/10/783ff-17280361172197-1920.jpg?w=640" alt="Shell Shockers">
+        <div class="game-name">Shell Shockers</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/ultimate-driving-simulator.html', '_blank')">
+        <img src="https://m.media-amazon.com/images/I/91hUahJchWL.jpg" alt="Ultimate Driving Simulator">
+        <div class="game-name">Ultimate Driving Simulator</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/hole-io.html', '_blank')">
+        <img src="https://lh3.googleusercontent.com/kdoWsI9fctfXqwInmRRn57jqohctanZvPrGIQIPxh-JPcMlK-U2Q3WgOJV2uHj0io1avUi2UTE_7mfFsjqjgT9xI=s1280-w1280-h800" alt="Hole.io">
+        <div class="game-name">Hole.io</div>
+    </div>
+</div>
+<div class="rectangle-container">
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/geometry-dash.html', '_blank')">
+        <img src="https://images3.alphacoders.com/120/thumb-1920-1202615.jpg" alt="Geometry Dash">
+        <div class="game-name">Geometry Dash</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/basketball-stars.html', '_blank')">
+        <img src="https://play-lh.googleusercontent.com/WReGOclxXI481lMXvvAP8VGxSywci4vy-KmrZLKDeVO0ewmCZPzRzbAIVls-qwFzEw=w526-h296-rw" alt="Basketball Stars">
+        <div class="game-name">Basketball Stars</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/slither-io.html', '_blank')">
+        <img src="https://files.catbox.moe/jz2zkq.png" alt="Slither.io">
+        <div class="game-name">Slither.io</div>
+    </div>
+</div>
+<div class="rectangle-container">
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/snowball-io.html', '_blank')">
+        <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/8b/29/7c/8b297c9a-14ee-8271-5615-4b96f1838b6d/AppIcon-1x_U007emarketing-0-7-0-85-220-0.png/1200x600wa.png" alt="Snowball.io">
+        <div class="game-name">Snowball.io</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/retro-bowl.html', '_blank')">
+        <img src="https://files.catbox.moe/0k3fg4.png" alt="Retro Bowl">
+        <div class="game-name">Retro Bowl</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/just-fall-io.html', '_blank')">
+        <img src="https://files.catbox.moe/zw4hua.png" alt="Just Fall.io">
+        <div class="game-name">Just Fall.io</div>
+    </div>
+</div>
+<div class="rectangle-container">
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/gladihoppers.html', '_blank')">
+        <img src="https://i.ytimg.com/vi/_kuLMGMoGAY/maxresdefault.jpg" alt="Gladihoppers">
+        <div class="game-name">Gladihoppers</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/ragdoll-io.html', '_blank')">
+        <img src="https://files.catbox.moe/2vqace.png" alt="Ragdoll.io">
+        <div class="game-name">Ragdoll.io</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/temple-run-2.html', '_blank')">
+        <img src="https://i.ytimg.com/vi/9aK2zoFBbKY/maxresdefault.jpg" alt="Temple Run 2">
+        <div class="game-name">Temple Run 2</div>
+    </div>
+</div>
+<div class="rectangle-container">
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/stickman-hook.html', '_blank')">
+        <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/ae/ed/22/aeed22b9-6b86-34ef-7464-af1657d2d5f7/AppIcon-1x_U007emarketing-0-7-0-85-220-0.png/1200x600wa.png" alt="Stickman Hook">
+        <div class="game-name">Stickman Hook</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/flappy-bird.html', '_blank')">
+        <img src="https://mir-s3-cdn-cf.behance.net/projects/404/c4b80d143006427.Y3JvcCw4NjksNjgwLDI1LDA.png" alt="Flappy Bird">
+        <div class="game-name">Flappy Bird</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/minecraft-shooter.html', '_blank')">
+        <img src="https://i.ytimg.com/vi/k_wBPps8fMA/maxresdefault.jpg" alt="Minecraft Shooter">
+        <div class="game-name">Minecraft Shooter</div>
+    </div>
+</div>
+<div class="rectangle-container">
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/helix-jump.html', '_blank')">
+        <img src="https://files.catbox.moe/64wqaw.png" alt="Helix Jump">
+        <div class="game-name">Helix Jump</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/fnaf.html', '_blank')">
+        <img src="https://i.ytimg.com/vi/JKWVjXeNdM4/maxresdefault.jpg" alt="FNAF">
+        <div class="game-name">FNAF</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/fnaf-2.html', '_blank')">
+        <img src="https://i.ytimg.com/vi/JNNgQKlr77c/maxresdefault.jpg" alt="FNAF 2">
+        <div class="game-name">FNAF 2</div>
+    </div>
+</div>
+<div class="rectangle-container">
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/moto-x3m-pool.html', '_blank')">
+        <img src="https://files.catbox.moe/pj4twt.png" alt="Moto X3M Pool">
+        <div class="game-name">Moto X3M Pool</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/moto-x3m.html', '_blank')">
+        <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple1/v4/b8/74/9f/b8749f28-9ff1-2fc2-b7f2-9428abd40fda/mzl.jiqtfguw.png/1200x600wa.png" alt="Moto X3M">
+        <div class="game-name">Moto X3M</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/among-us.html', '_blank')">
+        <img src="https://gaming-cdn.com/images/products/7522/616x353/among-us-pc-game-steam-cover.jpg?v=1715242071" alt="Among Us">
+        <div class="game-name">Among Us</div>
+    </div>
+</div>
+<div class="rectangle-container">
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/rocket-soccer.html', '_blank')">
+        <img src="https://us-west-2-epicgames.graphassets.com/A0Gpf4ZpfQzaTePr3NRc1z/resize=fit:clip,height:1080,width:1920/output=format:webp/2FE6uJltT6WKtdIEG2rc" alt="Rocket Soccer">
+        <div class="game-name">Rocket Soccer</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/ovo.html', '_blank')">
+        <img src="https://files.catbox.moe/8g58ni.png" alt="Ovo">
+        <div class="game-name">Ovo</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/knife-hit.html', '_blank')">
+        <img src="https://files.catbox.moe/yiwjfc.png" alt="Knife Hit">
+        <div class="game-name">Knife Hit</div>
+    </div>
+</div>
+<div class="rectangle-container">
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/sky-race-3d.html', '_blank')">
+        <img src="https://files.catbox.moe/9efq0t.png" alt="Sky Race 3D">
+        <div class="game-name">Sky Race 3D</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/slope.html', '_blank')">
+        <img src="https://files.catbox.moe/kod1r6.png" alt="Slope">
+        <div class="game-name">Slope</div>
+    </div>
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/poly-track.html', '_blank')">
+        <img src="https://files.catbox.moe/2ho4bb.png" alt="poly track">
+        <div class="game-name">poly track</div>
+    </div>
+</div>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        particlesJS("particles-js", {
+            "particles": {
+                "number": { "value": 100, "density": { "enable": false } },
+                "color": { "value": "#aaa" },
+                "shape": { "type": "circle" },
+                "opacity": { "value": 0.5, "random": true },
+                "size": { "value": 4, "random": true },
+                "move": { "enable": true, "speed": 8, "direction": "random" }
+            },
+            "interactivity": {
+                "events": { "onhover": { "enable": true, "mode": "repulse" } }
+            }
+        });
+    </script>
+</body>
+</html>
