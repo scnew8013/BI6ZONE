@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,14 +7,14 @@
     <link rel="icon" href="https://files.catbox.moe/fhlylz.png" type="image/png">
 
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-SZN69N4SEF"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SZN69N4SEF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
 
-  gtag('config', 'G-SZN69N4SEF');
-</script>
+        gtag('config', 'G-SZN69N4SEF');
+    </script>
     
     <style>
         * {
@@ -33,7 +30,7 @@
             justify-content: center;
             align-items: center;
             color: white;
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
             flex-direction: column;
             opacity: 0;
             animation: fadeIn 1s ease-in forwards;
@@ -46,31 +43,73 @@
         }
         .title {
             position: absolute;
-            top: 20%;
-            font-size: 48px;
-            font-weight: bold;
+            top: 10%;
+            font-size: 56px;
+            font-weight: 700;
             text-transform: lowercase;
-            transition: transform 0.3s ease-in-out;
+            text-align: center;
             color: white;
             text-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
-            text-align: center;
+            transition: transform 0.3s ease-in-out;
         }
         .title:hover {
-            transform: scale(1.2);
+            transform: scale(1.1);
+        }
+        .icons-container {
+            position: absolute;
+            top: 35%;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            width: 100%;
+            flex-wrap: wrap;
+            max-width: 900px;
+        }
+        .icon-container {
+            width: 100px;
+            height: 120px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, background 0.3s ease;
+            padding: 10px;
+            opacity: 0.85;
+        }
+        .icon-container:hover {
+            transform: scale(1.1);
+            background: rgba(0, 0, 0, 0.8);
+        }
+        .icon {
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+        }
+        .icon-label {
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            color: white;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+            text-align: center;
         }
         .header {
             position: absolute;
-            top: 70%;
+            top: 80%;
             left: 50%;
             transform: translateX(-50%);
             width: 80%;
-            height: 60px;
-            background: black;
-            border: 2px solid white;
-            border-radius: 20px;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 30px;
             display: flex;
             align-items: center;
-            padding: 0 15px;
+            justify-content: center;
+            padding: 0 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
         .search-bar {
             width: 100%;
@@ -79,66 +118,42 @@
             outline: none;
             color: white;
             font-size: 18px;
+            padding: 10px;
+            border-radius: 25px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease-in-out;
         }
-        .icons-container {
-            position: absolute;
-            top: 40%;
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            width: 100%;
+        .search-bar:focus {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
         }
-        .icon-container {
-            width: 100px;
-            height: 120px;
-            background: black;
-            border: 3px solid white;
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: transform 0.3s ease-in-out, background 0.3s ease-in-out;
-        }
-        .icon-container:hover {
-            transform: scale(1.2);
-            background: black;
-        }
-        .icon {
-            width: 60px;
-            height: 60px;
-            cursor: pointer;
-        }
-        .icon-label {
-            margin-top: 5px;
-            font-size: 14px;
-            color: white;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-        }
-
         .support-text {
             position: absolute;
             bottom: 20px;
-            left: 20px;
-            font-size: 20px;
+            right: 20px;
+            font-size: 18px;
             font-weight: bold;
             color: white;
             text-transform: lowercase;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
             cursor: pointer;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+            transition: transform 0.3s ease-in-out;
         }
-
+        .support-text:hover {
+            transform: scale(1.1);
+        }
         .coolBlobIdk {
             position: absolute;
-            bottom: -30%;
+            bottom: -20%;
             left: 50%;
             transform: translateX(-50%);
             width: 600px;
             height: 400px;
-            background: linear-gradient(135deg, rgba(169, 169, 169, 0.6), rgba(255, 255, 255, 0.5), rgba(169, 169, 169, 0.6), rgba(255, 255, 255, 0.4));
+            background: rgba(169, 169, 169, 0.5);
             border-radius: 50%;
             filter: blur(100px);
-            box-shadow: 0 0 120px rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 100px rgba(255, 255, 255, 0.5);
         }
         .coolBlobIdk::before {
             content: '';
@@ -147,7 +162,7 @@
             left: 30%;
             width: 300px;
             height: 300px;
-            background: linear-gradient(135deg, rgba(169, 169, 169, 0.5), rgba(169, 169, 169, 0.4), rgba(255, 255, 255, 0.3));
+            background: rgba(169, 169, 169, 0.6);
             border-radius: 50%;
             filter: blur(100px);
             z-index: -1;
@@ -199,40 +214,4 @@
             <div class="icon-label">exploits</div>
         </div>
         <div class="icon-container">
-            <img class="icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRclWJCEIPuuU-0DeRx9HfoSWM4y8Ei59lGhQ&s" onclick="window.open('https://bi66ie619.github.io/es.html', '_blank')">
-            <div class="icon-label">extras</div>
-        </div>
-        <div class="icon-container">
-            <img class="icon" src="https://img.icons8.com/m_rounded/512/FFFFFF/settings.png" onclick="window.open('https://bi66ie619.github.io/s.html', '_blank')">
-            <div class="icon-label">settings</div>
-        </div>
-        <div class="icon-container">
-            <img class="icon" src="https://files.catbox.moe/xyywkl.png" onclick="window.open('https://bi66ie619.github.io/disremake.html', '_blank')">
-            <div class="icon-label">chat</div>
-        </div>
-    </div>
-
-    <div class="header">
-        <input type="text" class="search-bar" placeholder="search..." onkeydown="handleSearch(event)">
-    </div>
-
-    <div class="support-text" onclick="openSupportPage()">support</div>
-
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-    <script>
-        particlesJS("particles-js", {
-            "particles": {
-                "number": { "value": 100, "density": { "enable": false } },
-                "color": { "value": "#aaa" },
-                "shape": { "type": "circle" },
-                "opacity": { "value": 0.5, "random": true },
-                "size": { "value": 4, "random": true },
-                "move": { "enable": true, "speed": 8, "direction": "random" }
-            },
-            "interactivity": {
-                "events": { "onhover": { "enable": true, "mode": "repulse" } }
-            }
-        });
-    </script>
-</body>
-</html>
+            <img class="icon
