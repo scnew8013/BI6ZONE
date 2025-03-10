@@ -76,10 +76,11 @@
   background: #32323b;
   border-radius: 10px;
   
-  display: flex;        /* Enables flexbox */
-  flex-direction: column-reverse; /* Makes new messages appear at the bottom */
+  display: flex;
+  flex-direction: column; /* Change from column-reverse to column */
+  justify-content: flex-end; /* Keeps new messages at the bottom */
 }
-
+    
     .message {
       padding: 8px;
       margin: 5px 0;
