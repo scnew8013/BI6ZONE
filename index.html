@@ -6,15 +6,14 @@
     <title>BI6ZONE</title>
     <link rel="shortcut icon" type="image/x-icon" href="bi66ie619.github.io/favicon.ico">
 
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-SZN69N4SEF"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-SZN69N4SEF');
-</script>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SZN69N4SEF"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-SZN69N4SEF');
+    </script>
     
     <style>
         * {
@@ -47,13 +46,9 @@
             font-size: 48px;
             font-weight: bold;
             text-transform: lowercase;
-            transition: transform 0.3s ease-in-out;
             color: white;
             text-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
             text-align: center;
-        }
-        .title:hover {
-            transform: scale(1.2);
         }
         .header {
             position: absolute;
@@ -95,7 +90,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: transform 0.3s ease-in-out, background 0.3s ease-in-out;
+            transition: transform 0.3s ease-in-out;
         }
         .icon-container:hover {
             transform: scale(1.2);
@@ -112,7 +107,6 @@
             color: white;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
         }
-
         .support-text {
             position: absolute;
             bottom: 20px;
@@ -120,11 +114,8 @@
             font-size: 20px;
             font-weight: bold;
             color: white;
-            text-transform: lowercase;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
             cursor: pointer;
         }
-
         .coolBlobIdk {
             position: absolute;
             bottom: -30%;
@@ -136,27 +127,6 @@
             border-radius: 50%;
             filter: blur(100px);
             box-shadow: 0 0 120px rgba(255, 255, 255, 0.5);
-        }
-        .coolBlobIdk::before {
-            content: '';
-            position: absolute;
-            top: 10%;
-            left: 30%;
-            width: 300px;
-            height: 300px;
-            background: linear-gradient(135deg, rgba(169, 169, 169, 0.5), rgba(169, 169, 169, 0.4), rgba(255, 255, 255, 0.3));
-            border-radius: 50%;
-            filter: blur(100px);
-            z-index: -1;
-        }
-
-        #particles-js {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
         }
     </style>
     
@@ -177,7 +147,6 @@
     </script>
 </head>
 <body>
-    <div id="particles-js"></div>
     <div class="coolBlobIdk"></div>
 
     <div class="title">BI6ZONE v1</div>
@@ -215,21 +184,5 @@
 
     <div class="support-text" onclick="openSupportPage()">support</div>
 
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-    <script>
-        particlesJS("particles-js", {
-            "particles": {
-                "number": { "value": 100, "density": { "enable": false } },
-                "color": { "value": "#aaa" },
-                "shape": { "type": "circle" },
-                "opacity": { "value": 0.5, "random": true },
-                "size": { "value": 4, "random": true },
-                "move": { "enable": true, "speed": 8, "direction": "random" }
-            },
-            "interactivity": {
-                "events": { "onhover": { "enable": true, "mode": "repulse" } }
-            }
-        });
-    </script>
 </body>
 </html>
