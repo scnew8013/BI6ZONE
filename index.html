@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BI6ZONE</title>
-    <link rel="shortcut icon" type="image/x-icon" href="bi66ie619.github.io/favicon.ico">
     <style>
         * {
             margin: 0;
@@ -16,62 +15,34 @@
             background-size: cover;
             height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             color: white;
             font-family: Arial, sans-serif;
-            flex-direction: column;
-            position: relative;
             overflow: hidden;
         }
         .title {
-            position: absolute;
-            top: 10%;
-            font-size: 48px;
+            font-size: 36px;
             font-weight: bold;
             text-transform: lowercase;
-            color: white;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
             text-align: center;
-        }
-        .header {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80%;
-            height: 60px;
-            background: black;
-            border: 2px solid white;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            padding: 0 15px;
-        }
-        .search-bar {
-            width: 100%;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: white;
-            font-size: 18px;
+            margin-bottom: 20px;
         }
         .icons-container {
-            position: absolute;
-            top: 70%;
-            left: 50%;
-            transform: translateX(-50%);
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(2, 1fr);
-            gap: 25px;
+            gap: 15px;
+            width: 60%;
+            justify-items: center;
+            margin-bottom: 20px;
         }
         .icon-container {
-            width: 100px;
-            height: 120px;
+            width: 90px;
+            height: 100px;
             background: black;
-            border: 3px solid white;
-            border-radius: 20px;
+            border: 2px solid white;
+            border-radius: 15px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -79,50 +50,61 @@
             transition: transform 0.3s ease-in-out;
         }
         .icon-container:hover {
-            transform: scale(1.2);
-            background: black;
+            transform: scale(1.1);
         }
         .icon {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             cursor: pointer;
         }
         .icon-label {
+            font-size: 12px;
             margin-top: 5px;
-            font-size: 14px;
+        }
+        .header {
+            width: 70%;
+            height: 50px;
+            background: black;
+            border: 2px solid white;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            margin-bottom: 20px;
+        }
+        .search-bar {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
             color: white;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            font-size: 16px;
         }
         .support-text {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
-            font-size: 20px;
+            bottom: 10px;
+            right: 15px;
+            font-size: 14px;
             font-weight: bold;
-            color: white;
             cursor: pointer;
         }
     </style>
 </head>
 <body>
     <div class="title">BI6ZONE v1</div>
-
+    
     <div class="header">
         <input type="text" class="search-bar" placeholder="search...">
     </div>
-
+    
     <div class="icons-container">
-        <div class="icon-container">
-            <img class="icon" src="https://img.icons8.com/m_rounded/512/FFFFFF/settings.png">
-            <div class="icon-label">settings</div>
-        </div>
         <div class="icon-container">
             <img class="icon" src="https://static-00.iconduck.com/assets.00/console-controller-icon-2048x2048-pmmusn7m.png">
             <div class="icon-label">games</div>
         </div>
         <div class="icon-container">
-            <img class="icon" src="https://files.catbox.moe/xyywkl.png">
-            <div class="icon-label">chat</div>
+            <img class="icon" src="https://img.icons8.com/ios7/600/FFFFFF/apple-app-store--v2.png">
+            <div class="icon-label">apps</div>
         </div>
         <div class="icon-container">
             <img class="icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0_6HUhLshuftA_sDchc5pEGqTBPa41EO6Xw&s">
@@ -133,11 +115,15 @@
             <div class="icon-label">extras</div>
         </div>
         <div class="icon-container">
-            <img class="icon" src="https://img.icons8.com/ios7/600/FFFFFF/apple-app-store--v2.png">
-            <div class="icon-label">apps</div>
+            <img class="icon" src="https://img.icons8.com/m_rounded/512/FFFFFF/settings.png">
+            <div class="icon-label">settings</div>
+        </div>
+        <div class="icon-container">
+            <img class="icon" src="https://files.catbox.moe/xyywkl.png">
+            <div class="icon-label">chat</div>
         </div>
     </div>
-
+    
     <div class="support-text">support</div>
 </body>
 </html>
