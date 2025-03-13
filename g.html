@@ -101,38 +101,16 @@
             gap: 20px;
             margin-top: 40px;
         }
-            .badge {
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    color: white;
-    font-size: 12px;
-    font-weight: bold;
-    padding: 3px 7px;
-    border-radius: 5px;
-    text-transform: uppercase;
-                }
-
-.pc-badge {
-    background: red; /* Red for PC games */
-}
-
-.mobile-badge {
-    background: blue; /* Blue for Mobile games */
-}
-        }
         .rectangle {
-    position: relative; /* Required for absolute positioning of the badge */
-    width: 150px;
-    height: 180px;
-    background: black;
-    border: 3px solid yellow;
-    border-radius: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    transition: transform 0.3s ease-in-out;
+            width: 400px;
+            height: 250px;
+            background-color: black;
+            border-radius: 15px;
+            box-shadow: 0 0 20px white;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out;
         }
         .rectangle:hover {
             transform: scale(1.05);
@@ -176,17 +154,15 @@
         <a href="https://bi66ie619.github.io/es.html" target="_blank" class="icon-container"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRclWJCEIPuuU-0DeRx9HfoSWM4y8Ei59lGhQ&s" alt="Extras" class="icon"></a>
         <a href="https://bi66ie619.github.io/s.html" target="_blank" class="icon-container"><img src="https://img.icons8.com/m_rounded/512/FFFFFF/settings.png" alt="Settings" class="icon"></a>
     </div>
-    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/subway-surfers.html', '_blank')">
-    <div class="badge mobile-badge">Mobile</div> <!-- Badge added here -->
+    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/subway-surfers.html', '_blank')"
     <img src="https://files.catbox.moe/nlz4zw.jpeg" alt="subway surfers">
     <div class="game-name">subway surfers</div>
-    </div>
-    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/minecraft.html', '_blank')">
-    <div class="badge pc-badge">PC</div> <!-- Badge added here -->
+</div>
+<div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/minecraft.html', '_blank')">
     <img src="https://gaming-cdn.com/images/news/articles/7191/cover/minecraft-gets-a-new-artwork-cover66856ea7d02ad.jpg" alt="minecraft">
     <div class="game-name">minecraft</div>
-    </div>
-    <div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/block-blast.html', '_blank')">
+</div>
+<div class="rectangle" onclick="window.open('https://bi66ie619.github.io/g/block-blast.html', '_blank')">
         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDbz7CYwoe4wulDfOJ5Z5sUZOCiX0QfzRhqQ&s" alt="block blast">
         <div class="game-name">block blast</div>
     </div>
