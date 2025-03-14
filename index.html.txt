@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BI6ZONE</title>
+    <link rel="shortcut icon" type="image/x-icon" href="bi66ie619.github.io/favicon.ico">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: url('https://files.catbox.moe/g1zf6v.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            font-family: Arial, sans-serif;
+            opacity: 0;
+            animation: fadeIn 1s ease-in forwards;
+            overflow: hidden;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .title {
+            margin-top: 50px;
+            font-size: 48px;
+            font-weight: bold;
+            text-transform: lowercase;
+            color: white;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
+            text-align: center;
+        }
+        .search-container {
+            margin-top: 100px;
+            width: 60%;
+            height: 50px;
+            background: black;
+            border: 2px solid white;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+        }
+        .search-bar {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: white;
+            font-size: 18px;
+        }
+        .icons-container {
+            margin-top: 50px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            justify-items: center;
+        }
+        .icon-container {
+            width: 100px;
+            height: 120px;
+            background: black;
+            border: 3px solid yellow;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.3s ease-in-out;
+        }
+        .icon-container:hover {
+            transform: scale(1.2);
+        }
+        .icon {
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+        }
+        .icon-label {
+            margin-top: 5px;
+            font-size: 14px;
+            color: white;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+        .support-text {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+        }
+        .update-text {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="title">BI6ZONE v1</div>
+
+    <div class="search-container">
+        <input type="text" class="search-bar" placeholder="search... (built in bing proxy)" onkeydown="handleSearch(event)">
+    </div>
+
+    <div class="icons-container">
+        <div class="icon-container" onclick="window.open('https://bi66ie619.github.io/g.html', '_blank')">
+            <img class="icon" src="https://static-00.iconduck.com/assets.00/console-controller-icon-2048x2048-pmmusn7m.png">
+            <div class="icon-label">games</div>
+        </div>
+        <div class="icon-container" onclick="window.open('https://bi66ie619.github.io/a.html', '_blank')">
+            <img class="icon" src="https://img.icons8.com/ios7/600/FFFFFF/apple-app-store--v2.png">
+            <div class="icon-label">apps</div>
+        </div>
+        <div class="icon-container" onclick="window.open('https://bi66ie619.github.io/e.html', '_blank')">
+            <img class="icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0_6HUhLshuftA_sDchc5pEGqTBPa41EO6Xw&s">
+            <div class="icon-label">exploits</div>
+        </div>
+        <div class="icon-container" onclick="window.open('https://bi66ie619.github.io/es.html', '_blank')">
+            <img class="icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRclWJCEIPuuU-0DeRx9HfoSWM4y8Ei59lGhQ&s">
+            <div class="icon-label">extras</div>
+        </div>
+        <div class="icon-container" onclick="window.open('https://bi66ie619.github.io/s.html', '_blank')">
+            <img class="icon" src="https://img.icons8.com/m_rounded/512/FFFFFF/settings.png">
+            <div class="icon-label">settings</div>
+        </div>
+        <div class="icon-container" onclick="window.open('https://bi66ie619.github.io/disremake.html', '_blank')">
+            <img class="icon" src="https://files.catbox.moe/xyywkl.png">
+            <div class="icon-label">chat</div>
+        </div>
+    </div>
+
+    <div class="support-text" onclick="window.open('https://docs.google.com/forms/d/1t52FBl9fUIm6ftWzFQTSw4dutoIOP1rTe8AnQ4cg1pY/viewform?edit_requested=true', '_blank')">support</div>
+
+    <script>
+    window.onload = function() {
+        alert("Welcome To BI6ZONE, the future of unblocked gaming made by Jericho...");
+        alert("WARNING: If people keep leaking this site, I may have to take action through an emergency website shutdown cause I aint tryna get it blocked so be aware of this message & GATEKEEP");
+    };
+</script>
+    
+    <div class="update-text">Last Updated On 3/13/25</div>
+</body>
+</html>
