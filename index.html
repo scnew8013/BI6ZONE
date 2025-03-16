@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BI6ZONE</title>
-    <link rel="shortcut icon" type="image/x-icon" href="bi66ie619.github.io/favicon.ico">
+    <title>unblockzone</title>
+    <link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/png">
 
     <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-SZN69N4SEF"></script>
@@ -16,6 +16,62 @@
   gtag('config', 'G-SZN69N4SEF');
 </script>
 
+<<<<<<< HEAD
+<!-- Tab Cloaking and Emergency Escape Scripts -->
+<script src="scripts/utilities/tab-cloak.js"></script>
+<script src="scripts/utilities/emergency-escape.js"></script>
+<script src="scripts/utilities/theme.js"></script>
+<script src="scripts/utilities/message-system.js"></script>
+=======
+    <style>
+/* Moving gradient background */
+@keyframes moveGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+body {
+    background: linear-gradient(-45deg, #0f0f0f, #1a1a1a, #000000, #222222);
+    background-size: 400% 400%;
+    animation: moveGradient 20s infinite alternate ease-in-out;
+}
+
+/* Icon container for smooth shine effect */
+.icon-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px; /* Keeps the shine effect within rounded edges */
+    transition: transform 0.3s ease-in-out;
+}
+
+.icon-container:hover {
+    transform: scale(1.1); /* Slight zoom effect for smooth interaction */
+}
+
+/* Clean, smooth shine effect */
+.icon-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0.1) 100%);
+    filter: blur(8px);
+    transform: skewX(-25deg);
+    transition: left 0.8s ease-in-out;
+}
+
+/* Shine effect moves smoothly on hover */
+.icon-container:hover::before {
+    left: 100%;
+}
+
+</style>
+
+>>>>>>> e5f71126cd7818555d1eae62e2bd91ff24b9b62e
+    
     <style>
         * {
             margin: 0;
@@ -39,19 +95,27 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
-        .title {
-            margin-top: 50px;
+.title {
+    margin-top: 50px;
             font-size: 48px;
             font-weight: bold;
             text-transform: lowercase;
             color: white;
             text-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
             text-align: center;
-        }
-        .search-container {
-            margin-top: 100px;
-            width: 60%;
-            height: 50px;
+}
+
+.title:hover {
+    transform: translateX(-50%) scale(1.1);
+}
+
+        .header {
+            position: absolute;
+            top: 70%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 60px;
             background: black;
             border: 2px solid white;
             border-radius: 20px;
@@ -84,10 +148,12 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: transform 0.3s ease-in-out;
+            transition: transform 0.3s ease-in-out; ease;
+            will-change: transform;
         }
         .icon-container:hover {
             transform: scale(1.2);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
         }
         .icon {
             width: 60px;
@@ -100,6 +166,7 @@
             color: white;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
         }
+
         .support-text {
             position: absolute;
             bottom: 20px;
@@ -109,6 +176,21 @@
             color: white;
             cursor: pointer;
         }
+
+        .coolBlobIdk {
+            position: fixed;
+            bottom: -30%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 400px;
+            background: linear-gradient(135deg, rgba(169, 169, 169, 0.5), rgba(255, 255, 255, 0.4));
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.8;
+            will-change: transform;
+        }
+
         .update-text {
             position: absolute;
             bottom: 20px;
@@ -121,13 +203,28 @@
             border-radius: 5px;
         }
     </style>
+    
+    <script>
+        function handleSearch(event) {
+            if (event.key === "Enter") {
+                let query = event.target.value.trim();
+                if (query) {
+                    let proxyUrl = `active/iframe.html#https://bing.com/search?q=${encodeURIComponent(query)}`;
+                    window.location.href = proxyUrl;
+                }
+            }
+        }
+
+        function openSupportPage() {
+            window.open('https://docs.google.com/forms/d/1t52FBl9fUIm6ftWzFQTSw4dutoIOP1rTe8AnQ4cg1pY/viewform?edit_requested=true', '_blank');
+        }
+    </script>
 </head>
 <body>
-    <div class="title">BI6ZONE v1</div>
+    <div id="particles-js"></div>
+    <div class="coolBlobIdk"></div>
 
-    <div class="search-container">
-        <input type="text" class="search-bar" placeholder="search... (built in bing proxy)" onkeydown="handleSearch(event)">
-    </div>
+    <div class="title">BI6ZONE</div>
 
     <div class="icons-container">
         <div class="icon-container">
@@ -142,28 +239,31 @@
             <img class="icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0_6HUhLshuftA_sDchc5pEGqTBPa41EO6Xw&s" onclick="window.location.href='e.html'">
             <div class="icon-label">exploits</div>
         </div>
-        <div class="icon-container"
-            <img class="icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRclWJCEIPuuU-0DeRx9HfoSWM4y8Ei59lGhQ&s" onclick="window.location.href='e.html'">
-            <div class="icon-label">extras</div>
+        <div class="icon-container">
+            <img class="icon" src="https://i.pinimg.com/736x/ea/8d/11/ea8d11f1ffc6355b8a440106ce61d0f3.jpg" onclick="window.location.href='es.html'">
+            <div class="icon-label">extra</div>
         </div>
         <div class="icon-container">
             <img class="icon" src="https://img.icons8.com/m_rounded/512/FFFFFF/settings.png" onclick="window.location.href='s.html'">
             <div class="icon-label">settings</div>
         </div>
-        <div class="icon-container"
-            <img class="icon" src="https://files.catbox.moe/xyywkl.png" onclick="window.location.href='disremake.html'">
+        <div class="icon-container">
+            <img class="icon" src="https://img.icons8.com/m_rounded/512/FFFFFF/settings.png" onclick="window.location.href='disremake.html'">
             <div class="icon-label">chat</div>
         </div>
     </div>
 
-    <div class="support-text" onclick="window.open('https://docs.google.com/forms/d/1t52FBl9fUIm6ftWzFQTSw4dutoIOP1rTe8AnQ4cg1pY/viewform?edit_requested=true', '_blank')">support</div>
+    <div class="header">
+        <input type="text" class="search-bar" placeholder="search..." onkeydown="handleSearch(event)">
+    </div>
 
+    <div class="support-text" onclick="openSupportPage()">support</div>
+    
     <script>
+        // Show a welcome message on homepage
         setTimeout(function() {
-            showGlowingMessage('Welcome to BI6ZONE! (Will be setting up password lock on 3/19 so come into contact with me in person or through a support form)');
+            showGlowingMessage('Welcome to UnblockZone! Check out our new themes in the settings page.');
         }, 1500);
     </script>
-    
-    <div class="update-text">Last Updated On 3/16/25</div>
 </body>
 </html>
