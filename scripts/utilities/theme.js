@@ -5,7 +5,7 @@
 const themes = {
     default: {
         name: "Default",
-        background: "url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROdNIejFmjeKC5u6Xq2yqOCa5y-uJseTCTfA&s')",
+        background: "url('https://files.catbox.moe/g1zf6v.jpeg')",
         particleColor: "#ffffff",
         particleLinks: "#ffffff"
     },
