@@ -4,7 +4,7 @@
 // Initialize the shown messages from localStorage or create empty object
 let shownMessages = {};
 try {
-    const savedMessages = localStorage.getItem('unblockzone_shown_messages');
+    const savedMessages = localStorage.getItem('bi66ie619_shown_messages');
     if (savedMessages) {
         shownMessages = JSON.parse(savedMessages);
     }
