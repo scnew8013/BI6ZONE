@@ -7,215 +7,58 @@
     <link rel="icon" href="https://files.catbox.moe/m1zg0c.ico" type="image/png">
 
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-SZN69N4SEF"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SZN69N4SEF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-SZN69N4SEF');
+    </script>
 
-  gtag('config', 'G-SZN69N4SEF');
-</script>
-
-<!-- Tab Cloaking and Emergency Escape Scripts -->
-<script src="scripts/utilities/tab-cloak.js"></script>
-<script src="scripts/utilities/emergency-escape.js"></script>
-<script src="scripts/utilities/theme.js"></script>
-<script src="scripts/utilities/message-system.js"></script>
+    <!-- Tab Cloaking and Emergency Escape Scripts -->
+    <script src="scripts/utilities/tab-cloak.js"></script>
+    <script src="scripts/utilities/emergency-escape.js"></script>
+    <script src="scripts/utilities/theme.js"></script>
+    <script src="scripts/utilities/message-system.js"></script>
     WARNING : Adding passlock to site (3/19). See me in person or contact me at 1620029@sweetwaterschools.net. -Thanks
-    <style>
-/* Moving gradient background */
-@keyframes moveGradient {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-body {
-    background: linear-gradient(-45deg, #0f0f0f, #1a1a1a, #000000, #222222);
-    background-size: 400% 400%;
-    animation: moveGradient 20s infinite alternate ease-in-out;
-}
-
-/* Icon container for smooth shine effect */
-.icon-container {
-    position: relative;
-    overflow: hidden;
-    border-radius: 20px; /* Keeps the shine effect within rounded edges */
-    transition: transform 0.3s ease-in-out;
-}
-
-.icon-container:hover {
-    transform: scale(1.1); /* Slight zoom effect for smooth interaction */
-}
-
-/* Clean, smooth shine effect */
-.icon-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -150%;
-    width: 200%;
-    height: 100%;
-    background: linear-gradient(120deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0.1) 100%);
-    filter: blur(8px);
-    transform: skewX(-25deg);
-    transition: left 0.8s ease-in-out;
-}
-
-/* Shine effect moves smoothly on hover */
-.icon-container:hover::before {
-    left: 100%;
-}
-
-</style>
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            background: url('https://files.catbox.moe/g1zf6v.jpeg') no-repeat center center fixed;
-            background-size: cover;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: white;
-            font-family: Arial, sans-serif;
-            opacity: 0;
-            animation: fadeIn 1s ease-in forwards;
-            overflow: hidden;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-.title {
-    margin-top: 50px;
-            font-size: 48px;
-            font-weight: bold;
-            text-transform: lowercase;
-            color: white;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
-            text-align: center;
-}
-
-.title:hover {
-    transform: translateX(-50%) scale(1.1);
-}
-
-        .header {
-            position: absolute;
-            top: 70%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            height: 60px;
-            background: black;
-            border: 2px solid white;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            padding: 0 15px;
-        }
-        .search-bar {
-            width: 100%;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: white;
-            font-size: 18px;
-        }
-        .icons-container {
-            margin-top: 50px;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            justify-items: center;
-        }
-        .icon-container {
-            width: 100px;
-            height: 120px;
-            background: black;
-            border: 3px solid yellow;
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: transform 0.3s ease-in-out; ease;
-            will-change: transform;
-        }
-        .icon-container:hover {
-            transform: scale(1.2);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-        }
-        .icon {
-            width: 60px;
-            height: 60px;
-            cursor: pointer;
-        }
-        .icon-label {
-            margin-top: 5px;
-            font-size: 14px;
-            color: white;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-        }
-
-        .support-text {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            font-size: 20px;
-            font-weight: bold;
-            color: white;
-            cursor: pointer;
-        }
-
-        .coolBlobIdk {
+        /* Floating update message box */
+        .update-message {
             position: fixed;
-            bottom: -30%;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            width: 600px;
-            height: 400px;
-            background: linear-gradient(135deg, rgba(169, 169, 169, 0.5), rgba(255, 255, 255, 0.4));
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.8;
-            will-change: transform;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            font-size: 16px;
+            text-align: center;
+            z-index: 1000;
+            display: none; /* Initially hidden */
+            animation: fadeIn 0.5s ease-in-out;
         }
 
-        .update-text {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            font-size: 16px;
-            font-weight: bold;
+        /* Close button */
+        .update-message button {
+            background: red;
+            border: none;
             color: white;
-            background: rgba(0, 0, 0, 0.7);
             padding: 5px 10px;
+            margin-left: 15px;
             border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Fade-in animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
-    
-    <script>
-        function handleSearch(event) {
-            if (event.key === "Enter") {
-                let query = event.target.value.trim();
-                if (query) {
-                    let proxyUrl = `active/iframe.html#https://bing.com/search?q=${encodeURIComponent(query)}`;
-                    window.location.href = proxyUrl;
-                }
-            }
-        }
-
-        function openSupportPage() {
-            window.open('https://docs.google.com/forms/d/1t52FBl9fUIm6ftWzFQTSw4dutoIOP1rTe8AnQ4cg1pY/viewform?edit_requested=true', '_blank');
-        }
-    </script>
 </head>
 <body>
     <div id="particles-js"></div>
@@ -255,15 +98,34 @@ body {
     </div>
 
     <div class="support-text" onclick="openSupportPage()">support</div>
-    
+
+    <!-- Floating Update Message Box -->
+    <div id="updateBox" class="update-message">
+        🚀 <strong>MAJOR UPDATE:</strong> Apps are now fixed! 🎉  
+        <button onclick="document.getElementById('updateBox').style.display='none'">Close</button>
+    </div>
+
     <script>
-        // Show a welcome message on homepage
-        setTimeout(function() {
-            showGlowingMessage('Welcome to BI6ZONE! (Will be setting a passlock on 3/19 so contact me through a support form or in person. -Thanks) ');
-        }, 1500);
-   <script>
-    alert("MAJOR UPDATE - APPS ARE FIXED!"); // This line displays the alert box
-  </script>
-    
+        function handleSearch(event) {
+            if (event.key === "Enter") {
+                let query = event.target.value.trim();
+                if (query) {
+                    let proxyUrl = `active/iframe.html#https://bing.com/search?q=${encodeURIComponent(query)}`;
+                    window.location.href = proxyUrl;
+                }
+            }
+        }
+
+        function openSupportPage() {
+            window.open('https://docs.google.com/forms/d/1t52FBl9fUIm6ftWzFQTSw4dutoIOP1rTe8AnQ4cg1pY/viewform?edit_requested=true', '_blank');
+        }
+
+        // Show the update message after 1.5 seconds
+        window.onload = function() {
+            setTimeout(function() {
+                document.getElementById("updateBox").style.display = "block";
+            }, 1500);
+        };
+    </script>
 </body>
 </html>
