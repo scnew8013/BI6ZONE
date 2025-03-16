@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -150,43 +147,52 @@
             transform: scale(1.1);
             box-shadow: 0 0 20px #28a745;
         }
+        
+        /* Remove home button styles */
+            
     </style>
+
+    <!-- Tab Cloaking and Emergency Escape Scripts -->
+    <script src="scripts/utilities/tab-cloak.js"></script>
+    <script src="scripts/utilities/emergency-escape.js"></script>
+    <script src="scripts/utilities/theme.js"></script>
 </head>
 <body>
     <div id="particles-js"></div>
     <div class="coolBlobIdk"></div>
     <div class="title">exploits</div>
     <div class="icons">
-        <a href="https://bi66ie619.github.io/g.html" target="_blank" class="icon-container"><img src="https://static-00.iconduck.com/assets.00/console-controller-icon-2048x2048-pmmusn7m.png" alt="Games" class="icon"></a>
-        <a href="https://bi66ie619.github.io/a.html" target="_blank" class="icon-container"><img src="https://img.icons8.com/ios7/600/FFFFFF/apple-app-store--v2.png" alt="Apps" class="icon"></a>
-        <a href="https://bi66ie619.github.io/e.html" target="_blank" class="icon-container"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0_6HUhLshuftA_sDchc5pEGqTBPa41EO6Xw&s" alt="Exploits" class="icon"></a>
-        <a href="https://bi66ie619.github.io/es.html" target="_blank" class="icon-container"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRclWJCEIPuuU-0DeRx9HfoSWM4y8Ei59lGhQ&s" alt="Extras" class="icon"></a>
-        <a href="https://bi66ie619.github.io/s.html" target="_blank" class="icon-container"><img src="https://img.icons8.com/m_rounded/512/FFFFFF/settings.png" alt="Settings" class="icon"></a>
+        <a href="/index.html" onclick="event.preventDefault(); window.location.href='/index.html';" class="icon-container"><img src="https://img.icons8.com/ios-filled/50/FFFFFF/home.png" alt="Home" class="icon"></a>
+        <a href="/g.html" onclick="event.preventDefault(); window.location.href='/g.html';" class="icon-container"><img src="https://static-00.iconduck.com/assets.00/console-controller-icon-2048x2048-pmmusn7m.png" alt="Games" class="icon"></a>
+        <a href="/a.html" onclick="event.preventDefault(); window.location.href='/a.html';" class="icon-container"><img src="https://img.icons8.com/ios7/600/FFFFFF/apple-app-store--v2.png" alt="Apps" class="icon"></a>
+        <a href="/e.html" onclick="event.preventDefault(); window.location.href='/e.html';" class="icon-container"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0_6HUhLshuftA_sDchc5pEGqTBPa41EO6Xw&s" alt="Exploits" class="icon"></a>
+        <a href="/m.html" onclick="event.preventDefault(); window.location.href='/m.html';" class="icon-container"><img src="https://i.pinimg.com/736x/ea/8d/11/ea8d11f1ffc6355b8a440106ce61d0f3.jpg" alt="Movies" class="icon"></a>
+        <a href="/s.html" onclick="event.preventDefault(); window.location.href='/s.html';" class="icon-container"><img src="https://img.icons8.com/m_rounded/512/FFFFFF/settings.png" alt="Settings" class="icon"></a>
     </div>
     <div class="rectangle-container">
-        <div class="rectangle" onclick="window.open('https://ext-remover.net/detail/JPCMG/', '_blank')">
+        <div class="rectangle" onclick="window.location.href='https://ext-remover.net/detail/JPCMG/'">
             <img src="https://files.catbox.moe/ldko7k.png" alt="Image 2">
             <div class="new-badge">NEW!</div>
         </div>
-        <div class="rectangle" onclick="window.open('https://spypiemath.pages.dev/', '_blank')">
+        <div class="rectangle" onclick="window.location.href='https://spypiemath.pages.dev/'">
             <img src="https://files.catbox.moe/g8tju3.png" alt="Image 2">
             <div class="new-badge">NEW!</div>
         </div>
-        <div class="rectangle" onclick="window.open('https://github.com/TheRealMrGamz/Bookmarklets', '_blank')">
+        <div class="rectangle" onclick="window.location.href='https://github.com/TheRealMrGamz/Bookmarklets'">
             <img src="https://files.catbox.moe/evl9h4.png" alt="Image 2">
             <div class="new-badge">NEW!</div>
         </div>
     </div>
      <div class="rectangle-container">
-        <div class="rectangle" onclick="window.open('https://camoapi.vercel.app/proxy?url=https://blooketbot.glitch.me', '_blank')">
+        <div class="rectangle" onclick="window.location.href='https://unblockzone.github.io/active/iframe.html#https://blooketbot.glitch.me'">
             <img src="https://files.catbox.moe/vze1vq.png" alt="Image">
             <div class="new-badge">NEW!</div>
         </div>
-        <div class="rectangle" onclick="window.open('https://www.summarizer.org/', '_blank')">
+        <div class="rectangle" onclick="window.location.href='https://www.summarizer.org/'">
             <img src="https://files.catbox.moe/5v0ih3.png" alt="Image 2">
             <div class="new-badge">NEW!</div>
         </div>
-        <div class="rectangle" onclick="window.open('https://br1ck.vercel.app/', '_blank')">
+        <div class="rectangle" onclick="window.location.href='https://br1ck.vercel.app/'">
             <img src="https://files.catbox.moe/o3g1uj.png" alt="Image 2">
             <div class="new-badge">NEW!</div>
         </div>
@@ -196,15 +202,15 @@
     <script>
         particlesJS("particles-js", {
             "particles": {
-                "number": { "value": 100, "density": { "enable": false } },
+                "number": { "value": 30, "density": { "enable": false } },
                 "color": { "value": "#aaa" },
                 "shape": { "type": "circle" },
                 "opacity": { "value": 0.5, "random": true },
-                "size": { "value": 4, "random": true },
-                "move": { "enable": true, "speed": 8, "direction": "random" }
+                "size": { "value": 3, "random": true },
+                "move": { "enable": true, "speed": 4, "direction": "random" }
             },
             "interactivity": {
-                "events": { "onhover": { "enable": true, "mode": "repulse" } }
+                "events": { "onhover": { "enable": false } }
             }
         });
     </script>
@@ -215,6 +221,12 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-8PERVFVWRG');
 </script>
-
+    <script src="scripts/utilities/shared.js"></script>
+    <script>
+        // Exploits page specific code
+    </script>
+    <!-- Discord Widget -->
 </body>
 </html>
+
+
