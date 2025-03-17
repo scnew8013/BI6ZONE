@@ -21,6 +21,9 @@ function applySavedCloak() {
             newFavicon.id = 'favicon';
             document.head.appendChild(newFavicon);
         }
+    } else {
+        // If no cloak is set, apply current page name by default
+        cloakTabWithCurrentPage('https://files.catbox.moe/ao6qv3.png');
     }
 }
 
@@ -75,6 +78,41 @@ function cloakTab(title, favicon) {
     }
 }
 
+// Function to cloak tab with current page name
+function cloakTabWithCurrentPage(favicon) {
+    // Get the current page name from URL
+    let pageName = 'unblockzone';
+    
+    // Extract page name from URL
+    const path = window.location.pathname;
+    
+    // Check for main pages and their subdirectories
+    if (path.includes('/g.html') || path.includes('/g/')) {
+        pageName = 'games';
+    } else if (path.includes('/a.html') || path.includes('/a/')) {
+        pageName = 'apps';
+    } else if (path.includes('/m.html') || path.includes('/m/')) {
+        pageName = 'movies';
+    } else if (path.includes('/e.html') || path.includes('/e/')) {
+        pageName = 'exploits';
+    } else if (path.includes('/s.html')) {
+        pageName = 'settings';
+    } else if (path === '/' || path.includes('/index.html')) {
+        pageName = 'home';
+    } else if (path.includes('/es.html')) {
+        pageName = 'games (español)';
+    } else if (path.includes('/chat.html')) {
+        pageName = 'chat';
+    } else if (path.includes('/ai.html')) {
+        pageName = 'ai tools';
+    }
+    
+    console.log('Cloaking tab with current page name:', pageName);
+    
+    // Apply the cloak with current page name
+    cloakTab(pageName, favicon || 'https://files.catbox.moe/ao6qv3.png');
+}
+
 // Apply saved cloak when the DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     applySavedCloak();
@@ -85,5 +123,6 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
     applySavedCloak();
 }
 
-// Make cloakTab function globally available
-window.cloakTab = cloakTab; 
+// Make functions globally available
+window.cloakTab = cloakTab;
+window.cloakTabWithCurrentPage = cloakTabWithCurrentPage; 
