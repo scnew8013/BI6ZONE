@@ -106,77 +106,99 @@ body {
     transform: translateX(-50%) scale(1.1);
 }
 
-/* Search bar moved above the icons */
-.header {
-    margin-top: 20px;
-    width: 80%;
-    height: 60px;
-    background: black;
-    border: 2px solid white;
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    padding: 0 15px;
-}
+        .header {
+            position: absolute;
+            top: 70%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 60px;
+            background: black;
+            border: 2px solid white;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+        }
+        .search-bar {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: white;
+            font-size: 18px;
+        }
+        .icons-container {
+            margin-top: 50px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            justify-items: center;
+        }
+        .icon-container {
+            width: 100px;
+            height: 120px;
+            background: black;
+            border: 3px solid yellow;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.3s ease-in-out; ease;
+            will-change: transform;
+        }
+        .icon-container:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+        .icon {
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+        }
+        .icon-label {
+            margin-top: 5px;
+            font-size: 14px;
+            color: white;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
 
-.search-bar {
-    width: 100%;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: white;
-    font-size: 18px;
-}
+        .support-text {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+        }
 
-.icons-container {
-    margin-top: 50px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    justify-items: center;
-}
+        .coolBlobIdk {
+            position: fixed;
+            bottom: -30%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 400px;
+            background: linear-gradient(135deg, rgba(169, 169, 169, 0.5), rgba(255, 255, 255, 0.4));
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.8;
+            will-change: transform;
+        }
 
-.icon-container {
-    width: 100px;
-    height: 120px;
-    background: black;
-    border: 3px solid yellow;
-    border-radius: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    transition: transform 0.3s ease-in-out; ease;
-    will-change: transform;
-}
-
-.icon-container:hover {
-    transform: scale(1.2);
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-}
-
-.icon {
-    width: 60px;
-    height: 60px;
-    cursor: pointer;
-}
-
-.icon-label {
-    margin-top: 5px;
-    font-size: 14px;
-    color: white;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-}
-
-.support-text {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    font-size: 20px;
-    font-weight: bold;
-    color: white;
-    cursor: pointer;
-}
+        .update-text {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
     </style>
     
     <script>
@@ -189,6 +211,10 @@ body {
                 }
             }
         }
+
+        function openSupportPage() {
+            window.open('https://docs.google.com/forms/d/1t52FBl9fUIm6ftWzFQTSw4dutoIOP1rTe8AnQ4cg1pY/viewform?edit_requested=true', '_blank');
+        }
     </script>
 </head>
 <body>
@@ -197,36 +223,51 @@ body {
 
     <div class="title">BI6ZONE</div>
 
-    <!-- Search bar moved above the icons -->
-    <div class="header">
-        <input type="text" class="search-bar" placeholder="search..." onkeydown="handleSearch(event)">
-    </div>
+    <!-- Move the search bar above the buttons -->
+<div class="header">
+    <input type="text" class="search-bar" placeholder="search..." onkeydown="handleSearch(event)">
+</div>
 
-    <div class="icons-container">
-        <div class="icon-container">
-            <img class="icon" src="https://static-00.iconduck.com/assets.00/console-controller-icon-2048x2048-pmmusn7m.png" onclick="window.location.href='g.html'">
-            <div class="icon-label">games</div>
-        </div>
-        <div class="icon-container">
-            <img class="icon" src="https://img.icons8.com/ios7/600/FFFFFF/apple-app-store--v2.png" onclick="window.location.href='a.html'">
-            <div class="icon-label">apps</div>
-        </div>
-        <div class="icon-container">
-            <img class="icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0_6HUhLshuftA_sDchc5pEGqTBPa41EO6Xw&s" onclick="window.location.href='e.html'">
-            <div class="icon-label">exploits</div>
-        </div>
+<!-- Buttons below search bar now -->
+<div class="icons-container">
+    <div class="icon-container">
+        <img class="icon" src="https://static-00.iconduck.com/assets.00/console-controller-icon-2048x2048-pmmusn7m.png" onclick="window.location.href='g.html'">
+        <div class="icon-label">games</div>
     </div>
+    <div class="icon-container">
+        <img class="icon" src="https://img.icons8.com/ios7/600/FFFFFF/apple-app-store--v2.png" onclick="window.location.href='a.html'">
+        <div class="icon-label">apps</div>
+    </div>
+    <div class="icon-container">
+        <img class="icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0_6HUhLshuftA_sDchc5pEGqTBPa41EO6Xw&s" onclick="window.location.href='e.html'">
+        <div class="icon-label">exploits</div>
+    </div>
+    <div class="icon-container">
+        <img class="icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRclWJCEIPuuU-0DeRx9HfoSWM4Y8Ei59lGhQ&s" onclick="window.location.href='es.html'">
+        <div class="icon-label">extra</div>
+    </div>
+    <div class="icon-container">
+        <img class="icon" src="https://img.icons8.com/m_rounded/512/FFFFFF/settings.png" onclick="window.location.href='s.html'">
+        <div class="icon-label">settings</div>
+    </div>
+    <div class="icon-container">
+        <img class="icon" src="https://files.catbox.moe/uf0zh5.png" onclick="window.location.href='disremake.html'">
+        <div class="icon-label">chat</div>
+    </div>
+</div>
 
     <div class="support-text" onclick="openSupportPage()">support</div>
-
+    
     <!-- Update Message -->
-    <div id="updateBox" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.8); color: white; padding: 10px 15px; border: 2px solid yellow; border-radius: 10px; font-size: 14px; text-align: center; box-shadow: 0 0 15px rgba(255, 255, 255, 0.5); display: none;">
-        🚀 <strong>MAJOR UPDATE:</strong> Apps are now fixed! 🎉  
-        <button onclick="document.getElementById('updateBox').style.display='none'" style="background: none; color: yellow; border: 1px solid yellow; padding: 5px 10px; margin-left: 10px; cursor: pointer; border-radius: 5px;">Close</button>
-    </div>
+<div id="updateBox" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.8); color: white; padding: 10px 15px; border: 2px solid yellow; border-radius: 10px; font-size: 14px; text-align: center; box-shadow: 0 0 15px rgba(255, 255, 255, 0.5); display: none;">
+    🚀 <strong>MAJOR UPDATE:</strong> Apps are now fixed! 🎉  
+    <button onclick="document.getElementById('updateBox').style.display='none'" style="background: none; color: yellow; border: 1px solid yellow; padding: 5px 10px; margin-left: 10px; cursor: pointer; border-radius: 5px;">Close</button>
+</div>
 
-    <script>
-        setTimeout(() => document.getElementById("updateBox").style.display = "block", 1500);
-    </script>
+<script>
+    // Show update message after 1.5 seconds
+    setTimeout(() => document.getElementById("updateBox").style.display = "block", 1500);
+</script>
+    
 </body>
 </html>
