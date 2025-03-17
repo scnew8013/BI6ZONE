@@ -574,7 +574,6 @@ function openInAboutBlank() {
                                 <li>Or deploy to a web server with proper CORS headers</li>
                                 <li>Or use a browser extension to disable CORS for local development</li>
                             </ul>
-                            <button id="goBackBtn" style="padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">Go Back</button>
                         `;
                         
                         document.body.innerHTML = '';
