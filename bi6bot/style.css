@@ -9,9 +9,8 @@
 :root {
   /* Dark theme colors */
   --text-color: #ffc107;
-
   --subheading-color: #ffc107;
-  --placeholder-color: #c3cdde;
+  --placeholder-color: #ffc107;
   --primary-color: #ffc107;
   --secondary-color: #ffc107;
   --secondary-hover-color: #ffc107;
@@ -102,17 +101,17 @@ body.chats-active .container :where(.app-header, .suggestions) {
   align-items: center;
   border-radius: 50%;
   justify-content: center;
-  color: #1d7efd;
+  color: #ffc107;
   background: var(--primary-color);
 }
 .suggestions .suggestions-item:nth-child(2) .icon {
-  color: #28a745;
+  color: #ffc107;
 }
 .suggestions .suggestions-item:nth-child(3) .icon {
   color: #ffc107;
 }
 .suggestions .suggestions-item:nth-child(4) .icon {
-  color: #6f42c1;
+  color: #ffc107;
 }
 .container .chats-container {
   display: flex;
@@ -176,7 +175,7 @@ body.chats-active .container :where(.app-header, .suggestions) {
   background: var(--secondary-color);
 }
 .chats-container .user-message .file-attachment span {
-  color: #1d7efd;
+  color: #ffc107;
 }
 .container .prompt-container {
   position: fixed;
@@ -262,10 +261,10 @@ body.chats-active .container :where(.app-header, .suggestions) {
   display: block;
 }
 .prompt-form :is(#stop-response-btn:hover, #cancel-file-btn) {
-  color: #d62939;
+  color: #ffc107;
 }
 .prompt-wrapper .prompt-form .file-icon {
-  color: #1d7efd;
+  color: #ffc107;
 }
 .prompt-form #stop-response-btn,
 body.bot-responding .prompt-form .file-upload-wrapper {
