@@ -4,7 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BI6ZONE</title>
+    <!----======== CSS ======== -->
+    <link rel="stylesheet" href="style.css">
+    <!--<title>Typing Text Animation</title>-->
+</head>
+<body>
+    <div class="container">
+        <span class="text first-text">BI6ZONE IS THE</span>
+        <span class="text sec-text">Future</span>
+    </div>
+    <script>
+        const text = document.querySelector(".sec-text");
+        const textLoad = () => {
+            setTimeout(() => {
+                text.textContent = "Getaway";
+            }, 0);
+            setTimeout(() => {
+                text.textContent = "Getaround";
+            }, 4000);
+            setTimeout(() => {
+                text.textContent = "Unblocked";
+            }, 8000); //1s = 1000 milliseconds
+        }
+        textLoad();
+        setInterval(textLoad, 12000);
+    </script>    
     <link rel="icon" href="https://files.catbox.moe/m1zg0c.ico" type="image/png">
 
     <!-- Google tag (gtag.js) -->
