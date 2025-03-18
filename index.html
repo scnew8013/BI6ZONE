@@ -1,6 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <head>
+    <style>
+        #container {
+            background-color: #f0f8ff;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        let password = "BI6ISCOOL";
+        (function passcodeprotect() {
+            let passcode = prompt("Whats da secret code🤣🤣🤣");
+            while (passcode !== password) {
+                alert("Incorrect PassCode");
+                return passcodeprotect();
+            }
+        }());
+        alert('Correct - Shhhhhh🤫');
+        document.getElementById("container")
+            .style.display = "block";
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BI6ZONE</title>
