@@ -3,32 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!----======== CSS ======== -->
-    <link rel="stylesheet" href="style.css">
-    <!--<title>Typing Text Animation</title>-->
-</head>
-<body>
-    <div class="container">
-        <h1><title><span class="text first-text">BI6ZONE IS THE</span>
-        <span class="text sec-text">Future</span></title></h1>
-    </div>
-    <script>
-        const text = document.querySelector(".sec-text");
-        const textLoad = () => {
-            setTimeout(() => {
-                text.textContent = "Getaway";
-            }, 0);
-            setTimeout(() => {
-                text.textContent = "Getaround";
-            }, 4000);
-            setTimeout(() => {
-                text.textContent = "Unblocked";
-            }, 8000); //1s = 1000 milliseconds
-        }
-        textLoad();
-        setInterval(textLoad, 12000);
-    </script>    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
     <link rel="icon" href="https://files.catbox.moe/m1zg0c.ico" type="image/png">
 
     <!-- Google tag (gtag.js) -->
@@ -233,6 +208,31 @@ body {
     <div class="coolBlobIdk"></div>
 
     <div class="title">BI6ZONE</div>
+    <!----======== CSS ======== -->
+    <link rel="stylesheet" href="style.css">
+    <!--<title>Typing Text Animation</title>-->
+</head>
+<body>
+    <div class="container">
+        <div class="title"><span class="text first-text">I'm a</span>
+        <span class="text sec-text">Freelancer</span></div>
+    </div>
+    <script>
+        const text = document.querySelector(".sec-text");
+        const textLoad = () => {
+            setTimeout(() => {
+                text.textContent = "Freelancer";
+            }, 0);
+            setTimeout(() => {
+                text.textContent = "Blogger";
+            }, 4000);
+            setTimeout(() => {
+                text.textContent = "YouTuber";
+            }, 8000); //1s = 1000 milliseconds
+        }
+        textLoad();
+        setInterval(textLoad, 12000);
+    </script>
 
     <div class="icons-container">
         <div class="icon-container">
