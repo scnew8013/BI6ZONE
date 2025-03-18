@@ -8,23 +8,24 @@
 }
 :root {
   /* Dark theme colors */
-  --text-color: #edf3ff;
-  --subheading-color: #97a7ca;
+  --text-color: #ffc107;
+
+  --subheading-color: #ffc107;
   --placeholder-color: #c3cdde;
-  --primary-color: #101623;
-  --secondary-color: #283045;
-  --secondary-hover-color: #333e58;
-  --scrollbar-color: #626a7f;
+  --primary-color: #ffc107;
+  --secondary-color: #ffc107;
+  --secondary-hover-color: #ffc107;
+  --scrollbar-color: #ffc107;
 }
 body.light-theme {
   /* Light theme colors */
-  --text-color: #090c13;
-  --subheading-color: #7b8cae;
-  --placeholder-color: #606982;
-  --primary-color: #f3f7ff;
-  --secondary-color: #dce6f9;
-  --secondary-hover-color: #d2ddf2;
-  --scrollbar-color: #a2aac2;
+  --text-color: #ffc107;
+  --subheading-color: #ffc107;
+  --placeholder-color: #ffc107;
+  --primary-color: #ffc107;
+  --secondary-color: #ffc107;
+  --secondary-hover-color: #ffc107;
+  --scrollbar-color: #ffc107;
 }
 body {
   color: var(--text-color);
