@@ -674,25 +674,44 @@
     <script src="scripts/utilities/shared.js"></script>
     <script>
         function filterGamesByType(type) {
-    const allGames = document.querySelectorAll('.rectangle-container');
+    const allContainers = document.querySelectorAll('.rectangle-container');
+    let hasVisibleGames = false; // Track if at least one game is shown
 
-    allGames.forEach(container => {
-        container.style.display = 'none'; // Hide all by default
+    allContainers.forEach(container => {
+        let hasVisibleCard = false; // Track if this container should be visible
 
         container.querySelectorAll('.rectangle').forEach(game => {
             let isMobile = game.querySelector('.badge').classList.contains('mobilesup-badge');
             let isPC = game.querySelector('.badge').classList.contains('notmobsup-badge');
 
             if (type === 'mobile' && isMobile) {
-                container.style.display = 'flex';
+                game.style.display = 'block';
+                hasVisibleCard = true;
             } else if (type === 'pc' && isPC) {
-                container.style.display = 'flex';
+                game.style.display = 'block';
+                hasVisibleCard = true;
             } else if (type === 'all') {
-                container.style.display = 'flex';
+                game.style.display = 'block';
+                hasVisibleCard = true;
+            } else {
+                game.style.display = 'none';
             }
         });
+
+        // Show or hide the container based on whether it has visible games
+        container.style.display = hasVisibleCard ? 'flex' : 'none';
+
+        if (hasVisibleCard) {
+            hasVisibleGames = true;
+        }
     });
+
+    // If no games are visible, you could display a message
+    if (!hasVisibleGames) {
+        console.log("No games available in this category."); // You can replace this with an actual message on the page
+    }
 }
+
         // Game search functionality
         document.addEventListener('DOMContentLoaded', function() {
             const searchBar = document.getElementById('gameSearch');
