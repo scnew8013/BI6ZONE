@@ -116,14 +116,14 @@
         }
 
         // Local Storage - Unique Visitors Tracking
-        function trackUniqueVisitor() {
-            if (!localStorage.getItem('uniqueVisitorTracked')) {
-                localStorage.setItem('uniqueVisitorTracked', 'true');
-                let uniqueVisitors = localStorage.getItem('uniqueVisitors') || 0;
-                uniqueVisitors++;
-                localStorage.setItem('uniqueVisitors', uniqueVisitors);
-            }
-        }
+        function updateStats() {
+    const visitorRef = firebase.database().ref('visitors');
+    
+    visitorRef.on('value', snapshot => {
+        const count = snapshot.val() || 0;
+        document.getElementById('page-views').innerText = `Page Views: ${count}`;
+    });
+}
 
         // Show selected tab
         function showTab(tabId) {
