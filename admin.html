@@ -18,6 +18,26 @@
             padding: 10px 20px;
             text-align: center;
         }
+        .tabs {
+            display: flex;
+            cursor: pointer;
+            margin: 20px 0;
+            padding: 10px;
+            background: #f1f1f1;
+            border-radius: 5px;
+        }
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background: #e0e0e0;
+            border-radius: 5px;
+            margin-right: 5px;
+        }
+        .tab.active {
+            background: #007BFF;
+            color: white;
+        }
         .container {
             width: 80%;
             margin: auto;
@@ -26,83 +46,57 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        .button {
-            background: #007BFF;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 5px;
-        }
-        .button:hover {
-            background: #0056b3;
-        }
-        #games-list {
-            margin-top: 20px;
+        .hidden {
+            display: none;
         }
     </style>
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-B9NXE8RCL6"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-B9NXE8RCL6');
+    </script>
 </head>
 <body>
     <header>
         <h1>Admin Panel</h1>
     </header>
-    <div class="container">
-        <h2>Manage Games</h2>
-        <form id="add-game-form">
-            <input type="text" id="game-title" placeholder="Game Title" required>
-            <input type="url" id="game-url" placeholder="Game URL" required>
-            <button type="submit" class="button">Add Game</button>
-        </form>
-        <h3>Current Games:</h3>
-        <ul id="games-list"></ul>
+    <div class="tabs">
+        <div class="tab active" onclick="showTab('home')">Home</div>
+        <div class="tab" onclick="showTab('games')">Games</div>
+    </div>
+    <div class="container" id="home">
+        <h2>Home Tab - Stats and Analytics</h2>
+        <p>This section will display your site stats and analytics using Google Analytics.</p>
+    </div>
+    <div class="container hidden" id="games">
+        <h2>Games Tab</h2>
+        <p>This section is currently blank. We will work on it later.</p>
     </div>
     <script>
-        // Initialize an empty array to store games
-        let games = [];
+        function showTab(tab) {
+            const homeTab = document.getElementById('home');
+            const gamesTab = document.getElementById('games');
+            const tabs = document.querySelectorAll('.tab');
 
-        // Load existing games from Local Storage
-        function loadGames() {
-            const storedGames = localStorage.getItem('games');
-            if (storedGames) {
-                games = JSON.parse(storedGames);
+            // Hide all tabs
+            homeTab.classList.add('hidden');
+            gamesTab.classList.add('hidden');
+
+            // Remove active class from all tabs
+            tabs.forEach(t => t.classList.remove('active'));
+
+            // Show the selected tab
+            if (tab === 'home') {
+                homeTab.classList.remove('hidden');
+                tabs[0].classList.add('active');
+            } else if (tab === 'games') {
+                gamesTab.classList.remove('hidden');
+                tabs[1].classList.add('active');
             }
-            displayGames();
         }
-
-        // Display games in the list
-        function displayGames() {
-            const gamesList = document.getElementById('games-list');
-            gamesList.innerHTML = '';
-            games.forEach((game, index) => {
-                const li = document.createElement('li');
-                li.innerHTML = `<a href="${game.url}" target="_blank">${game.title}</a>
-                                <button class="button" onclick="removeGame(${index})">Remove</button>`;
-                gamesList.appendChild(li);
-            });
-        }
-
-        // Add new game
-        document.getElementById('add-game-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const title = document.getElementById('game-title').value;
-            const url = document.getElementById('game-url').value;
-
-            games.push({ title, url });
-            localStorage.setItem('games', JSON.stringify(games));
-            displayGames();
-            this.reset(); // Reset the form
-        });
-
-        // Remove game by index
-        function removeGame(index) {
-            games.splice(index, 1);
-            localStorage.setItem('games', JSON.stringify(games));
-            displayGames();
-        }
-
-        // Load games on page load
-        window.onload = loadGames;
     </script>
 </body>
 </html>
