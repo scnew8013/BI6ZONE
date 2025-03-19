@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
     <style>
-        /* Basic styles for the admin panel */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -13,85 +12,65 @@
             background-color: #f4f4f4;
             display: flex;
         }
-        header {
-            background: #007BFF;
+        #sidebar {
+            width: 200px;
+            background: #333;
             color: white;
-            padding: 10px 20px;
-            text-align: center;
-            width: 100%;
-            display: none; /* Hide the header */
+            padding: 15px;
+            height: 100vh;
+            transition: width 0.3s;
         }
-        .sidebar {
-            width: 160px; /* Reduced width */
-            background: #e0e0e0;
-            padding: 10px;
-            height: 100vh; /* Full height */
-            position: fixed; /* Fixed sidebar */
-            transition: transform 0.3s ease; /* Smooth transition for hiding */
-        }
-        .sidebar.hidden {
-            transform: translateX(-100%); /* Hide sidebar */
-        }
-        .small-title {
-            font-size: 20px; /* Smaller font size for the title */
-            font-weight: bold;
-            margin-bottom: 10px; /* Spacing below the title */
-            text-align: center; /* Center align title */
+        #sidebar.hidden {
+            width: 0;
+            padding: 0;
+            overflow: hidden;
         }
         .tab {
-            padding: 8px; /* Reduced padding */
-            text-align: center;
-            background: #f1f1f1;
-            border-radius: 5px;
-            margin-bottom: 5px;
+            padding: 10px;
             cursor: pointer;
-            font-size: 14px; /* Smaller font size for buttons */
+            background: #444;
+            margin: 5px 0;
+            border-radius: 5px;
+            text-align: center;
         }
         .tab.active {
             background: #007BFF;
-            color: white;
         }
-        .content {
-            margin-left: 180px; /* Space for the sidebar */
+        #content {
+            flex: 1;
             padding: 20px;
-            width: calc(100% - 180px); /* Adjust content width */
-            transition: margin-left 0.3s ease; /* Smooth transition for content */
+            transition: margin-left 0.3s;
         }
-        .content.expanded {
-            margin-left: 0; /* Adjust content margin when sidebar is hidden */
-        }
-        .container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        .hidden {
-            display: none;
-        }
-        .toggle-button {
+        #toggle-btn {
+            position: absolute;
+            top: 10px;
+            left: 210px;
             cursor: pointer;
-            font-size: 24px;
+            font-size: 20px;
             background: none;
             border: none;
+            color: #333;
+        }
+        #toggle-btn:hover {
             color: #007BFF;
-            position: absolute;
-            left: 10px;
-            top: 10px;
+        }
+        .container {
+            display: none;
+        }
+        .container.active {
+            display: block;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Admin Panel</h1>
-        <p id="page-view-count">Page Views: 0 (URL: https://bi66ie619.github.io)</p> <!-- Display page view count for the main page -->
-    </header>
-    <button class="toggle-button" onclick="toggleSidebar()">&#60;/&#62;</button> <!-- Sidebar toggle button -->
-    <div class="sidebar" id="sidebar">
-        <div class="small-title">BI6's Panel</div> <!-- Smaller title above the home tab -->
+    <button id="toggle-btn" onclick="toggleSidebar()"> &lt;/&gt; </button>
+
+    <div id="sidebar">
+        <h2>BI6’s Panel</h2>
         <div class="tab active" onclick="showTab('home')">Home</div>
         <div class="tab" onclick="showTab('games')">Games</div>
-        <div class="tab" onclick="showTab('components')">Components</div> <!-- New Components tab -->
+        <div class="tab" onclick="showTab('components')">Components</div>
+        <!-- 10 Backup Tabs -->
         <div class="tab" onclick="showTab('backup1')">Backup Tab 1</div>
         <div class="tab" onclick="showTab('backup2')">Backup Tab 2</div>
         <div class="tab" onclick="showTab('backup3')">Backup Tab 3</div>
@@ -103,140 +82,92 @@
         <div class="tab" onclick="showTab('backup9')">Backup Tab 9</div>
         <div class="tab" onclick="showTab('backup10')">Backup Tab 10</div>
     </div>
-    <div class="content" id="content">
-        <div class="container" id="home">
-            <h2>Home Tab - Stats</h2>
-            <p>This section will display your site stats.</p>
-            <p id="home-page-view-count"></p> <!-- New element to display page view count -->
+
+    <div id="content">
+        <div class="container active" id="home">
+            <h2>Home - Stats & Analytics</h2>
+            <p id="page-views">Loading page views...</p>
+            <p id="unique-visitors">Loading unique visitors...</p>
+            <p id="games-played">Total Games Played: 0</p>
+            <p id="most-played-game">Most Played Game: N/A</p>
         </div>
-        <div class="container hidden" id="games">
+
+        <div class="container" id="games">
             <h2>Games Tab</h2>
             <p>This section is currently blank. We will work on it later.</p>
         </div>
-        <div class="container hidden" id="components">
-            <h2>Components Tab</h2>
-            <p>Fetching files from the GitHub repository...</p>
-            <ul id="file-list"></ul> <!-- List to display files -->
-        </div>
-        <div class="container hidden" id="backup1">
-            <h2>Backup Tab 1</h2>
-            <p>This section is currently blank. We will work on it later.</p>
-        </div>
-        <div class="container hidden" id="backup2">
-            <h2>Backup Tab 2</h2>
-            <p>This section is currently blank. We will work on it later.</p>
-        </div>
-        <div class="container hidden" id="backup3">
-            <h2>Backup Tab 3</h2>
-            <p>This section is currently blank. We will work on it later.</p>
-        </div>
-        <div class="container hidden" id="backup4">
-            <h2>Backup Tab 4</h2>
-            <p>This section is currently blank. We will work on it later.</p>
-        </div>
-        <div class="container hidden" id="backup5">
-            <h2>Backup Tab 5</h2>
-            <p>This section is currently blank. We will work on it later.</p>
-        </div>
-        <div class="container hidden" id="backup6">
-            <h2>Backup Tab 6</h2>
-            <p>This section is currently blank. We will work on it later.</p>
-        </div>
-        <div class="container hidden" id="backup7">
-            <h2>Backup Tab 7</h2>
-            <p>This section is currently blank. We will work on it later.</p>
-        </div>
-        <div class="container hidden" id="backup8">
-            <h2>Backup Tab 8</h2>
-            <p>This section is currently blank. We will work on it later.</p>
-        </div>
-        <div class="container hidden" id="backup9">
-            <h2>Backup Tab 9</h2>
-            <p>This section is currently blank. We will work on it later.</p>
-        </div>
-        <div class="container hidden" id="backup10">
-            <h2>Backup Tab 10</h2>
-            <p>This section is currently blank. We will work on it later.</p>
+
+        <div class="container" id="components">
+            <h2>Components - GitHub Files</h2>
+            <ul id="file-list">Fetching files...</ul>
         </div>
     </div>
+
     <script>
-        // Page view tracking
-        function incrementPageView() {
-            let pageViews = localStorage.getItem('mainPageViews') || 0;
-            pageViews++;
-            localStorage.setItem('mainPageViews', pageViews);
+        // Page View Tracking (Fetching from Main Site)
+        function updateStats() {
+            fetch('https://bi66ie619.github.io/stats.json')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('page-views').innerText = `Page Views: ${data.pageViews}`;
+                    document.getElementById('unique-visitors').innerText = `Unique Visitors: ${data.uniqueVisitors}`;
+                })
+                .catch(error => console.error('Error fetching stats:', error));
         }
 
-        // Display page views and URL
-        function displayPageViews() {
-            const pageViewCount = localStorage.getItem('mainPageViews') || 0;
-            document.getElementById('page-view-count').innerText = `Page Views: ${pageViewCount} (URL: https://bi66ie619.github.io)`;
-            document.getElementById('home-page-view-count').innerText = `Total Page Views: ${pageViewCount}`; // Update Home tab
+        // Local Storage - Unique Visitors Tracking
+        function trackUniqueVisitor() {
+            if (!localStorage.getItem('uniqueVisitorTracked')) {
+                localStorage.setItem('uniqueVisitorTracked', 'true');
+                let uniqueVisitors = localStorage.getItem('uniqueVisitors') || 0;
+                uniqueVisitors++;
+                localStorage.setItem('uniqueVisitors', uniqueVisitors);
+            }
         }
 
-        // Call functions on page load
-        window.onload = function() {
-            incrementPageView();
-            displayPageViews();
-        };
+        // Show selected tab
+        function showTab(tabId) {
+            document.querySelectorAll('.container').forEach(container => {
+                container.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
 
-        function showTab(tab) {
-            // Hide all content containers
-            const containers = document.querySelectorAll('.container');
-            containers.forEach(container => container.classList.add('hidden'));
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`.tab[onclick="showTab('${tabId}')"]`).classList.add('active');
 
-            // Remove active class from all tabs
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(t => t.classList.remove('active'));
-
-            // Show the selected tab's content and set it active
-            const selectedTab = document.getElementById(tab);
-            if (selectedTab) {
-                selectedTab.classList.remove('hidden');
-            }
-            const activeTab = Array.from(tabs).find(t => t.textContent.trim() === tab.replace('backup', 'Backup Tab '));
-            if (activeTab) {
-                activeTab.classList.add('active');
-            } else {
-                const homeTab = document.querySelector('.tab.active');
-                homeTab.classList.add('active');
-            }
-
-            // If the Components tab is selected, fetch the GitHub files
-            if (tab === 'components') {
+            if (tabId === 'components') {
                 fetchGitHubFiles();
             }
         }
 
-        // Function to fetch files from the GitHub repository
+        // Fetch GitHub Files
         function fetchGitHubFiles() {
-            const repoUrl = "https://api.github.com/repos/BI66IE619/bi66ie619.github.io/contents/";
-            fetch(repoUrl)
+            fetch("https://api.github.com/repos/BI66IE619/bi66ie619.github.io/contents/")
                 .then(response => response.json())
                 .then(data => {
                     const fileList = document.getElementById('file-list');
-                    fileList.innerHTML = ''; // Clear previous files
-
-                    // Iterate through the fetched files and add them to the list
+                    fileList.innerHTML = ''; 
                     data.forEach(file => {
                         const li = document.createElement('li');
-                        li.textContent = file.name; // Display file name
+                        li.textContent = file.name;
                         fileList.appendChild(li);
                     });
                 })
-                .catch(error => {
-                    console.error('Error fetching files:', error);
-                });
+                .catch(error => console.error('Error fetching files:', error));
         }
 
-        // Toggle sidebar visibility
+        // Toggle Sidebar
         function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const content = document.getElementById('content');
-
-            sidebar.classList.toggle('hidden');
-            content.classList.toggle('expanded');
+            document.getElementById('sidebar').classList.toggle('hidden');
         }
+
+        // On Page Load
+        window.onload = function() {
+            trackUniqueVisitor();
+            updateStats();
+        };
     </script>
 </body>
 </html>
