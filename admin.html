@@ -107,6 +107,7 @@
         <div class="container" id="home">
             <h2>Home Tab - Stats</h2>
             <p>This section will display your site stats.</p>
+            <p id="home-page-view-count"></p> <!-- New element to display page view count -->
         </div>
         <div class="container hidden" id="games">
             <h2>Games Tab</h2>
@@ -170,6 +171,7 @@
         function displayPageViews() {
             const pageViewCount = localStorage.getItem('mainPageViews') || 0;
             document.getElementById('page-view-count').innerText = `Page Views: ${pageViewCount} (URL: https://bi66ie619.github.io)`;
+            document.getElementById('home-page-view-count').innerText = `Total Page Views: ${pageViewCount}`; // Update Home tab
         }
 
         // Call functions on page load
