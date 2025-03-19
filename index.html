@@ -10,31 +10,20 @@
     </style>
 </head>
 <body>
-    <div id="passwordModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); display: flex; justify-content: center; align-items: center;">
-        <div style="background: white; padding: 20px; text-align: center; border-radius: 10px;">
-            <p>Enter the secret code 🤣🤣🤣</p>
-            <input type="password" id="passwordInput">
-            <button onclick="checkPassword()">Submit</button>
-        </div>
-    </div>
-
-    <div id="container" style="display: none;">
-        <h1>Welcome to the protected content!</h1>
-    </div>
-
     <script>
+        <script>
         let password = "BI6ISCOOL";
-
-        function checkPassword() {
-            let passcode = document.getElementById("passwordInput").value;
-            if (passcode === password) {
-                alert('Correct - Shhhhhh🤫');
-                document.getElementById("passwordModal").style.display = "none";
-                document.getElementById("container").style.display = "block";
-            } else {
+        (function passcodeprotect() {
+            let passcode = prompt("Whats da secret code🤣🤣🤣");
+            while (passcode !== password) {
                 alert("Incorrect PassCode");
+                return passcodeprotect();
             }
-        }
+        }());
+        alert('Correct - Shhhhhh🤫');
+        document.getElementById("container")
+            .style.display = "block";
+    </script>
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
