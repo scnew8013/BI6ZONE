@@ -11,36 +11,40 @@
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
+            display: flex;
         }
         header {
             background: #007BFF;
             color: white;
             padding: 10px 20px;
             text-align: center;
+            width: 100%;
         }
-        .tabs {
-            display: flex;
-            cursor: pointer;
-            margin: 20px 0;
+        .sidebar {
+            width: 200px;
+            background: #e0e0e0;
             padding: 10px;
-            background: #f1f1f1;
-            border-radius: 5px;
+            height: 100vh; /* Full height */
+            position: fixed; /* Fixed sidebar */
         }
         .tab {
-            flex: 1;
             padding: 10px;
             text-align: center;
-            background: #e0e0e0;
+            background: #f1f1f1;
             border-radius: 5px;
-            margin-right: 5px;
+            margin-bottom: 5px;
+            cursor: pointer;
         }
         .tab.active {
             background: #007BFF;
             color: white;
         }
+        .content {
+            margin-left: 220px; /* Space for the sidebar */
+            padding: 20px;
+            width: calc(100% - 220px); /* Adjust content width */
+        }
         .container {
-            width: 80%;
-            margin: auto;
             background: white;
             padding: 20px;
             border-radius: 8px;
@@ -50,51 +54,116 @@
             display: none;
         }
     </style>
-    <!-- Google Analytics 4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-B9NXE8RCL6"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-B9NXE8RCL6');
-    </script>
 </head>
 <body>
     <header>
         <h1>Admin Panel</h1>
+        <p id="page-view-count">Page Views: 0 (URL: https://bi66ie619.github.io)</p> <!-- Display page view count for the main page -->
     </header>
-    <div class="tabs">
+    <div class="sidebar">
         <div class="tab active" onclick="showTab('home')">Home</div>
         <div class="tab" onclick="showTab('games')">Games</div>
+        <div class="tab" onclick="showTab('backup1')">Backup Tab 1</div>
+        <div class="tab" onclick="showTab('backup2')">Backup Tab 2</div>
+        <div class="tab" onclick="showTab('backup3')">Backup Tab 3</div>
+        <div class="tab" onclick="showTab('backup4')">Backup Tab 4</div>
+        <div class="tab" onclick="showTab('backup5')">Backup Tab 5</div>
+        <div class="tab" onclick="showTab('backup6')">Backup Tab 6</div>
+        <div class="tab" onclick="showTab('backup7')">Backup Tab 7</div>
+        <div class="tab" onclick="showTab('backup8')">Backup Tab 8</div>
+        <div class="tab" onclick="showTab('backup9')">Backup Tab 9</div>
+        <div class="tab" onclick="showTab('backup10')">Backup Tab 10</div>
     </div>
-    <div class="container" id="home">
-        <h2>Home Tab - Stats and Analytics</h2>
-        <p>This section will display your site stats and analytics using Google Analytics.</p>
-    </div>
-    <div class="container hidden" id="games">
-        <h2>Games Tab</h2>
-        <p>This section is currently blank. We will work on it later.</p>
+    <div class="content">
+        <div class="container" id="home">
+            <h2>Home Tab - Stats</h2>
+            <p>This section will display your site stats.</p>
+        </div>
+        <div class="container hidden" id="games">
+            <h2>Games Tab</h2>
+            <p>This section is currently blank. We will work on it later.</p>
+        </div>
+        <div class="container hidden" id="backup1">
+            <h2>Backup Tab 1</h2>
+            <p>This section is currently blank. We will work on it later.</p>
+        </div>
+        <div class="container hidden" id="backup2">
+            <h2>Backup Tab 2</h2>
+            <p>This section is currently blank. We will work on it later.</p>
+        </div>
+        <div class="container hidden" id="backup3">
+            <h2>Backup Tab 3</h2>
+            <p>This section is currently blank. We will work on it later.</p>
+        </div>
+        <div class="container hidden" id="backup4">
+            <h2>Backup Tab 4</h2>
+            <p>This section is currently blank. We will work on it later.</p>
+        </div>
+        <div class="container hidden" id="backup5">
+            <h2>Backup Tab 5</h2>
+            <p>This section is currently blank. We will work on it later.</p>
+        </div>
+        <div class="container hidden" id="backup6">
+            <h2>Backup Tab 6</h2>
+            <p>This section is currently blank. We will work on it later.</p>
+        </div>
+        <div class="container hidden" id="backup7">
+            <h2>Backup Tab 7</h2>
+            <p>This section is currently blank. We will work on it later.</p>
+        </div>
+        <div class="container hidden" id="backup8">
+            <h2>Backup Tab 8</h2>
+            <p>This section is currently blank. We will work on it later.</p>
+        </div>
+        <div class="container hidden" id="backup9">
+            <h2>Backup Tab 9</h2>
+            <p>This section is currently blank. We will work on it later.</p>
+        </div>
+        <div class="container hidden" id="backup10">
+            <h2>Backup Tab 10</h2>
+            <p>This section is currently blank. We will work on it later.</p>
+        </div>
     </div>
     <script>
-        function showTab(tab) {
-            const homeTab = document.getElementById('home');
-            const gamesTab = document.getElementById('games');
-            const tabs = document.querySelectorAll('.tab');
+        // Page view tracking
+        function incrementPageView() {
+            let pageViews = localStorage.getItem('mainPageViews') || 0;
+            pageViews++;
+            localStorage.setItem('mainPageViews', pageViews);
+        }
 
-            // Hide all tabs
-            homeTab.classList.add('hidden');
-            gamesTab.classList.add('hidden');
+        // Display page views and URL
+        function displayPageViews() {
+            const pageViewCount = localStorage.getItem('mainPageViews') || 0;
+            document.getElementById('page-view-count').innerText = `Page Views: ${pageViewCount} (URL: https://bi66ie619.github.io)`;
+        }
+
+        // Call functions on page load
+        window.onload = function() {
+            incrementPageView();
+            displayPageViews();
+        };
+
+        function showTab(tab) {
+            // Hide all content containers
+            const containers = document.querySelectorAll('.container');
+            containers.forEach(container => container.classList.add('hidden'));
 
             // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
             tabs.forEach(t => t.classList.remove('active'));
 
-            // Show the selected tab
-            if (tab === 'home') {
-                homeTab.classList.remove('hidden');
-                tabs[0].classList.add('active');
-            } else if (tab === 'games') {
-                gamesTab.classList.remove('hidden');
-                tabs[1].classList.add('active');
+            // Show the selected tab's content and set it active
+            const selectedTab = document.getElementById(tab);
+            if (selectedTab) {
+                selectedTab.classList.remove('hidden');
+            }
+            const activeTab = Array.from(tabs).find(t => t.textContent.trim() === tab.replace('backup', 'Backup Tab '));
+            if (activeTab) {
+                activeTab.classList.add('active');
+            } else {
+                const homeTab = document.querySelector('.tab.active');
+                homeTab.classList.add('active');
             }
         }
     </script>
