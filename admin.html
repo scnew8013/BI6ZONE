@@ -19,30 +19,46 @@
             padding: 10px 20px;
             text-align: center;
             width: 100%;
+            display: none; /* Hide the header */
         }
         .sidebar {
-            width: 200px;
+            width: 160px; /* Reduced width */
             background: #e0e0e0;
             padding: 10px;
             height: 100vh; /* Full height */
             position: fixed; /* Fixed sidebar */
+            transition: transform 0.3s ease; /* Smooth transition for hiding */
+        }
+        .sidebar.hidden {
+            transform: translateX(-100%); /* Hide sidebar */
+        }
+        .small-title {
+            font-size: 20px; /* Smaller font size for the title */
+            font-weight: bold;
+            margin-bottom: 10px; /* Spacing below the title */
+            text-align: center; /* Center align title */
         }
         .tab {
-            padding: 10px;
+            padding: 8px; /* Reduced padding */
             text-align: center;
             background: #f1f1f1;
             border-radius: 5px;
             margin-bottom: 5px;
             cursor: pointer;
+            font-size: 14px; /* Smaller font size for buttons */
         }
         .tab.active {
             background: #007BFF;
             color: white;
         }
         .content {
-            margin-left: 220px; /* Space for the sidebar */
+            margin-left: 180px; /* Space for the sidebar */
             padding: 20px;
-            width: calc(100% - 220px); /* Adjust content width */
+            width: calc(100% - 180px); /* Adjust content width */
+            transition: margin-left 0.3s ease; /* Smooth transition for content */
+        }
+        .content.expanded {
+            margin-left: 0; /* Adjust content margin when sidebar is hidden */
         }
         .container {
             background: white;
@@ -53,6 +69,16 @@
         .hidden {
             display: none;
         }
+        .toggle-button {
+            cursor: pointer;
+            font-size: 24px;
+            background: none;
+            border: none;
+            color: #007BFF;
+            position: absolute;
+            left: 10px;
+            top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -60,9 +86,12 @@
         <h1>Admin Panel</h1>
         <p id="page-view-count">Page Views: 0 (URL: https://bi66ie619.github.io)</p> <!-- Display page view count for the main page -->
     </header>
-    <div class="sidebar">
+    <button class="toggle-button" onclick="toggleSidebar()">&#60;/&#62;</button> <!-- Sidebar toggle button -->
+    <div class="sidebar" id="sidebar">
+        <div class="small-title">BI6's Panel</div> <!-- Smaller title above the home tab -->
         <div class="tab active" onclick="showTab('home')">Home</div>
         <div class="tab" onclick="showTab('games')">Games</div>
+        <div class="tab" onclick="showTab('components')">Components</div> <!-- New Components tab -->
         <div class="tab" onclick="showTab('backup1')">Backup Tab 1</div>
         <div class="tab" onclick="showTab('backup2')">Backup Tab 2</div>
         <div class="tab" onclick="showTab('backup3')">Backup Tab 3</div>
@@ -74,7 +103,7 @@
         <div class="tab" onclick="showTab('backup9')">Backup Tab 9</div>
         <div class="tab" onclick="showTab('backup10')">Backup Tab 10</div>
     </div>
-    <div class="content">
+    <div class="content" id="content">
         <div class="container" id="home">
             <h2>Home Tab - Stats</h2>
             <p>This section will display your site stats.</p>
@@ -82,6 +111,11 @@
         <div class="container hidden" id="games">
             <h2>Games Tab</h2>
             <p>This section is currently blank. We will work on it later.</p>
+        </div>
+        <div class="container hidden" id="components">
+            <h2>Components Tab</h2>
+            <p>Fetching files from the GitHub repository...</p>
+            <ul id="file-list"></ul> <!-- List to display files -->
         </div>
         <div class="container hidden" id="backup1">
             <h2>Backup Tab 1</h2>
@@ -165,6 +199,41 @@
                 const homeTab = document.querySelector('.tab.active');
                 homeTab.classList.add('active');
             }
+
+            // If the Components tab is selected, fetch the GitHub files
+            if (tab === 'components') {
+                fetchGitHubFiles();
+            }
+        }
+
+        // Function to fetch files from the GitHub repository
+        function fetchGitHubFiles() {
+            const repoUrl = "https://api.github.com/repos/BI66IE619/bi66ie619.github.io/contents/";
+            fetch(repoUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const fileList = document.getElementById('file-list');
+                    fileList.innerHTML = ''; // Clear previous files
+
+                    // Iterate through the fetched files and add them to the list
+                    data.forEach(file => {
+                        const li = document.createElement('li');
+                        li.textContent = file.name; // Display file name
+                        fileList.appendChild(li);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching files:', error);
+                });
+        }
+
+        // Toggle sidebar visibility
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+
+            sidebar.classList.toggle('hidden');
+            content.classList.toggle('expanded');
         }
     </script>
 </body>
