@@ -12,16 +12,17 @@
 <body>
     <script>
         let password = "BI6ISCOOL";
-        (function passcodeprotect() {
-            let passcode = prompt("Whats da secret code🤣🤣🤣");
-            while (passcode !== password) {
+
+        function checkPassword() {
+            let passcode = document.getElementById("passwordInput").value;
+            if (passcode === password) {
+                alert('Correct - Shhhhhh🤫');
+                document.getElementById("passwordModal").style.display = "none";
+                document.getElementById("container").style.display = "block";
+            } else {
                 alert("Incorrect PassCode");
-                return passcodeprotect();
             }
-        }());
-        alert('Correct - Shhhhhh🤫');
-        document.getElementById("container")
-            .style.display = "block";
+        }
     </script>
 
 <div id="container" style="display: none;">
