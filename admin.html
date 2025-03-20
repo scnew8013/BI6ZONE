@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
+    
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -121,8 +125,16 @@
             <h2>Home - Stats & Analytics</h2>
             <div class="stats-container">
                 <div class="stat-card">
-                    <h3 id="total-games">Loading total games...</h3>
-                    <p>Total Games</p>
+                    <h3 id="total-page-views">Loading...</h3>
+                    <p>Total Page Views</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="unique-visitors">Loading...</h3>
+                    <p>Unique Visitors</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="games-played">Loading...</h3>
+                    <p>Games Played</p>
                 </div>
             </div>
         </div>
@@ -144,22 +156,65 @@
                 </div>
             </div>
         </div>
-
-        <div class="container" id="apps">
-            <h2>Apps Tab</h2>
-            <div class="column">
-                <h3>All Apps</h3>
-                <div id="apps-list"></div>
-            </div>
-        </div>
-
-        <div class="container" id="components">
-            <h2>Components - GitHub Files</h2>
-            <ul id="file-list">Fetching files...</ul>
-        </div>
     </div>
 
     <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+  apiKey: "AIzaSyAe5Rx6v9v7a_AbppRkEWs6tEkVd3DbyLI",
+  authDomain: "bi6zone-51b18.firebaseapp.com",
+  databaseURL: "https://bi6zone-51b18-default-rtdb.firebaseio.com",
+  projectId: "bi6zone-51b18",
+  storageBucket: "bi6zone-51b18.firebasestorage.app",
+  messagingSenderId: "787996595081",
+  appId: "1:787996595081:web:f85edbb0001124f2cf0758",
+  measurementId: "G-HHJW0NJFK5"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const analytics = firebase.analytics();
+        const db = firebase.database();
+
+        // Tracking Page Views
+        function trackPageView() {
+            const pageViewsRef = db.ref("analytics/pageViews");
+            pageViewsRef.transaction(currentViews => (currentViews || 0) + 1);
+        }
+
+        // Tracking Unique Visitors
+        function trackUniqueVisitor() {
+            const visitorId = localStorage.getItem("visitorId");
+            if (!visitorId) {
+                const newVisitorId = Date.now().toString();
+                localStorage.setItem("visitorId", newVisitorId);
+                db.ref("analytics/uniqueVisitors").transaction(count => (count || 0) + 1);
+            }
+        }
+
+        // Fetch and Display Stats
+        function fetchStats() {
+            db.ref("analytics/pageViews").on("value", snapshot => {
+                document.getElementById("total-page-views").innerText = snapshot.val() || 0;
+            });
+
+            db.ref("analytics/uniqueVisitors").on("value", snapshot => {
+                document.getElementById("unique-visitors").innerText = snapshot.val() || 0;
+            });
+
+            db.ref("analytics/gamesPlayed").on("value", snapshot => {
+                document.getElementById("games-played").innerText = snapshot.val() || 0;
+            });
+        }
+
+        // Call Tracking Functions on Load
+        window.onload = function() {
+            trackPageView();
+            trackUniqueVisitor();
+            fetchStats();
+        };
+
+        // Tab Switching Function
         function showTab(tabId) {
             document.querySelectorAll('.container').forEach(container => {
                 container.classList.remove('active');
@@ -170,84 +225,14 @@
                 tab.classList.remove('active');
             });
             document.querySelector(`.tab[onclick="showTab('${tabId}')"]`).classList.add('active');
-
-            if (tabId === 'games') fetchGames();
-            else if (tabId === 'apps') fetchApps();
         }
 
-function fetchGames() {
-    fetch('/g.html')
-        .then(response => response.text())
-        .then(html => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const games = doc.querySelectorAll('.rectangle');
-
-            document.getElementById('pc-games').innerHTML = '';
-            document.getElementById('mobile-games').innerHTML = '';
-            document.getElementById('fixing-games').innerHTML = '';
-
-            games.forEach(game => {
-                const name = game.querySelector('.game-name').innerText;
-                const link = game.getAttribute('onclick').match(/'([^']+)'/)[1];
-                const badge = game.querySelector('.badge') ? game.querySelector('.badge').innerText.trim() : '';
-
-                const gameElement = `<div class="game-item"><a href="${link}" target="_blank">${name}</a></div><div class="separator"></div>`;
-
-                if (badge.includes('Mobile Supported')) {
-                    document.getElementById('mobile-games').innerHTML += gameElement;
-                } else if (badge.includes('Mobile Not Supported')) {
-                    document.getElementById('pc-games').innerHTML += gameElement;
-                } else if (badge.includes('Fixing')) {
-                    document.getElementById('fixing-games').innerHTML += gameElement;
-                } else {
-                    console.warn(`Game "${name}" has no recognized badge.`);
-                }
-            });
-        })
-        .catch(error => console.error('Error fetching games:', error));
-}
-
-        function fetchTotalGames() {
-            fetch('/g.html')
-                .then(response => response.text())
-                .then(html => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    const totalGames = doc.querySelectorAll('.rectangle').length;
-                    document.getElementById('total-games').innerText = `Total Games: ${totalGames}`;
-                })
-                .catch(() => document.getElementById('total-games').innerText = "Error loading games");
-        }
-
-        function fetchApps() {
-            fetch('/a.html')
-                .then(response => response.text())
-                .then(html => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    const appsList = document.getElementById('apps-list');
-                    appsList.innerHTML = '';
-
-                    doc.querySelectorAll('.rectangle').forEach(app => {
-                        const name = app.querySelector('.game-name').innerText;
-                        const link = app.getAttribute('onclick').match(/'([^']+)'/)[1];
-                        appsList.innerHTML += `<div class="game-item"><a href="${link}" target="_blank">${name}</a></div><div class="separator"></div>`;
-                    });
-                })
-                .catch(error => console.error('Error fetching apps:', error));
-        }
-
+        // Sidebar Toggle
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('hidden');
             document.getElementById('toggle-btn').innerHTML = sidebar.classList.contains('hidden') ? '&gt;' : '&lt;';
         }
-
-        window.onload = function() {
-            fetchTotalGames();
-            fetchGames(); // Ensure games are fetched on page load
-        };
     </script>
 </body>
 </html>
