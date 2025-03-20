@@ -75,8 +75,25 @@ body {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 .game-item {
+    background: #000; /* Black background */
+    color: white; /* White text */
     padding: 10px;
-    border-bottom: 1px solid #ddd;
+    margin: 5px 0;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+}
+.game-item a {
+    color: white;
+    text-decoration: none;
+}
+.game-item a:hover {
+    text-decoration: underline;
+}
+.separator {
+    height: 1px;
+    background: gray;
+    margin: 5px 0;
 }
 </style>
 </head>
@@ -174,22 +191,6 @@ function showTab(tabId) {
     }
 }
 
-// Fetch GitHub Files
-function fetchGitHubFiles() {
-    fetch("https://api.github.com/repos/BI66IE619/bi66ie619.github.io/contents/")
-        .then(response => response.json())
-        .then(data => {
-            const fileList = document.getElementById('file-list');
-            fileList.innerHTML = ''; 
-            data.forEach(file => {
-                const li = document.createElement('li');
-                li.textContent = file.name;
-                fileList.appendChild(li);
-            });
-        })
-        .catch(error => console.error('Error fetching files:', error));
-}
-
 // Fetch and sort games
 function fetchGames() {
     fetch('/g.html')
@@ -208,7 +209,7 @@ function fetchGames() {
                 const link = game.getAttribute('onclick').match(/'([^']+)'/)[1];
                 const badge = game.querySelector('.badge') ? game.querySelector('.badge').innerText : '';
 
-                const gameElement = `<div class="game-item"><a href="${link}" target="_blank">${name}</a></div>`;
+                const gameElement = `<div class="game-item"><a href="${link}" target="_blank">${name}</a></div><div class="separator"></div>`;
 
                 if (badge.includes('Mobile Supported')) {
                     document.getElementById('mobile-games').innerHTML += gameElement;
