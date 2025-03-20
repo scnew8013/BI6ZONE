@@ -175,36 +175,38 @@
             else if (tabId === 'apps') fetchApps();
         }
 
-        function fetchGames() {
-            fetch('/g.html')
-                .then(response => response.text())
-                .then(html => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    const games = doc.querySelectorAll('.rectangle');
+function fetchGames() {
+    fetch('/g.html')
+        .then(response => response.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const games = doc.querySelectorAll('.rectangle');
 
-                    const pcGames = document.getElementById('pc-games');
-                    const mobileGames = document.getElementById('mobile-games');
-                    const fixingGames = document.getElementById('fixing-games');
+            document.getElementById('pc-games').innerHTML = '';
+            document.getElementById('mobile-games').innerHTML = '';
+            document.getElementById('fixing-games').innerHTML = '';
 
-                    pcGames.innerHTML = '';
-                    mobileGames.innerHTML = '';
-                    fixingGames.innerHTML = '';
+            games.forEach(game => {
+                const name = game.querySelector('.game-name').innerText;
+                const link = game.getAttribute('onclick').match(/'([^']+)'/)[1];
+                const badge = game.querySelector('.badge') ? game.querySelector('.badge').innerText.trim() : '';
 
-                    games.forEach(game => {
-                        const name = game.querySelector('.game-name').innerText;
-                        const link = game.getAttribute('onclick').match(/'([^']+)'/)[1];
-                        const badge = game.querySelector('.badge') ? game.querySelector('.badge').innerText.toLowerCase() : '';
+                const gameElement = `<div class="game-item"><a href="${link}" target="_blank">${name}</a></div><div class="separator"></div>`;
 
-                        const gameElement = `<div class="game-item"><a href="${link}" target="_blank">${name}</a></div><div class="separator"></div>`;
-
-                        if (badge.includes("mobile")) mobileGames.innerHTML += gameElement;
-                        else if (badge.includes("fixing")) fixingGames.innerHTML += gameElement;
-                        else pcGames.innerHTML += gameElement;
-                    });
-                })
-                .catch(error => console.error('Error fetching games:', error));
-        }
+                if (badge.includes('Mobile Supported')) {
+                    document.getElementById('mobile-games').innerHTML += gameElement;
+                } else if (badge.includes('Mobile Not Supported')) {
+                    document.getElementById('pc-games').innerHTML += gameElement;
+                } else if (badge.includes('Fixing')) {
+                    document.getElementById('fixing-games').innerHTML += gameElement;
+                } else {
+                    console.warn(`Game "${name}" has no recognized badge.`);
+                }
+            });
+        })
+        .catch(error => console.error('Error fetching games:', error));
+}
 
         function fetchTotalGames() {
             fetch('/g.html')
