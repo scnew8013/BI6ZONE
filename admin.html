@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -20,24 +17,7 @@
             background: #333;
             color: white;
             height: 100vh;
-            transition: width 0.3s;
-            position: relative;
-        }
-        #sidebar.hidden {
-            width: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-        #toggle-btn {
-            cursor: pointer;
-            font-size: 20px;
-            background: none;
-            border: none;
-            color: white;
-            position: absolute;
-            left: 100%;
-            transform: translateX(-50%);
-            top: 15px;
+            padding: 20px;
         }
         .tab {
             padding: 12px;
@@ -57,7 +37,6 @@
         #content {
             flex: 1;
             padding: 20px;
-            transition: margin-left 0.3s;
         }
         .container {
             display: none;
@@ -70,58 +49,34 @@
 <body>
 
     <div id="sidebar">
-        <button id="toggle-btn">&lt;—</button>
         <h2>BI6’s Panel</h2>
-        <div class="tab" data-tab="home">Home</div>
-        <div class="tab" data-tab="games">Games</div>
-        <div class="tab" data-tab="apps">Apps</div>
-        <div class="tab" data-tab="components">Components</div>
+        <div class="tab">Home</div>
+        <div class="tab">Games</div>
+        <div class="tab">Apps</div>
+        <div class="tab">Components</div>
     </div>
 
     <div id="content">
-        <div class="container active" id="home">
+        <div class="container active">
             <h2>Home - Stats & Analytics</h2>
             <p>Data will be displayed here...</p>
         </div>
 
-        <div class="container" id="games">
+        <div class="container">
             <h2>Games Tab</h2>
             <p>List of games...</p>
         </div>
 
-        <div class="container" id="apps">
+        <div class="container">
             <h2>Apps Tab</h2>
             <p>List of apps...</p>
         </div>
 
-        <div class="container" id="components">
+        <div class="container">
             <h2>Components - GitHub Files</h2>
             <p>Fetching files...</p>
         </div>
     </div>
-
-    <script>
-        // Sidebar Toggle
-        document.getElementById('toggle-btn').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.toggle('hidden');
-        });
-
-        // Tab Switching
-        const tabs = document.querySelectorAll('.tab');
-        const containers = document.querySelectorAll('.container');
-
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                // Remove active class from all tabs and containers
-                tabs.forEach(t => t.classList.remove('active'));
-                containers.forEach(c => c.classList.remove('active'));
-
-                // Add active class to the clicked tab and corresponding container
-                this.classList.add('active');
-                document.getElementById(this.dataset.tab).classList.add('active');
-            });
-        });
-    </script>
 
 </body>
 </html>
