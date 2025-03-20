@@ -16,7 +16,7 @@
             display: flex;
         }
         #sidebar {
-            width: 200px;
+            width: 220px;
             background: #333;
             color: white;
             height: 100vh;
@@ -40,12 +40,16 @@
             top: 15px;
         }
         .tab {
-            padding: 10px;
+            padding: 12px;
             cursor: pointer;
             background: #444;
             margin: 5px 0;
             border-radius: 5px;
             text-align: center;
+            transition: background 0.3s;
+        }
+        .tab:hover {
+            background: #555;
         }
         .tab.active {
             background: #007BFF;
@@ -63,7 +67,7 @@
         }
         .stats-container {
             display: flex;
-            justify-content: space-around;
+            justify-content: space-between;
             margin-top: 20px;
         }
         .stat-card {
@@ -79,6 +83,7 @@
             display: flex;
             justify-content: space-between;
             gap: 20px;
+            margin-top: 20px;
         }
         .column {
             flex: 1;
@@ -141,15 +146,15 @@
             <div class="game-columns">
                 <div class="column">
                     <h3>PC Games</h3>
-                    <div id="pc-games"></div>
+                    <div id="pc-games">Loading PC games...</div>
                 </div>
                 <div class="column">
                     <h3>Mobile Supported</h3>
-                    <div id="mobile-games"></div>
+                    <div id="mobile-games">Loading Mobile games...</div>
                 </div>
                 <div class="column">
                     <h3>Fixing</h3>
-                    <div id="fixing-games"></div>
+                    <div id="fixing-games">Loading Fixing games...</div>
                 </div>
             </div>
         </div>
@@ -158,7 +163,7 @@
             <h2>Apps Tab</h2>
             <div class="column">
                 <h3>All Apps</h3>
-                <div id="apps-list"></div>
+                <div id="apps-list">Loading apps...</div>
             </div>
         </div>
 
@@ -171,7 +176,7 @@
     <script>
         // Firebase Config (Replace with your Firebase project config)
         const firebaseConfig = {
-            apiKey: "AIzaSyAe5Rx6v9v7a_AbppRkEWs6tEkVd3DbyLI",
+            apiKey: "AIzaSyAe5Rx6v9v7a_AbppRkEWs6tEkVd3DbyLI",",
             authDomain: "http://bi6zone-51b18.firebaseapp.com/",
             databaseURL: "https://bi6zone-51b18-default-rtdb.firebaseio.com/",
             projectId: "bi6zone-51b18",
@@ -192,7 +197,9 @@
             viewsRef.transaction(currentViews => (currentViews || 0) + 1);
             visitorsRef.once('value').then(snapshot => {
                 const visitors = snapshot.val() || {};
-                const userIP = Math.random().toString(36).substring(7);
+                const userIP = localStorage.getItem('userIP') || Math.random().toString(36).substring(7);
+                localStorage.setItem('userIP', userIP);
+                
                 if (!visitors[userIP]) {
                     visitors[userIP] = true;
                     visitorsRef.set(visitors);
@@ -215,6 +222,46 @@
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(html, 'text/html');
                     document.getElementById('total-games').innerText = `Total Games: ${doc.querySelectorAll('.rectangle').length}`;
+                })
+                .catch(error => {
+                    console.error('Error fetching total games:', error);
+                    document.getElementById('total-games').innerText = 'Error fetching total games';
+                });
+        }
+
+        function fetchGames() {
+            // Replace with actual fetching logic from your database or API
+            const gamesData = {
+                pc: ['PC Game 1', 'PC Game 2', 'PC Game 3'],
+                mobile: ['Mobile Game 1', 'Mobile Game 2'],
+                fixing: ['Fixing Game 1', 'Fixing Game 2']
+            };
+
+            document.getElementById('pc-games').innerHTML = gamesData.pc.map(game => `<div class="game-item">${game}</div>`).join('');
+            document.getElementById('mobile-games').innerHTML = gamesData.mobile.map(game => `<div class="game-item">${game}</div>`).join('');
+            document.getElementById('fixing-games').innerHTML = gamesData.fixing.map(game => `<div class="game-item">${game}</div>`).join('');
+        }
+
+        function fetchApps() {
+            // Replace with actual fetching logic from your database or API
+            const appsData = ['App 1', 'App 2', 'App 3'];
+            document.getElementById('apps-list').innerHTML = appsData.map(app => `<div class="game-item">${app}</div>`).join('');
+        }
+
+        function fetchFiles() {
+            const username = 'BI66IE619';
+            const repoName = 'bi66ie619.github.io';
+            const apiUrl = `https://api.github.com/repos/${username}/${repoName}/contents/`;
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const filesList = data.map(file => `<li>${file.name}</li>`).join('');
+                    document.getElementById('file-list').innerHTML = filesList;
+                })
+                .catch(error => {
+                    console.error('Error fetching files from GitHub:', error);
+                    document.getElementById('file-list').innerText = 'Error fetching files.';
                 });
         }
 
@@ -230,6 +277,9 @@
         window.onload = function() {
             updateAnalytics();
             fetchTotalGames();
+            fetchGames();
+            fetchApps();
+            fetchFiles();
         };
     </script>
 </body>
