@@ -4,79 +4,179 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
+    <script type="module">
+        // Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+
+        // Your Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyAe5Rx6v9v7a_AbppRkEWs6tEkVd3DbyLI",
+            authDomain: "bi6zone-51b18.firebaseapp.com",
+            databaseURL: "https://bi6zone-51b18-default-rtdb.firebaseio.com",
+            projectId: "bi6zone-51b18",
+            storageBucket: "bi6zone-51b18.firebasestorage.app",
+            messagingSenderId: "787996595081",
+            appId: "1:787996595081:web:f85edbb0001124f2cf0758",
+            measurementId: "G-HHJW0NJFK5"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+
+        // Track Page View
+        logEvent(analytics, 'page_view');
+    </script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            display: flex;
-        }
-        #sidebar {
-            width: 220px;
-            background: #333;
-            color: white;
-            height: 100vh;
-            padding: 20px;
-        }
-        .tab {
-            padding: 12px;
-            cursor: pointer;
-            background: #444;
-            margin: 5px 0;
-            border-radius: 5px;
-            text-align: center;
-            transition: background 0.3s;
-        }
-        .tab:hover {
-            background: #555;
-        }
-        .tab.active {
-            background: #007BFF;
-        }
-        #content {
-            flex: 1;
-            padding: 20px;
-        }
-        .container {
-            display: none;
-        }
-        .container.active {
-            display: block;
-        }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; display: flex; }
+        #sidebar { width: 220px; background: #333; color: white; height: 100vh; padding: 20px; }
+        .tab { padding: 12px; cursor: pointer; background: #444; margin: 5px 0; border-radius: 5px; text-align: center; transition: background 0.3s; }
+        .tab:hover { background: #555; }
+        .tab.active { background: #007BFF; }
+        #content { flex: 1; padding: 20px; }
+        .container { display: none; }
+        .container.active { display: block; }
+        .stat-card { background: white; padding: 15px; margin: 10px 0; border-radius: 5px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); }
+        .game-columns { display: flex; justify-content: space-between; gap: 20px; }
+        .column { flex: 1; background: white; padding: 10px; border-radius: 5px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); }
+        .file-list { list-style: none; padding: 0; }
+        .file-list li { background: white; margin: 5px 0; padding: 10px; border-radius: 5px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); }
+        .file-list a { text-decoration: none; color: #007BFF; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div id="sidebar">
         <h2>BI6’s Panel</h2>
-        <div class="tab">Home</div>
-        <div class="tab">Games</div>
-        <div class="tab">Apps</div>
-        <div class="tab">Components</div>
+        <div class="tab active" onclick="showTab('home')">Home</div>
+        <div class="tab" onclick="showTab('games')">Games</div>
+        <div class="tab" onclick="showTab('apps')">Apps</div>
+        <div class="tab" onclick="showTab('components')">Components</div>
     </div>
 
     <div id="content">
-        <div class="container active">
+        <div class="container active" id="home">
             <h2>Home - Stats & Analytics</h2>
-            <p>Data will be displayed here...</p>
+            <div class="stat-card">Total Page Views: <span id="page-views">Loading...</span></div>
+            <div class="stat-card">Total Users: <span id="total-users">Loading...</span></div>
+            <div class="stat-card">Active Users: <span id="active-users">Loading...</span></div>
+            <div class="stat-card">Games Played: <span id="games-played">Loading...</span></div>
         </div>
 
-        <div class="container">
+        <div class="container" id="games">
             <h2>Games Tab</h2>
-            <p>List of games...</p>
+            <div class="game-columns">
+                <div class="column">
+                    <h3>PC Games</h3>
+                    <div id="pc-games"></div>
+                </div>
+                <div class="column">
+                    <h3>Mobile Supported</h3>
+                    <div id="mobile-games"></div>
+                </div>
+                <div class="column">
+                    <h3>Fixing</h3>
+                    <div id="fixing-games"></div>
+                </div>
+            </div>
         </div>
 
-        <div class="container">
+        <div class="container" id="apps">
             <h2>Apps Tab</h2>
-            <p>List of apps...</p>
+            <div id="apps-list"></div>
         </div>
 
-        <div class="container">
-            <h2>Components - GitHub Files</h2>
-            <p>Fetching files...</p>
+        <div class="container" id="components">
+            <h2>Components - Repository Files</h2>
+            <ul id="repo-files" class="file-list"></ul>
         </div>
     </div>
+
+    <script>
+        function showTab(tabId) {
+            document.querySelectorAll('.container').forEach(container => container.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabId === 'games') {
+                fetchGames();
+            } else if (tabId === 'apps') {
+                fetchApps();
+            } else if (tabId === 'components') {
+                fetchRepoFiles();
+            }
+        }
+
+        function fetchGames() {
+            fetch('/g.html')
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const games = doc.querySelectorAll('.rectangle');
+
+                    const pcGames = document.getElementById('pc-games');
+                    const mobileGames = document.getElementById('mobile-games');
+                    const fixingGames = document.getElementById('fixing-games');
+
+                    pcGames.innerHTML = '';
+                    mobileGames.innerHTML = '';
+                    fixingGames.innerHTML = '';
+
+                    games.forEach(game => {
+                        const gameClone = game.cloneNode(true);
+                        const badge = gameClone.querySelector('.badge');
+
+                        if (badge.classList.contains('mobilesup-badge')) {
+                            mobileGames.appendChild(gameClone);
+                        } else if (badge.classList.contains('notmobsup-badge')) {
+                            pcGames.appendChild(gameClone);
+                        } else if (badge.classList.contains('fixing-badge')) {
+                            fixingGames.appendChild(gameClone);
+                        }
+                    });
+                })
+                .catch(error => console.error('Error fetching games:', error));
+        }
+
+        function fetchApps() {
+            fetch('/a.html')
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const apps = doc.querySelectorAll('.rectangle');
+
+                    const appsList = document.getElementById('apps-list');
+                    appsList.innerHTML = '';
+
+                    apps.forEach(app => {
+                        const appClone = app.cloneNode(true);
+                        appsList.appendChild(appClone);
+                    });
+                })
+                .catch(error => console.error('Error fetching apps:', error));
+        }
+
+        function fetchRepoFiles() {
+            fetch('https://api.github.com/repos/BI66IE619/bi66ie619.github.io/contents/')
+                .then(response => response.json())
+                .then(files => {
+                    const fileList = document.getElementById('repo-files');
+                    fileList.innerHTML = '';
+
+                    files.forEach(file => {
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
+                        fileList.appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error('Error fetching repository files:', error));
+        }
+    </script>
 
 </body>
 </html>
