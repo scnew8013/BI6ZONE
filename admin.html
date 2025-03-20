@@ -121,7 +121,7 @@
     </style>
 </head>
 <body>
-    <button id="toggle-btn" onclick="toggleSidebar()"> &lt;/&gt; </button>
+    <button id="toggle-btn" onclick="toggleSidebar()"> &lt;— </button>
 
     <div id="sidebar">
         <h2>BI6’s Panel</h2>
@@ -262,7 +262,7 @@
 
         // Fetch and display GitHub files in the components tab
         function fetchGitHubFiles() {
-            const repoUrl = 'https://api.github.com/repos/bi66ie619/bi66ie619.github.io/contents/'; // Replace with your repo name
+            const repoUrl = 'https://api.github.com/repos/bi66ie619/YOUR_REPO_NAME/contents/'; // Replace with your repo name
             
             fetch(repoUrl)
                 .then(response => response.json())
@@ -288,7 +288,15 @@
 
         // Toggle Sidebar
         function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('hidden');
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('hidden');
+            const toggleBtn = document.getElementById('toggle-btn');
+
+            if (sidebar.classList.contains('hidden')) {
+                toggleBtn.innerHTML = '&gt;'; // Show arrow for expanding
+            } else {
+                toggleBtn.innerHTML = '&lt;'; // Show arrow for minimizing
+            }
         }
 
         // On Page Load
