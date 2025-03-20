@@ -20,7 +20,7 @@
             color: white;
             height: 100vh;
             transition: width 0.3s;
-            position: relative; /* Relative positioning for sidebar */
+            position: relative;
         }
         #sidebar.hidden {
             width: 0;
@@ -32,13 +32,11 @@
             font-size: 20px;
             background: none;
             border: none;
-            color: #333;
-            margin-bottom: 10px; /* Space below the button */
-            transition: margin-left 0.3s; /* Smooth transition */
-            position: absolute; /* Position the button absolutely within the sidebar */
-            left: 100%; /* Position it to the right of the sidebar */
-            transform: translateX(-50%); /* Center the button */
-            top: 15px; /* Align with the top of the sidebar */
+            color: white;
+            position: absolute;
+            left: 100%;
+            transform: translateX(-50%);
+            top: 15px;
         }
         .tab {
             padding: 10px;
@@ -76,15 +74,6 @@
             margin: 0 10px;
             text-align: center;
         }
-        .stat-card h3 {
-            margin: 0;
-            font-size: 24px;
-            color: #333;
-        }
-        .stat-card p {
-            font-size: 18px;
-            color: #555;
-        }
         .game-columns {
             display: flex;
             justify-content: space-between;
@@ -110,9 +99,6 @@
             color: white;
             text-decoration: none;
         }
-        .game-item a:hover {
-            text-decoration: underline;
-        }
         .separator {
             height: 1px;
             background: gray;
@@ -126,6 +112,7 @@
         <h2>BI6’s Panel</h2>
         <div class="tab active" onclick="showTab('home')">Home</div>
         <div class="tab" onclick="showTab('games')">Games</div>
+        <div class="tab" onclick="showTab('apps')">Apps</div>
         <div class="tab" onclick="showTab('components')">Components</div>
     </div>
 
@@ -142,8 +129,8 @@
                     <p>Unique Visitors</p>
                 </div>
                 <div class="stat-card">
-                    <h3 id="games-played">Total Games Played: 0</h3>
-                    <p>Games Played</p>
+                    <h3 id="total-games">Loading total games...</h3>
+                    <p>Total Games</p>
                 </div>
                 <div class="stat-card">
                     <h3 id="most-played-game">Most Played Game: N/A</h3>
@@ -170,6 +157,14 @@
             </div>
         </div>
 
+        <div class="container" id="apps">
+            <h2>Apps Tab</h2>
+            <div class="column">
+                <h3>All Apps</h3>
+                <div id="apps-list"></div>
+            </div>
+        </div>
+
         <div class="container" id="components">
             <h2>Components - GitHub Files</h2>
             <ul id="file-list">Fetching files...</ul>
@@ -177,38 +172,6 @@
     </div>
 
     <script>
-        // Firebase Config (Replace with your details)
-        const firebaseConfig = {
-            apiKey: "AIzaSyAe5Rx6v9v7a_AbppRkEWs6tEkVd3DbyLI",
-            authDomain: "bi6zone-51b18.firebaseapp.com",
-            databaseURL: "https://bi6zone-51b18-default-rtdb.firebaseio.com",
-            projectId: "bi6zone-51b18",
-            storageBucket: "bi6zone-51b18.firebasestorage.app",
-            messagingSenderId: "787996595081",
-            appId: "1:787996595081:web:f85edbb0001124f2cf0758",
-        };
-
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        // Fetch visitor stats from Firebase
-        function updateStats() {
-            const visitorRef = database.ref('visitors');
-
-            visitorRef.on('value', snapshot => {
-                if (snapshot.exists()) {
-                    document.getElementById('page-views').innerText = `Page Views: ${snapshot.val()}`;
-                } else {
-                    document.getElementById('page-views').innerText = "No data available";
-                }
-            }, error => {
-                console.error("Error fetching data:", error);
-                document.getElementById('page-views').innerText = "Error loading data";
-            });
-        }
-
-        // Show selected tab
         function showTab(tabId) {
             document.querySelectorAll('.container').forEach(container => {
                 container.classList.remove('active');
@@ -220,86 +183,48 @@
             });
             document.querySelector(`.tab[onclick="showTab('${tabId}')"]`).classList.add('active');
 
-            if (tabId === 'games') {
-                fetchGames();
-            } else if (tabId === 'components') {
-                fetchGitHubFiles();
-            }
+            if (tabId === 'games') fetchGames();
+            else if (tabId === 'apps') fetchApps();
+            else if (tabId === 'components') fetchGitHubFiles();
         }
 
-        // Fetch and sort games
-        function fetchGames() {
+        function fetchTotalGames() {
             fetch('/g.html')
                 .then(response => response.text())
                 .then(html => {
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(html, 'text/html');
-                    const games = doc.querySelectorAll('.rectangle');
+                    const totalGames = doc.querySelectorAll('.rectangle').length;
+                    document.getElementById('total-games').innerText = `Total Games: ${totalGames}`;
+                })
+                .catch(() => document.getElementById('total-games').innerText = "Error loading games");
+        }
 
-                    document.getElementById('pc-games').innerHTML = '';
-                    document.getElementById('mobile-games').innerHTML = '';
-                    document.getElementById('fixing-games').innerHTML = '';
+        function fetchApps() {
+            fetch('/a.html')
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const appsList = document.getElementById('apps-list');
+                    appsList.innerHTML = '';
 
-                    games.forEach(game => {
-                        const name = game.querySelector('.game-name').innerText;
-                        const link = game.getAttribute('onclick').match(/'([^']+)'/)[1];
-                        const badge = game.querySelector('.badge') ? game.querySelector('.badge').innerText : '';
-
-                        const gameElement = `<div class="game-item"><a href="${link}" target="_blank">${name}</a></div><div class="separator"></div>`;
-
-                        if (badge.includes('Mobile Supported')) {
-                            document.getElementById('mobile-games').innerHTML += gameElement;
-                        } else if (badge.includes('Fixing')) {
-                            document.getElementById('fixing-games').innerHTML += gameElement;
-                        } else {
-                            document.getElementById('pc-games').innerHTML += gameElement;
-                        }
+                    doc.querySelectorAll('.rectangle').forEach(app => {
+                        const name = app.querySelector('.game-name').innerText;
+                        const link = app.getAttribute('onclick').match(/'([^']+)'/)[1];
+                        appsList.innerHTML += `<div class="game-item"><a href="${link}" target="_blank">${name}</a></div><div class="separator"></div>`;
                     });
                 })
-                .catch(error => console.error('Error fetching games:', error));
+                .catch(error => console.error('Error fetching apps:', error));
         }
 
-        // Fetch and display GitHub files in the components tab
-        function fetchGitHubFiles() {
-            const repoUrl = 'https://api.github.com/repos/bi66ie619/YOUR_REPO_NAME/contents/'; // Replace with your repo name
-            
-            fetch(repoUrl)
-                .then(response => response.json())
-                .then(data => {
-                    const fileList = document.getElementById('file-list');
-                    fileList.innerHTML = ''; // Clear existing content
-
-                    if (Array.isArray(data)) {
-                        data.forEach(file => {
-                            const listItem = document.createElement('li');
-                            listItem.innerHTML = `<a href="${file.html_url}" target="_blank">${file.name}</a>`;
-                            fileList.appendChild(listItem);
-                        });
-                    } else {
-                        fileList.innerText = 'No files found';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching files:', error);
-                    document.getElementById('file-list').innerText = 'Error loading files';
-                });
-        }
-
-        // Toggle Sidebar
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('hidden');
-            const toggleBtn = document.getElementById('toggle-btn');
-
-            if (sidebar.classList.contains('hidden')) {
-                toggleBtn.innerHTML = '&gt;'; // Show arrow for expanding
-            } else {
-                toggleBtn.innerHTML = '&lt;'; // Show arrow for minimizing
-            }
+            document.getElementById('toggle-btn').innerHTML = sidebar.classList.contains('hidden') ? '&gt;' : '&lt;';
         }
 
-        // On Page Load
-        window.onload = updateStats;
+        window.onload = fetchTotalGames;
     </script>
 </body>
 </html>
