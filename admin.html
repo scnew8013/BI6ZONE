@@ -8,59 +8,75 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js"></script>
 <style>
 body {
-font-family: Arial, sans-serif;
-margin: 0;
-padding: 0;
-background-color: #f4f4f4;
-display: flex;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    display: flex;
 }
 #sidebar {
-width: 200px;
-background: #333;
-color: white;
-padding: 15px;
-height: 100vh;
-transition: width 0.3s;
+    width: 200px;
+    background: #333;
+    color: white;
+    padding: 15px;
+    height: 100vh;
+    transition: width 0.3s;
 }
 #sidebar.hidden {
-width: 0;
-padding: 0;
-overflow: hidden;
+    width: 0;
+    padding: 0;
+    overflow: hidden;
 }
 .tab {
-padding: 10px;
-cursor: pointer;
-background: #444;
-margin: 5px 0;
-border-radius: 5px;
-text-align: center;
+    padding: 10px;
+    cursor: pointer;
+    background: #444;
+    margin: 5px 0;
+    border-radius: 5px;
+    text-align: center;
 }
 .tab.active {
-background: #007BFF;
+    background: #007BFF;
 }
 #content {
-flex: 1;
-padding: 20px;
-transition: margin-left 0.3s;
+    flex: 1;
+    padding: 20px;
+    transition: margin-left 0.3s;
 }
 #toggle-btn {
-position: absolute;
-top: 10px;
-left: 210px;
-cursor: pointer;
-font-size: 20px;
-background: none;
-border: none;
-color: #333;
+    position: absolute;
+    top: 10px;
+    left: 210px;
+    cursor: pointer;
+    font-size: 20px;
+    background: none;
+    border: none;
+    color: #333;
 }
 #toggle-btn:hover {
-color: #007BFF;
+    color: #007BFF;
 }
 .container {
-display: none;
+    display: none;
 }
 .container.active {
-display: block;
+    display: block;
+}
+.game-columns {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+.column {
+    flex: 1;
+    background: white;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+.game-item {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
 }
 </style>
 </head>
@@ -68,42 +84,55 @@ display: block;
 <button id="toggle-btn" onclick="toggleSidebar()"> &lt;/&gt; </button>
 
 <div id="sidebar">
-<h2>BI6’s Panel</h2>
-<div class="tab active" onclick="showTab('home')">Home</div>
-<div class="tab" onclick="showTab('games')">Games</div>
-<div class="tab" onclick="showTab('components')">Components</div>
+    <h2>BI6’s Panel</h2>
+    <div class="tab active" onclick="showTab('home')">Home</div>
+    <div class="tab" onclick="showTab('games')">Games</div>
+    <div class="tab" onclick="showTab('components')">Components</div>
 </div>
 
 <div id="content">
-<div class="container active" id="home">
-<h2>Home - Stats & Analytics</h2>
-<p id="page-views">Loading page views...</p>
-<p id="unique-visitors">Loading unique visitors...</p>
-<p id="games-played">Total Games Played: 0</p>
-<p id="most-played-game">Most Played Game: N/A</p>
-</div>
+    <div class="container active" id="home">
+        <h2>Home - Stats & Analytics</h2>
+        <p id="page-views">Loading page views...</p>
+        <p id="unique-visitors">Loading unique visitors...</p>
+        <p id="games-played">Total Games Played: 0</p>
+        <p id="most-played-game">Most Played Game: N/A</p>
+    </div>
 
-<div class="container" id="games">
-<h2>Games Tab</h2>
-<p>This section is currently blank. We will work on it later.</p>
-</div>
+    <div class="container" id="games">
+        <h2>Games Tab</h2>
+        <div class="game-columns">
+            <div class="column">
+                <h3>PC Games</h3>
+                <div id="pc-games"></div>
+            </div>
+            <div class="column">
+                <h3>Mobile Supported</h3>
+                <div id="mobile-games"></div>
+            </div>
+            <div class="column">
+                <h3>Fixing</h3>
+                <div id="fixing-games"></div>
+            </div>
+        </div>
+    </div>
 
-<div class="container" id="components">
-<h2>Components - GitHub Files</h2>
-<ul id="file-list">Fetching files...</ul>
-</div>
+    <div class="container" id="components">
+        <h2>Components - GitHub Files</h2>
+        <ul id="file-list">Fetching files...</ul>
+    </div>
 </div>
 
 <script>
 // Firebase Config (Replace with your details)
 const firebaseConfig = {
-apiKey: "AIzaSyAe5Rx6v9v7a_AbppRkEWs6tEkVd3DbyLI",
-authDomain: "bi6zone-51b18.firebaseapp.com",
-databaseURL: "https://bi6zone-51b18-default-rtdb.firebaseio.com",
-projectId: "bi6zone-51b18",
-storageBucket: "bi6zone-51b18.firebasestorage.app",
-messagingSenderId: "787996595081",
-appId: "1:787996595081:web:f85edbb0001124f2cf0758",
+    apiKey: "AIzaSyAe5Rx6v9v7a_AbppRkEWs6tEkVd3DbyLI",
+    authDomain: "bi6zone-51b18.firebaseapp.com",
+    databaseURL: "https://bi6zone-51b18-default-rtdb.firebaseio.com",
+    projectId: "bi6zone-51b18",
+    storageBucket: "bi6zone-51b18.firebasestorage.app",
+    messagingSenderId: "787996595081",
+    appId: "1:787996595081:web:f85edbb0001124f2cf0758",
 };
 
 // Initialize Firebase
@@ -112,56 +141,90 @@ const database = firebase.database();
 
 // Fetch visitor stats from Firebase
 function updateStats() {
-const visitorRef = database.ref('visitors');
+    const visitorRef = database.ref('visitors');
 
-visitorRef.on('value', snapshot => {
-if (snapshot.exists()) {
-document.getElementById('page-views').innerText = `Page Views: ${snapshot.val()}`;
-} else {
-document.getElementById('page-views').innerText = "No data available";
-}
-}, error => {
-console.error("Error fetching data:", error);
-document.getElementById('page-views').innerText = "Error loading data";
-});
+    visitorRef.on('value', snapshot => {
+        if (snapshot.exists()) {
+            document.getElementById('page-views').innerText = `Page Views: ${snapshot.val()}`;
+        } else {
+            document.getElementById('page-views').innerText = "No data available";
+        }
+    }, error => {
+        console.error("Error fetching data:", error);
+        document.getElementById('page-views').innerText = "Error loading data";
+    });
 }
 
 // Show selected tab
 function showTab(tabId) {
-document.querySelectorAll('.container').forEach(container => {
-container.classList.remove('active');
-});
-document.getElementById(tabId).classList.add('active');
+    document.querySelectorAll('.container').forEach(container => {
+        container.classList.remove('active');
+    });
+    document.getElementById(tabId).classList.add('active');
 
-document.querySelectorAll('.tab').forEach(tab => {
-tab.classList.remove('active');
-});
-document.querySelector(`.tab[onclick="showTab('${tabId}')"]`).classList.add('active');
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelector(`.tab[onclick="showTab('${tabId}')"]`).classList.add('active');
 
-if (tabId === 'components') {
-fetchGitHubFiles();
-}
+    if (tabId === 'games') {
+        fetchGames();
+    } else if (tabId === 'components') {
+        fetchGitHubFiles();
+    }
 }
 
 // Fetch GitHub Files
 function fetchGitHubFiles() {
-fetch("https://api.github.com/repos/BI66IE619/bi66ie619.github.io/contents/")
-.then(response => response.json())
-.then(data => {
-const fileList = document.getElementById('file-list');
-fileList.innerHTML = ''; 
-data.forEach(file => {
-const li = document.createElement('li');
-li.textContent = file.name;
-fileList.appendChild(li);
-});
-})
-.catch(error => console.error('Error fetching files:', error));
+    fetch("https://api.github.com/repos/BI66IE619/bi66ie619.github.io/contents/")
+        .then(response => response.json())
+        .then(data => {
+            const fileList = document.getElementById('file-list');
+            fileList.innerHTML = ''; 
+            data.forEach(file => {
+                const li = document.createElement('li');
+                li.textContent = file.name;
+                fileList.appendChild(li);
+            });
+        })
+        .catch(error => console.error('Error fetching files:', error));
+}
+
+// Fetch and sort games
+function fetchGames() {
+    fetch('/g.html')
+        .then(response => response.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const games = doc.querySelectorAll('.rectangle');
+
+            document.getElementById('pc-games').innerHTML = '';
+            document.getElementById('mobile-games').innerHTML = '';
+            document.getElementById('fixing-games').innerHTML = '';
+
+            games.forEach(game => {
+                const name = game.querySelector('.game-name').innerText;
+                const link = game.getAttribute('onclick').match(/'([^']+)'/)[1];
+                const badge = game.querySelector('.badge') ? game.querySelector('.badge').innerText : '';
+
+                const gameElement = `<div class="game-item"><a href="${link}" target="_blank">${name}</a></div>`;
+
+                if (badge.includes('Mobile Supported')) {
+                    document.getElementById('mobile-games').innerHTML += gameElement;
+                } else if (badge.includes('Fixing')) {
+                    document.getElementById('fixing-games').innerHTML += gameElement;
+                } else {
+                    document.getElementById('pc-games').innerHTML += gameElement;
+                }
+            });
+        })
+        .catch(error => console.error('Error fetching games:', error));
 }
 
 // Toggle Sidebar
 function toggleSidebar() {
-document.getElementById('sidebar').classList.toggle('hidden');
+    document.getElementById('sidebar').classList.toggle('hidden');
 }
 
 // On Page Load
