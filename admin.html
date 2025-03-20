@@ -18,10 +18,9 @@
             width: 200px;
             background: #333;
             color: white;
-            padding: 15px;
             height: 100vh;
             transition: width 0.3s;
-            position: relative; /* Relative positioning */
+            position: relative; /* Relative positioning for sidebar */
         }
         #sidebar.hidden {
             width: 0;
@@ -34,7 +33,12 @@
             background: none;
             border: none;
             color: #333;
-            margin-bottom: 10px; /* Add space below the button */
+            margin-bottom: 10px; /* Space below the button */
+            transition: margin-left 0.3s; /* Smooth transition */
+            position: absolute; /* Position the button absolutely within the sidebar */
+            left: 100%; /* Position it to the right of the sidebar */
+            transform: translateX(-50%); /* Center the button */
+            top: 15px; /* Align with the top of the sidebar */
         }
         .tab {
             padding: 10px;
@@ -257,7 +261,7 @@
 
         // Fetch and display GitHub files in the components tab
         function fetchGitHubFiles() {
-            const repoUrl = 'https://api.github.com/repos/bi66ie619/bi66ie619.github.io/contents/'; // Replace with your repo name
+            const repoUrl = 'https://api.github.com/repos/bi66ie619/YOUR_REPO_NAME/contents/'; // Replace with your repo name
             
             fetch(repoUrl)
                 .then(response => response.json())
