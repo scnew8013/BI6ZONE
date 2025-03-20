@@ -21,11 +21,20 @@
             padding: 15px;
             height: 100vh;
             transition: width 0.3s;
+            position: relative; /* Relative positioning */
         }
         #sidebar.hidden {
             width: 0;
             padding: 0;
             overflow: hidden;
+        }
+        #toggle-btn {
+            cursor: pointer;
+            font-size: 20px;
+            background: none;
+            border: none;
+            color: #333;
+            margin-bottom: 10px; /* Add space below the button */
         }
         .tab {
             padding: 10px;
@@ -42,19 +51,6 @@
             flex: 1;
             padding: 20px;
             transition: margin-left 0.3s;
-        }
-        #toggle-btn {
-            position: absolute;
-            top: 10px;
-            left: 210px;
-            cursor: pointer;
-            font-size: 20px;
-            background: none;
-            border: none;
-            color: #333;
-        }
-        #toggle-btn:hover {
-            color: #007BFF;
         }
         .container {
             display: none;
@@ -121,9 +117,8 @@
     </style>
 </head>
 <body>
-    <button id="toggle-btn" onclick="toggleSidebar()"> &lt;— </button>
-
     <div id="sidebar">
+        <button id="toggle-btn" onclick="toggleSidebar()"> &lt;— </button>
         <h2>BI6’s Panel</h2>
         <div class="tab active" onclick="showTab('home')">Home</div>
         <div class="tab" onclick="showTab('games')">Games</div>
@@ -262,7 +257,7 @@
 
         // Fetch and display GitHub files in the components tab
         function fetchGitHubFiles() {
-            const repoUrl = 'https://api.github.com/repos/bi66ie619/YOUR_REPO_NAME/contents/'; // Replace with your repo name
+            const repoUrl = 'https://api.github.com/repos/bi66ie619/bi66ie619.github.io/contents/'; // Replace with your repo name
             
             fetch(repoUrl)
                 .then(response => response.json())
