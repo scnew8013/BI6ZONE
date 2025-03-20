@@ -38,11 +38,11 @@
         .container { display: none; }
         .container.active { display: block; }
         .stat-card { background: white; padding: 15px; margin: 10px 0; border-radius: 5px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); }
-        .game-columns { display: flex; justify-content: space-between; gap: 20px; }
-        .column { flex: 1; background: white; padding: 10px; border-radius: 5px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); }
-        .file-list { list-style: none; padding: 0; }
-        .file-list li { background: white; margin: 5px 0; padding: 10px; border-radius: 5px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); }
-        .file-list a { text-decoration: none; color: #007BFF; font-weight: bold; }
+        .list-container { background: white; padding: 10px; border-radius: 5px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); }
+        .list-container ul { list-style: none; padding: 0; }
+        .list-container li { padding: 8px; border-bottom: 1px solid #ddd; }
+        .list-container li:last-child { border-bottom: none; }
+        .list-container a { text-decoration: none; color: #007BFF; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -65,31 +65,24 @@
         </div>
 
         <div class="container" id="games">
-            <h2>Games Tab</h2>
-            <div class="game-columns">
-                <div class="column">
-                    <h3>PC Games</h3>
-                    <div id="pc-games"></div>
-                </div>
-                <div class="column">
-                    <h3>Mobile Supported</h3>
-                    <div id="mobile-games"></div>
-                </div>
-                <div class="column">
-                    <h3>Fixing</h3>
-                    <div id="fixing-games"></div>
-                </div>
+            <h2>Games List</h2>
+            <div class="list-container">
+                <ul id="games-list"></ul>
             </div>
         </div>
 
         <div class="container" id="apps">
-            <h2>Apps Tab</h2>
-            <div id="apps-list"></div>
+            <h2>Apps List</h2>
+            <div class="list-container">
+                <ul id="apps-list"></ul>
+            </div>
         </div>
 
         <div class="container" id="components">
             <h2>Components - Repository Files</h2>
-            <ul id="repo-files" class="file-list"></ul>
+            <div class="list-container">
+                <ul id="repo-files"></ul>
+            </div>
         </div>
     </div>
 
@@ -118,25 +111,16 @@
                     const doc = parser.parseFromString(html, 'text/html');
                     const games = doc.querySelectorAll('.rectangle');
 
-                    const pcGames = document.getElementById('pc-games');
-                    const mobileGames = document.getElementById('mobile-games');
-                    const fixingGames = document.getElementById('fixing-games');
-
-                    pcGames.innerHTML = '';
-                    mobileGames.innerHTML = '';
-                    fixingGames.innerHTML = '';
+                    const gamesList = document.getElementById('games-list');
+                    gamesList.innerHTML = '';
 
                     games.forEach(game => {
-                        const gameClone = game.cloneNode(true);
-                        const badge = gameClone.querySelector('.badge');
+                        const name = game.querySelector('.game-name').innerText;
+                        const link = game.getAttribute('onclick').match(/'([^']+)'/)[1];
 
-                        if (badge.classList.contains('mobilesup-badge')) {
-                            mobileGames.appendChild(gameClone);
-                        } else if (badge.classList.contains('notmobsup-badge')) {
-                            pcGames.appendChild(gameClone);
-                        } else if (badge.classList.contains('fixing-badge')) {
-                            fixingGames.appendChild(gameClone);
-                        }
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `<a href="${link}" target="_blank">${name}</a>`;
+                        gamesList.appendChild(listItem);
                     });
                 })
                 .catch(error => console.error('Error fetching games:', error));
@@ -154,8 +138,12 @@
                     appsList.innerHTML = '';
 
                     apps.forEach(app => {
-                        const appClone = app.cloneNode(true);
-                        appsList.appendChild(appClone);
+                        const name = app.querySelector('.game-name').innerText;
+                        const link = app.getAttribute('onclick').match(/'([^']+)'/)[1];
+
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `<a href="${link}" target="_blank">${name}</a>`;
+                        appsList.appendChild(listItem);
                     });
                 })
                 .catch(error => console.error('Error fetching apps:', error));
