@@ -14,6 +14,9 @@
         .container { display: none; }
         .container.active { display: block; }
         .list-container { background: white; padding: 10px; border-radius: 5px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); }
+        .columns { display: flex; justify-content: space-between; }
+        .column { flex: 1; margin-right: 20px; }
+        .column:last-child { margin-right: 0; }
         .list-container ul { list-style: none; padding: 0; }
         .list-container li { padding: 8px; border-bottom: 1px solid #ddd; }
         .list-container li:last-child { border-bottom: none; }
@@ -41,17 +44,25 @@
         <!-- Games Tab -->
         <div class="container" id="games">
             <h2>Games List</h2>
-            <h3>Mobile Supported</h3>
-            <div class="list-container">
-                <ul id="mobile-games-list"></ul>
-            </div>
-            <h3>Fixing</h3>
-            <div class="list-container">
-                <ul id="fixing-games-list"></ul>
-            </div>
-            <h3>PC Games</h3>
-            <div class="list-container">
-                <ul id="pc-games-list"></ul>
+            <div class="columns">
+                <div class="column">
+                    <h3>Mobile Supported</h3>
+                    <div class="list-container">
+                        <ul id="mobile-games-list"></ul>
+                    </div>
+                </div>
+                <div class="column">
+                    <h3>Fixing</h3>
+                    <div class="list-container">
+                        <ul id="fixing-games-list"></ul>
+                    </div>
+                </div>
+                <div class="column">
+                    <h3>PC Games</h3>
+                    <div class="list-container">
+                        <ul id="pc-games-list"></ul>
+                    </div>
+                </div>
             </div>
         </div>
 
