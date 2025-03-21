@@ -13,12 +13,7 @@
         #content { flex: 1; padding: 20px; }
         .container { display: none; }
         .container.active { display: block; }
-        .stat-card { background: white; padding: 15px; margin: 10px 0; border-radius: 5px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); }
-        .list-container { background: white; padding: 10px; border-radius: 5px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); }
-        .list-container ul { list-style: none; padding: 0; }
-        .list-container li { padding: 8px; border-bottom: 1px solid #ddd; }
-        .list-container li:last-child { border-bottom: none; }
-        .list-container a { text-decoration: none; color: #007BFF; font-weight: bold; }
+        .iframe-container { width: 100%; height: 80vh; border: none; }
     </style>
 </head>
 <body>
@@ -36,10 +31,6 @@
         <div class="container active" id="dashboard">
             <h2>Dashboard</h2>
             <iframe class="iframe-container" src="https://counter.dev/dashboard.html?user=BI66IE619&token=8dgw3XH5jw4%3D"></iframe>
-            <div class="stat-card">Total Page Views: <span id="page-views">Loading...</span></div>
-            <div class="stat-card">Total Users: <span id="total-users">Loading...</span></div>
-            <div class="stat-card">Active Users: <span id="active-users">Loading...</span></div>
-            <div class="stat-card">Games Played: <span id="games-played">Loading...</span></div>
         </div>
 
         <!-- Games Tab -->
