@@ -1,64 +1,66 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; display: flex; }
-        #sidebar { width: 220px; background: #333; color: white; height: 100vh; padding: 20px; }
-        .tab { padding: 12px; cursor: pointer; background: #444; margin: 5px 0; border-radius: 5px; text-align: center; transition: background 0.3s; }
-        .tab:hover { background: #555; }
-        .tab.active { background: #007BFF; }
-        #content { flex: 1; padding: 20px; }
-        .container { display: none; }
-        .container.active { display: block; }
-        .iframe-container { width: 100%; height: 80vh; border: none; }
-    </style>
-</head>
-<body>
+<div id="sidebar">
+    <h2>BI6’s Panel</h2>
+    <div class="tab active" onclick="showTab('dashboard')">Dashboard</div>
+    <div class="tab" onclick="showTab('games')">Games</div>
+    <div class="tab" onclick="showTab('apps')">Apps</div>
+    <div class="tab" onclick="showTab('components')">Components</div>
+</div>
 
-    <div id="sidebar">
-        <h2>BI6’s Panel</h2>
-        <div class="tab active" onclick="showTab('home')">Home</div>
-        <div class="tab" onclick="showTab('games')">Games</div>
-        <div class="tab" onclick="showTab('apps')">Apps</div>
-        <div class="tab" onclick="showTab('components')">Components</div>
-        <div class="tab" onclick="showTab('analytics')">Analytics</div>  <!-- New Tab -->
+<div id="content">
+    <!-- Dashboard Tab (Previously Home) -->
+    <div class="container active" id="dashboard">
+        <h2>Dashboard</h2>
+
+        <!-- Counter.dev Analytics Dashboard -->
+        <iframe src="https://counter.dev/dashboard.html?user=BI66IE619&token=8dgw3XH5jw4%3D" 
+                width="100%" height="600px" style="border: none;"></iframe>
+
+        <!-- Quick Stats Overview -->
+        <div class="stat-card">Total Page Views: <span id="page-views">Loading...</span></div>
+        <div class="stat-card">Total Users: <span id="total-users">Loading...</span></div>
+        <div class="stat-card">Active Users: <span id="active-users">Loading...</span></div>
+        <div class="stat-card">Games Played: <span id="games-played">Loading...</span></div>
     </div>
 
-    <div id="content">
-        <div class="container active" id="home">
-            <h2>Home - Dashboard</h2>
-        </div>
-
-        <div class="container" id="games">
-            <h2>Games List</h2>
-        </div>
-
-        <div class="container" id="apps">
-            <h2>Apps List</h2>
-        </div>
-
-        <div class="container" id="components">
-            <h2>Components - Repository Files</h2>
-        </div>
-
-        <div class="container" id="analytics">  <!-- New Analytics Section -->
-            <h2>Website Analytics</h2>
-            <iframe class="iframe-container" src="https://counter.dev/dashboard.html?user=BI66IE619&token=8dgw3XH5jw4%3D"></iframe>
+    <!-- Games Tab -->
+    <div class="container" id="games">
+        <h2>Games List</h2>
+        <div class="list-container">
+            <ul id="games-list"></ul>
         </div>
     </div>
 
-    <script>
-        function showTab(tabId) {
-            document.querySelectorAll('.container').forEach(container => container.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+    <!-- Apps Tab -->
+    <div class="container" id="apps">
+        <h2>Apps List</h2>
+        <div class="list-container">
+            <ul id="apps-list"></ul>
+        </div>
+    </div>
 
-            document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
+    <!-- Components Tab -->
+    <div class="container" id="components">
+        <h2>Components - Repository Files</h2>
+        <div class="list-container">
+            <ul id="repo-files"></ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showTab(tabId) {
+        document.querySelectorAll('.container').forEach(container => container.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+
+        document.getElementById(tabId).classList.add('active');
+        event.target.classList.add('active');
+
+        if (tabId === 'games') {
+            fetchGames();
+        } else if (tabId === 'apps') {
+            fetchApps();
+        } else if (tabId === 'components') {
+            fetchRepoFiles();
         }
-    </script>
-
-</body>
-</html>
+    }
+</script>
