@@ -13,35 +13,57 @@
         #content { flex: 1; padding: 20px; }
         .container { display: none; }
         .container.active { display: block; }
-        .iframe-container { width: 100%; height: 80vh; border: none; }
+        .stat-card { background: white; padding: 15px; margin: 10px 0; border-radius: 5px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); }
+        .list-container { background: white; padding: 10px; border-radius: 5px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); }
+        .list-container ul { list-style: none; padding: 0; }
+        .list-container li { padding: 8px; border-bottom: 1px solid #ddd; }
+        .list-container li:last-child { border-bottom: none; }
+        .list-container a { text-decoration: none; color: #007BFF; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div id="sidebar">
         <h2>BI6’s Panel</h2>
-        <div class="tab active" onclick="showTab('home')">Home</div>
+        <div class="tab active" onclick="showTab('dashboard')">Dashboard</div>
         <div class="tab" onclick="showTab('games')">Games</div>
         <div class="tab" onclick="showTab('apps')">Apps</div>
         <div class="tab" onclick="showTab('components')">Components</div>
     </div>
 
     <div id="content">
-        <div class="container active" id="home">
-            <h2>Home - Dashboard</h2>
+        <!-- Dashboard Tab -->
+        <div class="container active" id="dashboard">
+            <h2>Dashboard</h2>
             <iframe class="iframe-container" src="https://counter.dev/dashboard.html?user=BI66IE619&token=8dgw3XH5jw4%3D"></iframe>
+            <div class="stat-card">Total Page Views: <span id="page-views">Loading...</span></div>
+            <div class="stat-card">Total Users: <span id="total-users">Loading...</span></div>
+            <div class="stat-card">Active Users: <span id="active-users">Loading...</span></div>
+            <div class="stat-card">Games Played: <span id="games-played">Loading...</span></div>
         </div>
 
+        <!-- Games Tab -->
         <div class="container" id="games">
             <h2>Games List</h2>
+            <div class="list-container">
+                <ul id="games-list"></ul>
+            </div>
         </div>
 
+        <!-- Apps Tab -->
         <div class="container" id="apps">
             <h2>Apps List</h2>
+            <div class="list-container">
+                <ul id="apps-list"></ul>
+            </div>
         </div>
 
+        <!-- Components Tab -->
         <div class="container" id="components">
             <h2>Components - Repository Files</h2>
+            <div class="list-container">
+                <ul id="repo-files"></ul>
+            </div>
         </div>
     </div>
 
