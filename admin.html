@@ -77,8 +77,19 @@
         <!-- Components Tab -->
         <div class="container" id="components">
             <h2>Components - Repository Files</h2>
-            <div class="list-container">
-                <ul id="repo-files"></ul>
+            <div class="columns">
+                <div class="column">
+                    <h3>Files</h3>
+                    <div class="list-container">
+                        <ul id="file-list"></ul>
+                    </div>
+                </div>
+                <div class="column">
+                    <h3>Folders</h3>
+                    <div class="list-container">
+                        <ul id="folder-list"></ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -161,13 +172,23 @@
             fetch('https://api.github.com/repos/BI66IE619/bi66ie619.github.io/contents/')
                 .then(response => response.json())
                 .then(files => {
-                    const fileList = document.getElementById('repo-files');
+                    const fileList = document.getElementById('file-list');
+                    const folderList = document.getElementById('folder-list');
                     fileList.innerHTML = '';
+                    folderList.innerHTML = '';
 
                     files.forEach(file => {
                         const listItem = document.createElement('li');
                         listItem.innerHTML = `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
-                        fileList.appendChild(listItem);
+
+                        // Check if it's a folder or file based on the name
+                        if (file.name.includes('.')) {
+                            // It's a file
+                            fileList.appendChild(listItem);
+                        } else {
+                            // It's a folder
+                            folderList.appendChild(listItem);
+                        }
                     });
                 })
                 .catch(error => console.error('Error fetching repository files:', error));
