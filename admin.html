@@ -24,12 +24,12 @@
         <div class="tab" onclick="showTab('games')">Games</div>
         <div class="tab" onclick="showTab('apps')">Apps</div>
         <div class="tab" onclick="showTab('components')">Components</div>
-        <div class="tab" onclick="showTab('analytics')">Analytics</div>  <!-- New Tab -->
     </div>
 
     <div id="content">
         <div class="container active" id="home">
             <h2>Home - Dashboard</h2>
+            <iframe class="iframe-container" src="https://counter.dev/dashboard.html?user=BI66IE619&token=8dgw3XH5jw4%3D"></iframe>
         </div>
 
         <div class="container" id="games">
@@ -43,11 +43,6 @@
         <div class="container" id="components">
             <h2>Components - Repository Files</h2>
         </div>
-
-        <div class="container" id="analytics">  <!-- New Analytics Section -->
-            <h2>Website Analytics</h2>
-            <iframe class="iframe-container" src="https://counter.dev/dashboard.html?user=BI66IE619&token=8dgw3XH5jw4%3D"></iframe>
-        </div>
     </div>
 
     <script>
@@ -57,6 +52,76 @@
 
             document.getElementById(tabId).classList.add('active');
             event.target.classList.add('active');
+
+            if (tabId === 'games') {
+                fetchGames();
+            } else if (tabId === 'apps') {
+                fetchApps();
+            } else if (tabId === 'components') {
+                fetchRepoFiles();
+            }
+        }
+
+        function fetchGames() {
+            fetch('/g.html')
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const games = doc.querySelectorAll('.rectangle');
+
+                    const gamesList = document.getElementById('games-list');
+                    gamesList.innerHTML = '';
+
+                    games.forEach(game => {
+                        const name = game.querySelector('.game-name').innerText;
+                        const link = game.getAttribute('onclick').match(/'([^']+)'/)[1];
+
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `<a href="${link}" target="_blank">${name}</a>`;
+                        gamesList.appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error('Error fetching games:', error));
+        }
+
+        function fetchApps() {
+            fetch('/a.html')
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const apps = doc.querySelectorAll('.rectangle');
+
+                    const appsList = document.getElementById('apps-list');
+                    appsList.innerHTML = '';
+
+                    apps.forEach(app => {
+                        const name = app.querySelector('.game-name').innerText;
+                        const link = app.getAttribute('onclick').match(/'([^']+)'/)[1];
+
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `<a href="${link}" target="_blank">${name}</a>`;
+                        appsList.appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error('Error fetching apps:', error));
+        }
+
+        function fetchRepoFiles() {
+            fetch('https://api.github.com/repos/BI66IE619/bi66ie619.github.io/contents/')
+                .then(response => response.json())
+                .then(files => {
+                    const fileList = document.getElementById('repo-files');
+                    fileList.innerHTML = '';
+
+                    files.forEach(file => {
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
+                        fileList.appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error('Error fetching repository files:', error));
         }
     </script>
 
