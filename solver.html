@@ -6,16 +6,12 @@
     <title>AI Homework Solver</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.12.313/pdf.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; background: #f8f9fc; text-align: center; padding: 20px; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
         .upload-box { border: 2px dashed #ccc; padding: 20px; margin-bottom: 20px; background: #eef2ff; cursor: pointer; }
-        .upload-box p { margin: 10px 0; color: #666; }
-        .upload-box input { display: none; }
-        .button { display: block; padding: 10px; margin: 10px auto; background: #4285f4; color: white; border-radius: 5px; cursor: pointer; border: none; width: 200px; }
-        .output, .history { text-align: left; margin-top: 20px; white-space: pre-wrap; background: #f4f4f4; padding: 10px; border-radius: 5px; }
-        .example { margin-top: 30px; padding: 15px; background: #fffbe6; border-left: 5px solid #f4c542; }
-        .history-box { background: #eef2ff; padding: 10px; border-radius: 5px; max-height: 200px; overflow-y: auto; }
-        .prompt-box { width: 80%; padding: 10px; margin: 10px auto; border: 1px solid #ccc; border-radius: 5px; display: block; text-align: center; }
+        .button { padding: 10px; margin: 10px auto; background: #4285f4; color: white; border-radius: 5px; cursor: pointer; border: none; width: 200px; }
+        .output { background: #f4f4f4; padding: 10px; border-radius: 5px; text-align: left; white-space: pre-wrap; }
+        .status { font-weight: bold; color: #ff0000; }
     </style>
 </head>
 <body>
@@ -25,30 +21,16 @@
 
         <div class="upload-box" id="dropArea" onclick="document.getElementById('fileInput').click()">
             <input type="file" id="fileInput" accept="image/*, application/pdf" onchange="displayFileInfo()">
-            <p id="fileInfo">Drag & Drop an Image/PDF or Click to Upload</p>
+            <p id="fileInfo">Click to upload an Image or PDF</p>
         </div>
-
-        <textarea id="userPrompt" class="prompt-box" placeholder="Feel free to ask any questions on any subject, or inquire about the uploaded image, or view the examples below."></textarea>
 
         <button class="button" id="answerButton" onclick="solveHomework()">Get Answer</button>
-        <button class="button" id="downloadBtn" style="display:none;" onclick="downloadAnswer()">Download Answer</button>
-
+        <div id="status" class="status"></div>
         <div id="output" class="output"></div>
-
-        <div class="example">
-            <h3>Example Problem:</h3>
-            <p>A right triangle has one leg of 6 cm and a hypotenuse of 10 cm. What is the other leg's length?</p>
-            <img id="exampleImage" src="example.jpg" alt="Example Homework" width="100%">
-        </div>
-
-        <h3>History</h3>
-        <div class="history-box" id="history"></div>
     </div>
 
     <script>
-        let historyList = [];
         let extractedText = "";
-        let solution = "";
 
         function displayFileInfo() {
             const fileInput = document.getElementById("fileInput");
@@ -56,110 +38,115 @@
 
             if (fileInput.files.length > 0) {
                 const file = fileInput.files[0];
-                const fileSize = (file.size / 1024).toFixed(2); // Convert bytes to KB
-                const sizeText = fileSize > 1024 ? (fileSize / 1024).toFixed(2) + " MB" : fileSize + " KB";
-                fileInfo.innerHTML = `Uploaded: <strong>${file.name}</strong> (${sizeText})`;
+                fileInfo.innerHTML = `Uploaded: <strong>${file.name}</strong> (${(file.size / 1024).toFixed(2)} KB)`;
             }
         }
 
         async function solveHomework() {
             const fileInput = document.getElementById("fileInput");
-            const userPrompt = document.getElementById("userPrompt").value.trim();
+            const statusDiv = document.getElementById("status");
+            const outputDiv = document.getElementById("output");
             const answerButton = document.getElementById("answerButton");
-            
+
             if (fileInput.files.length === 0) {
-                alert("Please upload an image or PDF.");
+                statusDiv.innerHTML = "Please upload an image or PDF.";
                 return;
             }
 
+            statusDiv.innerHTML = "Processing file...";
             answerButton.innerText = "Getting Answers...";
             answerButton.disabled = true;
 
-            const apiKey = "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";
-            await processFile(fileInput.files[0], apiKey, userPrompt);
+            const apiKey = "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";
+            const file = fileInput.files[0];
+
+            if (file.type.includes("pdf")) {
+                await processPDF(file);
+            } else {
+                await processImage(file);
+            }
+
+            if (!extractedText) {
+                statusDiv.innerHTML = "Failed to extract text from file.";
+                answerButton.innerText = "Get Answer";
+                answerButton.disabled = false;
+                return;
+            }
+
+            statusDiv.innerHTML = "Sending to AI...";
+            const solution = await getSolution(apiKey);
+
+            if (solution) {
+                outputDiv.innerHTML = `<h3>Solution:</h3><p>${solution}</p>`;
+                statusDiv.innerHTML = "Done!";
+            } else {
+                outputDiv.innerHTML = "<h3>Error:</h3><p>Failed to generate a solution.</p>";
+                statusDiv.innerHTML = "Error.";
+            }
 
             answerButton.innerText = "Get Answer";
             answerButton.disabled = false;
         }
 
-        async function processFile(file, apiKey, userPrompt) {
-            if (file.type.includes("pdf")) {
-                await processPDF(file, apiKey, userPrompt);
-            } else {
-                await processImage(file, apiKey, userPrompt);
-            }
+        async function processImage(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    extractedText = "Extracted text placeholder (image processing not yet implemented).";  // Debugging placeholder
+                    console.log("Extracted text:", extractedText);
+                    resolve();
+                };
+                reader.readAsDataURL(file);
+            });
         }
 
-        async function processImage(file, apiKey, userPrompt) {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = async () => {
-                const base64Image = reader.result.split(",")[1];
+        async function processPDF(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = async function () {
+                    const pdfData = new Uint8Array(reader.result);
+                    const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
 
+                    let allText = "";
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const textContent = await page.getTextContent();
+                        allText += textContent.items.map(item => item.str).join(" ") + "\n\n";
+                    }
+
+                    extractedText = allText || "No text found in PDF.";
+                    console.log("Extracted PDF text:", extractedText);
+                    resolve();
+                };
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        async function getSolution(apiKey) {
+            try {
                 const response = await fetch("https://api.openai.com/v1/chat/completions", {
                     method: "POST",
                     headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
                     body: JSON.stringify({
                         model: "gpt-4-turbo",
                         messages: [
-                            { role: "system", content: "Extract text from the uploaded image and solve the problem." },
-                            { role: "user", content: `Image: ${base64Image}` }
+                            { role: "system", content: "Solve the extracted homework question(s) accurately." },
+                            { role: "user", content: extractedText }
                         ]
                     })
                 });
 
                 const data = await response.json();
-                extractedText = data.choices[0]?.message?.content || "Failed to extract text.";
-                await getSolution(apiKey, userPrompt);
-            };
-        }
 
-        async function processPDF(file, apiKey, userPrompt) {
-            const reader = new FileReader();
-            reader.readAsArrayBuffer(file);
-            reader.onload = async function () {
-                const pdfData = new Uint8Array(reader.result);
-                const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
-
-                let allText = "";
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    const page = await pdf.getPage(i);
-                    const textContent = await page.getTextContent();
-                    const pageText = textContent.items.map(item => item.str).join(" ");
-                    allText += `Page ${i}: ${pageText}\n\n`;
+                if (!response.ok) {
+                    throw new Error(`API Error: ${data.error?.message || "Unknown error"}`);
                 }
 
-                extractedText = allText || "Failed to extract text from PDF.";
-                await getSolution(apiKey, userPrompt);
-            };
-        }
-
-        async function getSolution(apiKey, userPrompt) {
-            const combinedPrompt = extractedText + "\n\nUser Question: " + userPrompt;
-
-            const response = await fetch("https://api.openai.com/v1/chat/completions", {
-                method: "POST",
-                headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    model: "gpt-4-turbo",
-                    messages: [
-                        { role: "system", content: "Solve the extracted homework question(s) accurately." },
-                        { role: "user", content: combinedPrompt }
-                    ]
-                })
-            });
-
-            const data = await response.json();
-            solution = data.choices[0]?.message?.content || "Failed to generate a solution.";
-
-            document.getElementById("output").innerHTML = `<h3>Solution:</h3><p>${solution}</p>`;
-            historyList.push(solution);
-            updateHistory();
-            document.getElementById("downloadBtn").style.display = "inline-block";
-        }
-
-        function updateHistory() {
-            document.getElementById("history").innerHTML = historyList.join("<hr>");
+                return data.choices[0]?.message?.content || "Failed to generate a solution.";
+            } catch (error) {
+                console.error(error);
+                return null;
+            }
         }
     </script>
 
