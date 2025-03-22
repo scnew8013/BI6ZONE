@@ -15,7 +15,7 @@
         .output, .history { text-align: left; margin-top: 20px; white-space: pre-wrap; background: #f4f4f4; padding: 10px; border-radius: 5px; }
         .example { margin-top: 30px; padding: 15px; background: #fffbe6; border-left: 5px solid #f4c542; }
         .history-box { background: #eef2ff; padding: 10px; border-radius: 5px; max-height: 200px; overflow-y: auto; }
-        .prompt-box { width: 100%; padding: 10px; margin-top: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        .prompt-box { width: 100%; padding: 10px; margin: 10px auto; border: 1px solid #ccc; border-radius: 5px; display: block; text-align: center; }
     </style>
 </head>
 <body>
@@ -24,13 +24,13 @@
         <h2>AI Homework Solver</h2>
 
         <div class="upload-box" id="dropArea" onclick="document.getElementById('fileInput').click()">
-            <input type="file" id="fileInput" accept="image/*, application/pdf">
-            <p>Drag & Drop an Image/PDF or Click to Upload</p>
+            <input type="file" id="fileInput" accept="image/*, application/pdf" onchange="displayFileInfo()">
+            <p id="fileInfo">Drag & Drop an Image/PDF or Click to Upload</p>
         </div>
 
         <textarea id="userPrompt" class="prompt-box" placeholder="Feel free to ask any questions on any subject, or inquire about the uploaded image, or view the examples below."></textarea>
 
-        <button class="button" onclick="solveHomework()">Get Answer</button>
+        <button class="button" id="answerButton" onclick="solveHomework()">Get Answer</button>
         <button class="button" id="downloadBtn" style="display:none;" onclick="downloadAnswer()">Download Answer</button>
 
         <div id="output" class="output"></div>
@@ -50,24 +50,43 @@
         let extractedText = "";
         let solution = "";
 
+        function displayFileInfo() {
+            const fileInput = document.getElementById("fileInput");
+            const fileInfo = document.getElementById("fileInfo");
+
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const fileSize = (file.size / 1024).toFixed(2); // Convert bytes to KB
+                const sizeText = fileSize > 1024 ? (fileSize / 1024).toFixed(2) + " MB" : fileSize + " KB";
+                fileInfo.innerHTML = `Uploaded: <strong>${file.name}</strong> (${sizeText})`;
+            }
+        }
+
         async function solveHomework() {
             const fileInput = document.getElementById("fileInput");
             const userPrompt = document.getElementById("userPrompt").value.trim();
+            const answerButton = document.getElementById("answerButton");
             
             if (fileInput.files.length === 0) {
                 alert("Please upload an image or PDF.");
                 return;
             }
 
-            const apiKey = "YOUR_OPENAI_API_KEY";
-            processFile(fileInput.files[0], apiKey, userPrompt);
+            answerButton.innerText = "Getting Answers..."; // Show loading message
+            answerButton.disabled = true; // Disable button during processing
+
+            const apiKey = "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";
+            await processFile(fileInput.files[0], apiKey, userPrompt);
+
+            answerButton.innerText = "Get Answer"; // Reset button text
+            answerButton.disabled = false; // Re-enable button
         }
 
         async function processFile(file, apiKey, userPrompt) {
             if (file.type.includes("pdf")) {
-                processPDF(file, apiKey, userPrompt);
+                await processPDF(file, apiKey, userPrompt);
             } else {
-                processImage(file, apiKey, userPrompt);
+                await processImage(file, apiKey, userPrompt);
             }
         }
 
@@ -91,7 +110,7 @@
 
                 const data = await response.json();
                 extractedText = data.choices[0]?.message?.content || "Failed to extract text.";
-                getSolution(apiKey, userPrompt);
+                await getSolution(apiKey, userPrompt);
             };
         }
 
@@ -111,7 +130,7 @@
                 }
 
                 extractedText = allText || "Failed to extract text from PDF.";
-                getSolution(apiKey, userPrompt);
+                await getSolution(apiKey, userPrompt);
             };
         }
 
