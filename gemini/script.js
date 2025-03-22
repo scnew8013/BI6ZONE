@@ -2,64 +2,71 @@ const API_KEY = "AIzaSyD3u5xSsP_IetpsQR70rJJ96rQB6Z4dMfU";
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
 const fileInput = document.getElementById("file-input");
-const fileNameDisplay = document.getElementById("file-name");
 const questionInput = document.getElementById("question-input");
-const getAnswerBtn = document.getElementById("get-answer-btn");
-const responseDiv = document.getElementById("response");
+const submitBtn = document.getElementById("submit-btn");
+const responseOutput = document.getElementById("response-output");
+const fileNameDisplay = document.querySelector(".file-name");
 
-document.getElementById("choose-file-btn").addEventListener("click", () => {
-    fileInput.click();
-});
+let uploadedFile = null;
 
-// Display selected file name
 fileInput.addEventListener("change", () => {
-    fileNameDisplay.textContent = fileInput.files.length ? `Selected: ${fileInput.files[0].name}` : "";
+    const file = fileInput.files[0];
+    if (file) {
+        fileNameDisplay.textContent = `Selected: ${file.name}`;
+        uploadedFile = file;
+    } else {
+        fileNameDisplay.textContent = "";
+        uploadedFile = null;
+    }
 });
 
-// Function to send question to Gemini API
-const fetchAnswer = async (question, fileData = null) => {
-    try {
-        const body = {
-            contents: [{ role: "user", parts: [{ text: question }] }]
-        };
-
-        if (fileData) {
-            body.contents[0].parts.push({ inline_data: { data: fileData } });
-        }
-
-        const response = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
-        });
-
-        const data = await response.json();
-        return data.candidates?.[0]?.content?.parts?.[0]?.text || "No response from AI.";
-    } catch (error) {
-        return `Error: ${error.message}`;
-    }
-};
-
-// Handle the "Get Answer" button click
-getAnswerBtn.addEventListener("click", async () => {
+submitBtn.addEventListener("click", async () => {
     const question = questionInput.value.trim();
-    if (!question && !fileInput.files.length) {
-        responseDiv.innerHTML = "Please enter a question or upload a file.";
+    if (!question && !uploadedFile) {
+        responseOutput.textContent = "Please enter a question or upload an image.";
         return;
     }
 
-    responseDiv.innerHTML = "Generating answer...";
+    responseOutput.textContent = "Generating response...";
 
     let fileData = null;
-    if (fileInput.files.length > 0) {
-        const file = fileInput.files[0];
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        fileData = await new Promise(resolve => {
-            reader.onload = () => resolve(reader.result.split(",")[1]); // Get base64 data
+    if (uploadedFile) {
+        fileData = await encodeFileToBase64(uploadedFile);
+    }
+
+    const requestBody = {
+        contents: [
+            { role: "user", parts: [{ text: question }] }
+        ]
+    };
+
+    if (fileData) {
+        requestBody.contents[0].parts.push({
+            inline_data: { mime_type: uploadedFile.type, data: fileData }
         });
     }
 
-    const answer = await fetchAnswer(question, fileData);
-    responseDiv.innerHTML = answer;
+    try {
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(requestBody)
+        });
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error.message);
+
+        const aiResponse = data.candidates[0].content.parts[0].text.trim();
+        responseOutput.textContent = aiResponse || "No response from AI.";
+    } catch (error) {
+        responseOutput.textContent = "Error: " + error.message;
+    }
 });
+
+async function encodeFileToBase64(file) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(",")[1]);
+        reader.readAsDataURL(file);
+    });
+}
