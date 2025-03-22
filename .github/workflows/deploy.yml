@@ -9,6 +9,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Install Dependencies
+        run: npm install express cors axios  # ✅ This installs required modules
+
       - name: Start API Server
         run: |
           echo "Starting API Server..."
