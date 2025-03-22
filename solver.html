@@ -12,10 +12,11 @@
         .upload-box label { display: block; padding: 10px; background: #4285f4; color: white; border-radius: 5px; cursor: pointer; }
         .output { text-align: left; margin-top: 20px; white-space: pre-wrap; }
         .button { padding: 10px 20px; font-size: 16px; margin-top: 10px; cursor: pointer; background: #4285f4; color: white; border: none; border-radius: 5px; }
-        .examples { margin-top: 30px; }
-        .example-grid { display: flex; justify-content: space-around; flex-wrap: wrap; }
-        .example { width: 30%; background: #fff; padding: 10px; border-radius: 5px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); margin-bottom: 10px; }
+        .examples, .history { margin-top: 30px; }
+        .example-grid { display: flex; justify-content: space-around; }
+        .example { width: 45%; background: #fff; padding: 10px; border-radius: 5px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); }
         .example img { max-width: 100%; border-radius: 5px; }
+        .history-list { text-align: left; max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; background: #fff; }
     </style>
 </head>
 <body>
@@ -44,18 +45,20 @@
             </div>
             <div class="example">
                 <p><strong>Photo</strong></p>
-                <img src="example1.jpg" alt="Math problem example">
-            </div>
-            <div class="example">
-                <p><strong>Photo</strong></p>
-                <img src="example2.jpg" alt="Math problem example">
+                <img src="example.jpg" alt="Math problem example"> <!-- Replace with your actual image -->
             </div>
         </div>
+    </div>
+
+    <div class="history">
+        <h3>Solution History</h3>
+        <div class="history-list" id="historyList">No history yet.</div>
     </div>
 
     <script>
         let extractedText = "";
         let solution = "";
+        let history = [];
 
         async function solveHomework() {
             const fileInput = document.getElementById("fileInput");
@@ -66,14 +69,12 @@
 
             const apiKey = "YOUR_OPENAI_API_KEY"; // Replace with your API key
 
-            // Convert image to base64
             const file = fileInput.files[0];
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = async () => {
                 const base64Image = reader.result.split(",")[1];
 
-                // Send image to OpenAI for OCR
                 const ocrResponse = await fetch("https://api.openai.com/v1/images/generations", {
                     method: "POST",
                     headers: {
@@ -92,7 +93,6 @@
                 const ocrData = await ocrResponse.json();
                 extractedText = ocrData.choices[0]?.message?.content || "Failed to extract text.";
 
-                // Send extracted text to GPT-4 for solving
                 const gptResponse = await fetch("https://api.openai.com/v1/chat/completions", {
                     method: "POST",
                     headers: {
@@ -111,13 +111,28 @@
                 const gptData = await gptResponse.json();
                 solution = gptData.choices[0]?.message?.content || "Failed to generate a solution.";
 
-                // Display results
                 document.getElementById("output").innerHTML = `<h3>Extracted Text:</h3><p>${extractedText}</p>
                                                                 <h3>Solution:</h3><p>${solution}</p>`;
 
-                // Show download button
                 document.getElementById("downloadBtn").style.display = "inline-block";
+
+                // Save to history
+                history.unshift({ text: extractedText, answer: solution });
+                updateHistory();
             };
+        }
+
+        function updateHistory() {
+            const historyDiv = document.getElementById("historyList");
+            if (history.length === 0) {
+                historyDiv.innerHTML = "No history yet.";
+                return;
+            }
+
+            historyDiv.innerHTML = history.map((entry, index) => 
+                `<p><strong>Problem ${index + 1}:</strong> ${entry.text}<br>
+                <strong>Solution:</strong> ${entry.answer}</p><hr>`
+            ).join("");
         }
 
         function downloadAnswer() {
