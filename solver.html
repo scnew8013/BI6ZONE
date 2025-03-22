@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Homework Solver</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.12.313/pdf.min.js"></script>
-    <script src="https://apis.google.com/js/api.js"></script>
     <style>
         body { font-family: Arial, sans-serif; background: #f8f9fc; text-align: center; padding: 20px; }
         .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
@@ -24,11 +23,10 @@
         <h2>AI Homework Solver</h2>
 
         <div class="upload-box" id="dropArea" onclick="document.getElementById('fileInput').click()">
-    <input type="file" id="fileInput" accept="image/*, application/pdf">
-    <p>Drag & Drop an Image/PDF or Click to Upload</p>
+            <input type="file" id="fileInput" accept="image/*, application/pdf">
+            <p>Drag & Drop an Image/PDF or Click to Upload</p>
         </div>
 
-        <button class="button" onclick="pickFromDrive()">Choose from Google Drive</button>
         <button class="button" onclick="solveHomework()">Get Answer</button>
         <button class="button" id="downloadBtn" style="display:none;" onclick="downloadAnswer()">Download Answer</button>
 
@@ -48,41 +46,16 @@
         let historyList = [];
         let extractedText = "";
         let solution = "";
-        let selectedFileUrl = "";
-
-        function pickFromDrive() {
-            gapi.load('picker', function () {
-                const picker = new google.picker.PickerBuilder()
-                    .setOAuthToken("YOUR_GOOGLE_DRIVE_API_KEY")
-                    .addView(google.picker.ViewId.DOCS)
-                    .setCallback(pickerCallback)
-                    .build();
-                picker.setVisible(true);
-            });
-        }
-
-        function pickerCallback(data) {
-            if (data.action === google.picker.Action.PICKED) {
-                const fileId = data.docs[0].id;
-                selectedFileUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=YOUR_GOOGLE_DRIVE_API_KEY`;
-            }
-        }
 
         async function solveHomework() {
             const fileInput = document.getElementById("fileInput");
-            if (fileInput.files.length === 0 && !selectedFileUrl) {
-                alert("Please upload an image/PDF or select from Google Drive.");
+            if (fileInput.files.length === 0) {
+                alert("Please upload an image or PDF.");
                 return;
             }
 
             const apiKey = "YOUR_OPENAI_API_KEY";
-            if (selectedFileUrl) {
-                fetch(selectedFileUrl)
-                    .then(response => response.blob())
-                    .then(file => processFile(file, apiKey));
-            } else {
-                processFile(fileInput.files[0], apiKey);
-            }
+            processFile(fileInput.files[0], apiKey);
         }
 
         async function processFile(file, apiKey) {
