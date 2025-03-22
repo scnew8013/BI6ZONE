@@ -23,9 +23,9 @@
     <div class="container">
         <h2>AI Homework Solver</h2>
 
-        <div class="upload-box" id="dropArea">
-            <input type="file" id="fileInput" accept="image/*, application/pdf">
-            <p>Drag & Drop an Image/PDF or Click to Upload</p>
+        <div class="upload-box" id="dropArea" onclick="document.getElementById('fileInput').click()">
+    <input type="file" id="fileInput" accept="image/*, application/pdf">
+    <p>Drag & Drop an Image/PDF or Click to Upload</p>
         </div>
 
         <button class="button" onclick="pickFromDrive()">Choose from Google Drive</button>
