@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Homework Solver</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #f8f9fc; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+        .upload-box { border: 2px dashed #ccc; padding: 20px; margin-bottom: 20px; background: #eef2ff; }
+        .upload-box input { display: none; }
+        .upload-box label { display: block; padding: 10px; background: #4285f4; color: white; border-radius: 5px; cursor: pointer; }
+        .output { text-align: left; margin-top: 20px; white-space: pre-wrap; }
+        .button { padding: 10px 20px; font-size: 16px; margin-top: 10px; cursor: pointer; background: #4285f4; color: white; border: none; border-radius: 5px; }
+        .examples { margin-top: 30px; }
+        .example-grid { display: flex; justify-content: space-around; flex-wrap: wrap; }
+        .example { width: 30%; background: #fff; padding: 10px; border-radius: 5px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); margin-bottom: 10px; }
+        .example img { max-width: 100%; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>AI Homework Solver</h2>
+
+        <div class="upload-box">
+            <input type="file" id="fileInput" accept="image/*">
+            <label for="fileInput">Choose a File</label>
+            <p>Drag and drop an image or PDF for AI to answer.</p>
+        </div>
+
+        <button class="button" onclick="solveHomework()">Get Answer</button>
+        <button class="button" id="downloadBtn" style="display:none;" onclick="downloadAnswer()">Download Answer</button>
+
+        <div id="output" class="output"></div>
+    </div>
+
+    <div class="examples">
+        <h3>Examples</h3>
+        <div class="example-grid">
+            <div class="example">
+                <p><strong>Text</strong></p>
+                <p>A right triangle has one leg that is 6 cm long and the hypotenuse that is 10 cm long. What is the length of the other leg?</p>
+            </div>
+            <div class="example">
+                <p><strong>Photo</strong></p>
+                <img src="example1.jpg" alt="Math problem example">
+            </div>
+            <div class="example">
+                <p><strong>Photo</strong></p>
+                <img src="example2.jpg" alt="Math problem example">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let extractedText = "";
+        let solution = "";
+
+        async function solveHomework() {
+            const fileInput = document.getElementById("fileInput");
+            if (fileInput.files.length === 0) {
+                alert("Please upload an image first.");
+                return;
+            }
+
+            const apiKey = "YOUR_OPENAI_API_KEY"; // Replace with your API key
+
+            // Convert image to base64
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = async () => {
+                const base64Image = reader.result.split(",")[1];
+
+                // Send image to OpenAI for OCR
+                const ocrResponse = await fetch("https://api.openai.com/v1/images/generations", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${apiKey}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-4-turbo",
+                        messages: [
+                            { role: "system", content: "Extract text from the image." },
+                            { role: "user", content: base64Image }
+                        ]
+                    })
+                });
+
+                const ocrData = await ocrResponse.json();
+                extractedText = ocrData.choices[0]?.message?.content || "Failed to extract text.";
+
+                // Send extracted text to GPT-4 for solving
+                const gptResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${apiKey}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-4-turbo",
+                        messages: [
+                            { role: "system", content: "Solve the extracted homework question as accurately as possible." },
+                            { role: "user", content: extractedText }
+                        ]
+                    })
+                });
+
+                const gptData = await gptResponse.json();
+                solution = gptData.choices[0]?.message?.content || "Failed to generate a solution.";
+
+                // Display results
+                document.getElementById("output").innerHTML = `<h3>Extracted Text:</h3><p>${extractedText}</p>
+                                                                <h3>Solution:</h3><p>${solution}</p>`;
+
+                // Show download button
+                document.getElementById("downloadBtn").style.display = "inline-block";
+            };
+        }
+
+        function downloadAnswer() {
+            const textToSave = `Extracted Text:\n${extractedText}\n\nSolution:\n${solution}`;
+            const blob = new Blob([textToSave], { type: "text/plain" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "AI_Homework_Solution.txt";
+            link.click();
+        }
+    </script>
+
+</body>
+</html>
