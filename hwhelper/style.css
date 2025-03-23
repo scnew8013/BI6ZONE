@@ -30,7 +30,6 @@ header p {
 
 /* Main Container */
 .container {
-    /* Reduced max-width to make the container a bit narrower on mobile */
     max-width: 500px;
     margin: 20px auto;
     background-color: #fff;
@@ -45,26 +44,32 @@ header p {
     padding: 15px;
     border-radius: 6px;
     margin-bottom: 20px;
+    text-align: center;
 }
 
-.upload-section label {
+/* Make entire box clickable */
+.file-box {
+    display: block;
+    padding: 20px;
+    background-color: #eaf4ff;
+    border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
     color: #007bff;
-    display: inline-block;
-    margin-bottom: 10px;
+    text-align: center;
 }
 
-.file-label {
-    display: inline-block;
-    padding: 8px 12px;
-    background-color: #eaf4ff;
-    border-radius: 4px;
-    margin-bottom: 8px;
+.file-box:focus {
+    outline: none;
 }
 
-.upload-icon {
-    margin-right: 5px;
+.file-box:hover {
+    background-color: #d4e8ff;
+}
+
+/* Hide default input */
+input[type="file"] {
+    display: none;
 }
 
 .file-name {
@@ -80,9 +85,9 @@ header p {
 
 .question-section textarea {
     width: 90%;
-    max-width: 400px; /* ensures it doesn't stretch too far on larger screens */
+    max-width: 400px;
     margin: 0 auto;
-    display: block; /* center by turning into a block and using margin auto */
+    display: block;
     height: 100px;
     padding: 10px;
     border: 1px solid #ccc;
@@ -112,7 +117,7 @@ header p {
 /* Response Section */
 .response-section {
     margin-top: 20px;
-    text-align: left; /* Align left for the "Response:" label */
+    text-align: left;
 }
 
 .response-section h3 {
@@ -128,7 +133,7 @@ header p {
     text-align: left;
     font-size: 16px;
     color: #555;
-    word-wrap: break-word; /* handle long text properly */
+    word-wrap: break-word;
 }
 
 /* Media Query for Extra Small Screens */
