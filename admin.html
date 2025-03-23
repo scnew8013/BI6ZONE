@@ -95,6 +95,23 @@
     </div>
 
     <script>
+        // Set your desired passcode
+        const passcode = "1234"; // Change this to your desired passcode
+
+        // Function to check the passcode on page load
+        function checkPasscode() {
+            const userPasscode = prompt("Please enter the passcode:");
+            if (userPasscode === passcode) {
+                document.body.style.display = "flex"; // Show the content if passcode is correct
+            } else {
+                alert("Incorrect passcode. Access denied.");
+                window.location.href = "https://example.com"; // Redirect to another page if needed
+            }
+        }
+
+        // Call the function to check the passcode when the page loads
+        checkPasscode();
+
         function showTab(tabId) {
             document.querySelectorAll('.container').forEach(container => container.classList.remove('active'));
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
