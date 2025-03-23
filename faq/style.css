@@ -21,16 +21,16 @@ body {
     font-size: 48px;
     font-weight: bold;
     text-transform: lowercase;
-    color: white;
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
+    color: yellow; /* Title color changed to yellow */
+    text-shadow: 0 0 15px rgba(255, 255, 0, 0.9); /* Yellow shadow */
     text-align: center;
     margin-top: 50px;
 }
 
 /* Header styles */
 .header {
-    background: rgba(0, 0, 0, 0.7);
-    border: 2px solid white;
+    background: black; /* Background changed to black */
+    border: 2px solid yellow; /* Border color changed to yellow */
     border-radius: 20px;
     padding: 10px;
     text-align: center;
@@ -58,7 +58,7 @@ body {
 
 /* Individual icon container styles */
 .icon-container {
-    background: black;
+    background: black; /* Background color for icon container */
     border: 3px solid yellow;
     border-radius: 15px;
     display: flex;
@@ -105,10 +105,10 @@ body {
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.8); /* Background color for update box */
     color: white;
     padding: 10px 15px;
-    border: 2px solid yellow;
+    border: 2px solid yellow; /* Border color for update box */
     border-radius: 10px;
     font-size: 14px;
     text-align: center;
