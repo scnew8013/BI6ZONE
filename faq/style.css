@@ -28,119 +28,52 @@ body {
 }
 
 /* Header styles */
-.header {
-    background: black; /* Background changed to black */
-    border: 2px solid yellow; /* Border color set to yellow */
-    border-radius: 20px;
+header {
+    background: black; /* Background for header */
     padding: 10px;
     text-align: center;
-    position: relative;
 }
 
 /* Search bar styles */
-.search-bar {
+#search {
     width: 80%;
     background: transparent;
     border: none;
     outline: none;
     color: white; /* Text color set to white */
     font-size: 18px;
+    margin: 20px auto;
+    display: block; /* Center search bar */
 }
 
-/* Icons container styles */
-.icons-container {
-    margin: 30px auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 10px;
+/* Main content styles */
+main {
+    margin: 20px auto;
     max-width: 800px;
-}
-
-/* Individual icon container styles */
-.icon-container {
-    background: black; /* Background color for icon container */
-    border: 3px solid yellow; /* Border color for icon container */
-    border-radius: 15px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    transition: transform 0.2s ease-in-out;
-    position: relative;
-}
-
-.icon-container:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
-}
-
-/* Icon styles */
-.icon {
-    width: 60px;
-    height: 60px;
-}
-
-/* Icon label styles */
-.icon-label {
-    margin-top: 5px;
-    font-size: 14px;
-    color: white; /* Label color set to white */
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-}
-
-/* Support text styles */
-.support-text {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    font-size: 20px;
-    font-weight: bold;
-    color: white; /* Color set to white */
-    cursor: pointer;
-}
-
-/* Update box styles */
-#updateBox {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.8); /* Background for update box */
-    color: white; /* Text color set to white */
-    padding: 10px 15px;
-    border: 2px solid yellow; /* Border color for update box */
-    border-radius: 10px;
-    font-size: 14px;
-    text-align: center;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-}
-
-/* Cool blob effect */
-.coolBlobIdk {
-    position: fixed;
-    bottom: -30%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 600px;
-    height: 400px;
-    background: linear-gradient(135deg, rgba(169, 169, 169, 0.5), rgba(255, 255, 255, 0.4));
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.8;
-    will-change: transform;
-}
-
-/* Update text styles */
-.update-text {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    font-size: 16px;
-    font-weight: bold;
-    color: white; /* Text color set to white */
-    background: rgba(0, 0, 0, 0.7);
-    padding: 5px 10px;
+    background: black; /* Background color for main content */
+    padding: 20px;
     border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    color: white; /* Text color for main content */
+}
+
+/* Section titles */
+h2 {
+    border-bottom: 2px solid yellow; /* Yellow border for section titles */
+    padding-bottom: 5px;
+}
+
+/* Question styles */
+h3 {
+    margin: 10px 0;
+}
+
+/* Footer styles */
+footer {
+    text-align: center;
+    background-color: #333; /* Footer background color */
+    color: white; /* Footer text color */
+    padding: 10px 0;
 }
 
 /* Fade-in animation for the body */
