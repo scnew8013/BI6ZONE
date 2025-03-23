@@ -14,112 +14,72 @@
         .container { display: none; }
         .container.active { display: block; }
         .list-container { background: white; padding: 10px; border-radius: 5px; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); }
-        .columns { display: flex; justify-content: space-between; }
-        .column { flex: 1; margin-right: 20px; }
-        .column:last-child { margin-right: 0; }
         .list-container ul { list-style: none; padding: 0; }
         .list-container li { padding: 8px; border-bottom: 1px solid #ddd; }
-        .list-container li:last-child { border-bottom: none; }
         .list-container a { text-decoration: none; color: #007BFF; font-weight: bold; }
         .iframe-container { width: 100%; height: 80vh; border: none; }
     </style>
 </head>
 <body>
-    
+
     <div id="sidebar">
         <h2>BI6’s Panel</h2>
         <div class="tab active" onclick="showTab('dashboard')">Dashboard</div>
         <div class="tab" onclick="showTab('games')">Games</div>
         <div class="tab" onclick="showTab('apps')">Apps</div>
         <div class="tab" onclick="showTab('components')">Components</div>
+        <div class="tab" onclick="showTab('commits')">Commits</div>
     </div>
 
     <div id="content">
-        <!-- Dashboard Tab -->
         <div class="container active" id="dashboard">
             <h2>Dashboard</h2>
             <iframe class="iframe-container" src="https://counter.dev/dashboard.html?user=BI66IE619&token=8dgw3XH5jw4%3D"></iframe>
         </div>
 
-        <!-- Games Tab -->
         <div class="container" id="games">
             <h2>Games List</h2>
-            <div class="columns">
-                <div class="column">
-                    <h3>Mobile Supported</h3>
-                    <div class="list-container">
-                        <ul id="mobile-games-list"></ul>
-                    </div>
-                </div>
-                <div class="column">
-                    <h3>Fixing</h3>
-                    <div class="list-container">
-                        <ul id="fixing-games-list"></ul>
-                    </div>
-                </div>
-                <div class="column">
-                    <h3>PC Games</h3>
-                    <div class="list-container">
-                        <ul id="pc-games-list"></ul>
-                    </div>
-                </div>
-            </div>
+            <div class="list-container"><ul id="games-list"></ul></div>
         </div>
 
-        <!-- Apps Tab -->
         <div class="container" id="apps">
             <h2>Apps List</h2>
-            <div class="list-container">
-                <ul id="apps-list"></ul>
-            </div>
+            <div class="list-container"><ul id="apps-list"></ul></div>
         </div>
 
-        <!-- Components Tab -->
         <div class="container" id="components">
             <h2>Components - Repository Files</h2>
-            <div class="columns">
-                <div class="column">
-                    <h3>Files</h3>
-                    <div class="list-container">
-                        <ul id="file-list"></ul>
-                    </div>
-                </div>
-                <div class="column">
-                    <h3>Folders/Non-Ext.</h3>
-                    <div class="list-container">
-                        <ul id="folder-list"></ul>
-                    </div>
-                </div>
-            </div>
+            <div class="list-container"><ul id="file-list"></ul></div>
+        </div>
+
+        <div class="container" id="commits">
+            <h2>Commit History</h2>
+            <div class="list-container"><ul id="commit-list"></ul></div>
         </div>
     </div>
 
     <script>
-        // Set your desired passcode
-    const passcode = "1234"; // Change this to your desired passcode
+        // Password protection
+        const passcode = "BI66IE@ADMIN"; // Change this as needed
 
-    // Function to check passcode on page load
-    function checkPasscode() {
-        if (localStorage.getItem("adminPasscode") === passcode) {
-            document.body.style.display = "flex"; // Show content if already logged in
-            return;
+        function checkPasscode() {
+            if (localStorage.getItem("adminPasscode") === passcode) {
+                document.body.style.display = "flex"; 
+                return;
+            }
+
+            const userPasscode = prompt("Enter The Admin Password");
+            if (userPasscode === passcode) {
+                localStorage.setItem("adminPasscode", passcode); 
+                document.body.style.display = "flex";
+            } else {
+                alert("Access Denied. Redirecting...");
+                window.location.href = "https://bi66ie619.github.io";
+            }
         }
 
-        const userPasscode = prompt("Enter The Admin Password");
-        if (userPasscode === passcode) {
-            localStorage.setItem("adminPasscode", passcode); // Save to localStorage
-            document.body.style.display = "flex";
-        } else {
-            alert("Fuck Off Bruh, Ur Not Even An Admin💀🙏");
-            window.location.href = "https://bi66ie619.github.io"; // Change this to your redirect URL
-        }
-    }
-
-    // Hide content initially
-    document.body.style.display = "none";
-
-    // Call the function to check the passcode when the page loads
-    checkPasscode();
+        document.body.style.display = "none";
+        checkPasscode();
 
         function showTab(tabId) {
             document.querySelectorAll('.container').forEach(container => container.classList.remove('active'));
@@ -128,13 +88,10 @@
             document.getElementById(tabId).classList.add('active');
             event.target.classList.add('active');
 
-            if (tabId === 'games') {
-                fetchGames();
-            } else if (tabId === 'apps') {
-                fetchApps();
-            } else if (tabId === 'components') {
-                fetchRepoFiles();
-            }
+            if (tabId === 'games') fetchGames();
+            else if (tabId === 'apps') fetchApps();
+            else if (tabId === 'components') fetchRepoFiles();
+            else if (tabId === 'commits') fetchCommits();
         }
 
         function fetchGames() {
@@ -145,27 +102,16 @@
                     const doc = parser.parseFromString(html, 'text/html');
                     const games = doc.querySelectorAll('.rectangle');
 
-                    // Clear all lists
-                    document.getElementById('mobile-games-list').innerHTML = '';
-                    document.getElementById('fixing-games-list').innerHTML = '';
-                    document.getElementById('pc-games-list').innerHTML = '';
+                    const gamesList = document.getElementById('games-list');
+                    gamesList.innerHTML = '';
 
-                    // Categorize games based on badges
                     games.forEach(game => {
                         const name = game.querySelector('.game-name').innerText;
                         const link = game.getAttribute('onclick').match(/'([^']+)'/)[1];
-                        const badge = game.querySelector('.badge');
 
                         const listItem = document.createElement('li');
                         listItem.innerHTML = `<a href="${link}" target="_blank">${name}</a>`;
-
-                        if (badge.classList.contains('mobilesup-badge')) {
-                            document.getElementById('mobile-games-list').appendChild(listItem);
-                        } else if (badge.classList.contains('fixing-badge')) {
-                            document.getElementById('fixing-games-list').appendChild(listItem);
-                        } else if (badge.classList.contains('notmobsup-badge')) {
-                            document.getElementById('pc-games-list').appendChild(listItem);
-                        }
+                        gamesList.appendChild(listItem);
                     });
                 })
                 .catch(error => console.error('Error fetching games:', error));
@@ -195,29 +141,39 @@
         }
 
         function fetchRepoFiles() {
-            fetch('https://api.github.com/repos/BI66IE619/bi66ie619.github.io/contents/')
+            fetch("https://api.github.com/repos/BI66IE619/bi66ie619.github.io/contents/")
                 .then(response => response.json())
                 .then(files => {
-                    const fileList = document.getElementById('file-list');
-                    const folderList = document.getElementById('folder-list');
-                    fileList.innerHTML = '';
-                    folderList.innerHTML = '';
+                    const fileList = document.getElementById("file-list");
+                    fileList.innerHTML = "";
 
                     files.forEach(file => {
-                        const listItem = document.createElement('li');
-                        listItem.innerHTML = `<a href="${file.download_url}" target="_blank">${file.name}</a>`;
-
-                        // Check if it's a folder or file based on the name
-                        if (file.name.includes('.')) {
-                            // It's a file
-                            fileList.appendChild(listItem);
-                        } else {
-                            // It's a folder
-                            folderList.appendChild(listItem);
-                        }
+                        const listItem = document.createElement("li");
+                        listItem.innerHTML = `<a href="${file.html_url}" target="_blank">${file.name}</a>`;
+                        fileList.appendChild(listItem);
                     });
                 })
-                .catch(error => console.error('Error fetching repository files:', error));
+                .catch(error => console.error("Error fetching repo files:", error));
+        }
+
+        function fetchCommits() {
+            fetch("https://api.github.com/repos/BI66IE619/bi66ie619.github.io/commits")
+                .then(response => response.json())
+                .then(commits => {
+                    const commitList = document.getElementById("commit-list");
+                    commitList.innerHTML = "";
+
+                    commits.slice(0, 10).forEach(commit => {
+                        const listItem = document.createElement("li");
+                        listItem.innerHTML = `
+                            <strong>${commit.commit.message}</strong><br>
+                            <em>${commit.commit.author.name}</em> - ${new Date(commit.commit.author.date).toLocaleString()}<br>
+                            <a href="${commit.html_url}" target="_blank">View Commit</a>
+                        `;
+                        commitList.appendChild(listItem);
+                    });
+                })
+                .catch(error => console.error("Error fetching commits:", error));
         }
     </script>
 
