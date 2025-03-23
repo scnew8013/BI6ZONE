@@ -23,11 +23,11 @@ fileInput.addEventListener("change", () => {
 submitBtn.addEventListener("click", async () => {
     const question = questionInput.value.trim();
     if (!question && !uploadedFile) {
-        responseOutput.innerHTML = "<p class='error-msg'>Please enter a question or upload an image.</p>";
+        responseOutput.textContent = "Please enter a question or upload an image.";
         return;
     }
 
-    responseOutput.innerHTML = "<p class='loading'>Generating response...</p>";
+    responseOutput.textContent = "Generating response...";
 
     let fileData = null;
     if (uploadedFile) {
@@ -56,14 +56,10 @@ submitBtn.addEventListener("click", async () => {
         const data = await response.json();
         if (!response.ok) throw new Error(data.error.message);
 
-        let aiResponse = data.candidates[0].content.parts[0].text.trim();
-        
-        // Replace newlines with HTML line breaks for better formatting
-        aiResponse = aiResponse.replace(/\n/g, "<br>");
-
-        responseOutput.innerHTML = `<p class='ai-response'>${aiResponse}</p>`;
+        const aiResponse = data.candidates[0].content.parts[0].text.trim();
+        responseOutput.textContent = aiResponse || "No response from AI.";
     } catch (error) {
-        responseOutput.innerHTML = `<p class='error-msg'>Error: ${error.message}</p>`;
+        responseOutput.textContent = "Error: " + error.message;
     }
 });
 
