@@ -21,8 +21,8 @@ body {
     font-size: 48px;
     font-weight: bold;
     text-transform: lowercase;
-    color: yellow; /* Title color changed to yellow */
-    text-shadow: 0 0 15px rgba(255, 255, 0, 0.9); /* Yellow shadow */
+    color: yellow; /* Title color set to yellow */
+    text-shadow: 0 0 15px rgba(255, 255, 0, 0.9); /* Yellow shadow for the title */
     text-align: center;
     margin-top: 50px;
 }
@@ -30,7 +30,7 @@ body {
 /* Header styles */
 .header {
     background: black; /* Background changed to black */
-    border: 2px solid yellow; /* Border color changed to yellow */
+    border: 2px solid yellow; /* Border color set to yellow */
     border-radius: 20px;
     padding: 10px;
     text-align: center;
@@ -43,7 +43,7 @@ body {
     background: transparent;
     border: none;
     outline: none;
-    color: white;
+    color: white; /* Text color set to white */
     font-size: 18px;
 }
 
@@ -59,7 +59,7 @@ body {
 /* Individual icon container styles */
 .icon-container {
     background: black; /* Background color for icon container */
-    border: 3px solid yellow;
+    border: 3px solid yellow; /* Border color for icon container */
     border-radius: 15px;
     display: flex;
     flex-direction: column;
@@ -84,7 +84,7 @@ body {
 .icon-label {
     margin-top: 5px;
     font-size: 14px;
-    color: white;
+    color: white; /* Label color set to white */
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
 }
 
@@ -95,7 +95,7 @@ body {
     right: 20px;
     font-size: 20px;
     font-weight: bold;
-    color: white;
+    color: white; /* Color set to white */
     cursor: pointer;
 }
 
@@ -105,8 +105,8 @@ body {
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.8); /* Background color for update box */
-    color: white;
+    background: rgba(0, 0, 0, 0.8); /* Background for update box */
+    color: white; /* Text color set to white */
     padding: 10px 15px;
     border: 2px solid yellow; /* Border color for update box */
     border-radius: 10px;
@@ -137,7 +137,7 @@ body {
     left: 20px;
     font-size: 16px;
     font-weight: bold;
-    color: white;
+    color: white; /* Text color set to white */
     background: rgba(0, 0, 0, 0.7);
     padding: 5px 10px;
     border-radius: 5px;
