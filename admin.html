@@ -26,6 +26,25 @@
 </head>
 <body>
 
+<script>
+        // Set your desired passcode
+        const passcode = "BI66IE@ADMIN"; // Change this to your desired passcode
+
+        // Function to prompt for the passcode
+        function checkPasscode() {
+            const userPasscode = prompt("Enter The Admin Password:");
+            if (userPasscode === passcode) {
+                document.body.style.display = "block"; // Show the content if passcode is correct
+            } else {
+                alert("Fuck Off Bruh, Ur Not An Admin");
+                window.location.href = "https://bi66ie619.github.io"; // Redirect to another page if needed
+            }
+        }
+
+        // Call the function to check the passcode
+        checkPasscode();
+    </script>
+    
     <div id="sidebar">
         <h2>BI6’s Panel</h2>
         <div class="tab active" onclick="showTab('dashboard')">Dashboard</div>
