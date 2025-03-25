@@ -16,13 +16,12 @@
                 <li><a href="#portfolio">Portfolio</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
-            <button id="mode-toggle">Toggle Dark/Light Mode</button>
         </nav>
     </header>
 
     <section id="about">
         <h2>About Me</h2>
-        <p>Hey! I'm BI66IE, a young web developer specializing in many different types of sites including blogs, unblocked game templates, admin panels, web dashboards, interactive templates, and modern web designs. Check out my work below!</p>
+        <p>Hey! I'm BI66IE, a young web developer specializing in unblocked game sites, interactive templates, and modern web designs. Check out my work below!</p>
     </section>
 
     <section id="portfolio">
@@ -52,7 +51,7 @@
 
     <section id="contact">
         <h2>Contact Me</h2>
-        <p>If you have any questions or want to collaborate, feel free to <a href="mailto:andersonbiggie2011@gmail.com">email me</a>!</p>
+        <p>If you have any questions or want to collaborate, feel free to <a href="mailto:your-email@example.com">email me</a>!</p>
     </section>
 
     <footer>
@@ -68,17 +67,6 @@
                     behavior: 'smooth'
                 });
             });
-        });
-
-        // Light/Dark Mode Toggle
-        const toggleButton = document.getElementById('mode-toggle');
-        toggleButton.addEventListener('click', () => {
-            document.body.classList.toggle('light-mode');
-            document.querySelector('header').classList.toggle('light-mode');
-            document.querySelectorAll('.template').forEach((template) => {
-                template.classList.toggle('light-mode');
-            });
-            toggleButton.innerText = toggleButton.innerText === 'Toggle Dark/Light Mode' ? 'Toggle Dark/Light Mode' : 'Toggle Dark/Light Mode';
         });
     </script>
 </body>
