@@ -1,19 +1,52 @@
 /* General Styles */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;
     margin: 0;
     padding: 0;
     background-color: #111;
     color: white;
     text-align: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Header */
+/* Header and Navbar */
 header {
     background: linear-gradient(45deg, #ffcc00, #ff9900);
     color: black;
-    padding: 25px;
-    font-size: 1.2em;
+    padding: 20px;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+}
+
+nav ul li {
+    margin: 0 15px;
+}
+
+nav a {
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+#mode-toggle {
+    background-color: #ffcc00;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
 }
 
 /* Sections */
@@ -100,4 +133,34 @@ footer {
 footer a {
     color: #ffcc00;
     text-decoration: none;
+}
+
+/* Light Mode Styles */
+body.light-mode {
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+header.light-mode {
+    background: #f8e6a2;
+    color: #212529;
+}
+
+#about.light-mode, #portfolio.light-mode {
+    background-color: #fff;
+    color: #212529;
+}
+
+footer.light-mode {
+    background-color: #e9ecef;
+}
+
+.light-mode .live-demo {
+    background: #ffc107;
+    color: #212529;
+}
+
+.light-mode .buy-now {
+    background: #e64a19;
+    color: #fff;
 }
