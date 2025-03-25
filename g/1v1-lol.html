@@ -1,30 +1,37 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>1v1.lol</title>
-
-    <!-- Favicon -->
     <link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/x-icon">
 
     <style>
-        /* Style for full-page embedding */
         html, body {
             margin: 0;
             padding: 0;
             height: 100%;
             overflow: hidden;
         }
-
         iframe {
             border: none;
             width: 100%;
             height: 100%;
         }
     </style>
+
+    <script>
+        window.onload = function () {
+            if (localStorage.getItem('premium') !== 'true') {
+                // Redirect to the Adsterra Direct Link ad
+                window.location.href = "https://www.effectiveratecpm.com/txssffia4?key=07fd67d0363def0d48850e4ff02d0e56";
+                // Automatically redirect back to the game after 10 seconds (adjust as needed)
+                setTimeout(() => {
+                    window.location.href = "https://x12maybeheat.vercel.app/games/1v1lol/index.html"; // Game URL in the iframe
+                }, 10000);
+            }
+        };
+    </script>
 </head>
 <body>
     <iframe src="https://x12maybeheat.vercel.app/games/1v1lol/index.html" title="1v1.lol"></iframe>
