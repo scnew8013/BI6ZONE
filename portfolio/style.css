@@ -1,3 +1,4 @@
+/* General Styles */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -7,38 +8,96 @@ body {
     text-align: center;
 }
 
+/* Header */
 header {
-    background: #ffcc00;
+    background: linear-gradient(45deg, #ffcc00, #ff9900);
     color: black;
-    padding: 20px;
+    padding: 25px;
+    font-size: 1.2em;
 }
 
-.portfolio {
+/* Sections */
+section {
+    padding: 40px 20px;
+}
+
+#about {
+    background-color: #222;
+    padding: 50px 20px;
+    border-radius: 10px;
+    margin: 20px;
+}
+
+#portfolio h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+/* Portfolio Grid */
+.portfolio-container {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    padding: 20px;
+    gap: 20px;
 }
 
+/* Template Cards */
 .template {
     background: #222;
-    padding: 15px;
-    margin: 10px;
+    padding: 20px;
+    border-radius: 10px;
     width: 300px;
-    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+.template:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 20px rgba(255, 255, 0, 0.8);
+}
+
+/* Template Images */
 .template img {
     width: 100%;
-    border-radius: 8px;
+    border-radius: 10px;
+    margin-bottom: 15px;
 }
 
-.template a {
-    display: block;
-    margin: 10px 0;
-    padding: 8px;
+/* Buttons */
+.buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.live-demo, .buy-now {
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.live-demo {
     background: #ffcc00;
     color: black;
+}
+
+.buy-now {
+    background: #ff6600;
+    color: white;
+}
+
+.live-demo:hover, .buy-now:hover {
+    opacity: 0.8;
+}
+
+/* Footer */
+footer {
+    background-color: #000;
+    padding: 20px;
+    font-size: 0.9em;
+}
+
+footer a {
+    color: #ffcc00;
     text-decoration: none;
-    border-radius: 5px;
 }
