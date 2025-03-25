@@ -1,0 +1,165 @@
+/* General Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff;
+    color: #333333;
+    text-align: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Header and Navbar */
+header {
+    background: #f8f9fa;
+    padding: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+}
+
+nav ul li {
+    margin: 0 15px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+#mode-toggle {
+    background-color: #007bff;
+    border: none;
+    padding: 10px;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* Sections */
+section {
+    padding: 40px 20px;
+}
+
+#about {
+    background-color: #f0f0f0;
+    padding: 50px 20px;
+    border-radius: 10px;
+    margin: 20px;
+}
+
+#portfolio h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+/* Portfolio Grid */
+.portfolio-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* Template Cards */
+.template {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.template:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Template Images */
+.template img {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+/* Buttons */
+.buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.live-demo, .buy-now {
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.live-demo {
+    background: #007bff;
+    color: white;
+}
+
+.buy-now {
+    background: #28a745;
+    color: white;
+}
+
+.live-demo:hover, .buy-now:hover {
+    opacity: 0.8;
+}
+
+/* Footer */
+footer {
+    background-color: #f8f9fa;
+    padding: 20px;
+    font-size: 0.9em;
+}
+
+footer a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+/* Light Mode Styles */
+body.light-mode {
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+header.light-mode {
+    background: #e2e6ea;
+}
+
+#about.light-mode, #portfolio.light-mode {
+    background-color: #ffffff;
+    color: #212529;
+}
+
+footer.light-mode {
+    background-color: #e2e6ea;
+}
+
+.light-mode .live-demo {
+    background: #0056b3;
+}
+
+.light-mode .buy-now {
+    background: #218838;
+}
