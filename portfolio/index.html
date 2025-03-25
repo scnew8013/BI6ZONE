@@ -5,11 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BI66IE Portfolio</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
-        <h1>BI66IE's Web Templates</h1>
-        <p>Creating sleek and powerful website templates</p>
+        <nav>
+            <h1>BI66IE's Templates</h1>
+            <ul>
+                <li><a href="#about">About</a></li>
+                <li><a href="#portfolio">Portfolio</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
     </header>
 
     <section id="about">
@@ -25,4 +32,42 @@
                 <h3>Unblocked Games Template</h3>
                 <p>A fast, responsive gaming site template with ad placements.</p>
                 <div class="buttons">
-                    <a href="https://bi66ie619.github.io/demo-template/" target="_blank" class="live-demo">_
+                    <a href="https://bi66ie619.github.io/demo-template/" target="_blank" class="live-demo">Live Demo</a>
+                    <a href="https://creativemarket.com/" target="_blank" class="buy-now">Buy Now</a>
+                </div>
+            </div>
+
+            <div class="template">
+                <img src="template2.png" alt="Portfolio Template">
+                <h3>Modern Portfolio Template</h3>
+                <p>A stylish portfolio site for developers and designers.</p>
+                <div class="buttons">
+                    <a href="https://bi66ie619.github.io/portfolio-template/" target="_blank" class="live-demo">Live Demo</a>
+                    <a href="https://creativemarket.com/" target="_blank" class="buy-now">Buy Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact">
+        <h2>Contact Me</h2>
+        <p>If you have any questions or want to collaborate, feel free to <a href="mailto:your-email@example.com">email me</a>!</p>
+    </section>
+
+    <footer>
+        <p>© 2025 BI66IE | <a href="https://github.com/BI66IE619">GitHub</a></p>
+    </footer>
+
+    <script>
+        // Smooth scroll effect for navbar links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
