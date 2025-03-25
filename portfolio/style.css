@@ -3,29 +3,34 @@ body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #ffffff;
-    color: #333333;
+    background-color: #111;
+    color: white;
     text-align: center;
-    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Header and Navbar */
 header {
-    background: #f8f9fa;
+    background: #222;
     padding: 20px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #444;
 }
 
 nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap; /* Responsive */
+}
+
+nav h1 {
+    margin: 0;
 }
 
 nav ul {
     list-style: none;
     padding: 0;
     display: flex;
+    flex-wrap: wrap; /* Responsive */
 }
 
 nav ul li {
@@ -34,21 +39,12 @@ nav ul li {
 
 nav a {
     text-decoration: none;
-    color: #333;
+    color: #ffcc00;
     font-weight: bold;
 }
 
 nav a:hover {
     text-decoration: underline;
-}
-
-#mode-toggle {
-    background-color: #007bff;
-    border: none;
-    padding: 10px;
-    color: white;
-    cursor: pointer;
-    border-radius: 5px;
 }
 
 /* Sections */
@@ -57,7 +53,7 @@ section {
 }
 
 #about {
-    background-color: #f0f0f0;
+    background-color: #222;
     padding: 50px 20px;
     border-radius: 10px;
     margin: 20px;
@@ -78,17 +74,17 @@ section {
 
 /* Template Cards */
 .template {
-    background: #ffffff;
+    background: #222;
     padding: 20px;
     border-radius: 10px;
     width: 300px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .template:hover {
     transform: translateY(-5px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 20px rgba(255, 255, 0, 0.8);
 }
 
 /* Template Images */
@@ -112,12 +108,12 @@ section {
 }
 
 .live-demo {
-    background: #007bff;
-    color: white;
+    background: #ffcc00;
+    color: black;
 }
 
 .buy-now {
-    background: #28a745;
+    background: #ff6600;
     color: white;
 }
 
@@ -127,39 +123,29 @@ section {
 
 /* Footer */
 footer {
-    background-color: #f8f9fa;
+    background-color: #222;
     padding: 20px;
     font-size: 0.9em;
 }
 
 footer a {
-    color: #007bff;
+    color: #ffcc00;
     text-decoration: none;
 }
 
-/* Light Mode Styles */
-body.light-mode {
-    background-color: #f8f9fa;
-    color: #212529;
-}
+/* Mobile Compatibility */
+@media (max-width: 768px) {
+    nav ul {
+        flex-direction: column;
+        align-items: center;
+    }
 
-header.light-mode {
-    background: #e2e6ea;
-}
+    .portfolio-container {
+        flex-direction: column;
+        align-items: center;
+    }
 
-#about.light-mode, #portfolio.light-mode {
-    background-color: #ffffff;
-    color: #212529;
-}
-
-footer.light-mode {
-    background-color: #e2e6ea;
-}
-
-.light-mode .live-demo {
-    background: #0056b3;
-}
-
-.light-mode .buy-now {
-    background: #218838;
+    .template {
+        width: 90%; /* Full width on mobile */
+    }
 }
