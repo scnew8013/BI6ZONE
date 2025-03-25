@@ -91,3 +91,11 @@ nav ul li a {
     padding: 50px 20px;
     background: #007BFF;
 }
+
+.separator {
+    width: 80%; /* Adjust the width as needed */
+    height: 2px; /* Thickness of the line */
+    background-color: #007BFF; /* Color of the line */
+    margin: 20px auto; /* Center it with margin on top and bottom */
+    border-radius: 5px; /* Optional: Rounding the edges */
+}
