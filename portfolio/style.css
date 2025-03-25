@@ -9,10 +9,12 @@ body {
 }
 
 /* Title */
-.title h1 {
-    text-align: center;
-    font-size: 2.5em;
+.title {
     margin-top: 20px;
+}
+
+.title h1 {
+    font-size: 2.5em;
 }
 
 /* Navbar */
@@ -43,6 +45,11 @@ nav ul li a {
 }
 
 /* Portfolio Section */
+#portfolio h2 {
+    text-align: center; /* Center "My Work" Header */
+    margin-bottom: 20px;
+}
+
 .portfolio-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -50,6 +57,7 @@ nav ul li a {
     padding: 20px;
 }
 
+/* Portfolio Cards */
 .card {
     background: white;
     color: black;
