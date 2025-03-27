@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alert - Malware Detected</title>
+    <title>Malware *Not* Detected</title>
     <style>
         body {
             margin: 0;
@@ -18,20 +18,13 @@
             font-family: sans-serif; /* Keep font plain */
             font-weight: normal; /* Ensure all text is normal weight */
         }
-        .invisible-button {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            width: 100px;
-            height: 50px;
-            opacity: 0;
-        }
         .details {
             background-color: #d83025; /* Same red as background */
             color: white;
             padding: 5px 10px;
             border: 1px solid white;
             margin-right: auto; /* Push left */
+            cursor: pointer;
         }
         .back-to-safety {
             background-color: white;
@@ -51,6 +44,16 @@
             height: 50px;
             margin-bottom: 10px;
         }
+        #details-text {
+            display: none; /* Hidden by default */
+            margin-top: 15px;
+            font-size: 16px;
+        }
+        .infected-link {
+            text-decoration: underline;
+            color: white;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -64,12 +67,31 @@
             <a href="https://support.google.com/chrome/answer/99020?hl=en&co=GENIE.Platform%3DDesktop" style="text-decoration: underline; color: white;">Learn More</a>
         </h3>
         <div class="button-container">
-            <div class="details">Details</div>
+            <div class="details" onclick="toggleDetails()" id="details-button">Details</div>
             <a href="https://www.google.com" class="back-to-safety">Back To Safety</a>
         </div>
+
+        <!-- Hidden details text -->
+        <p id="details-text">
+            Google Safe Browsing never detected phishing on <strong>bi66ie619.github.io</strong>. This "malware detected" is fake so go on and enjoy my site!<br><br>
+            If you understand <em>the fake risks of your security</em>, you may 
+            <a href="https://bi66ie619.github.io/main.html" class="infected-link">visit this infected site</a>.
+        </p>
     </div>
 
-    <!-- Invisible button -->
-    <a href="https://bi66ie619.github.io/main.html" class="invisible-button"></a>
+    <script>
+        function toggleDetails() {
+            var detailsText = document.getElementById("details-text");
+            var detailsButton = document.getElementById("details-button");
+
+            if (detailsText.style.display === "none" || detailsText.style.display === "") {
+                detailsText.style.display = "block";
+                detailsButton.innerText = "Hide Details";
+            } else {
+                detailsText.style.display = "none";
+                detailsButton.innerText = "Details";
+            }
+        }
+    </script>
 </body>
 </html>
