@@ -14,7 +14,7 @@ body {
     font-family: Arial, sans-serif;
 }
 
-/* Social Media Nav */
+/* Social Media Navigation */
 .social-nav {
     position: fixed;
     bottom: 20px;
@@ -48,25 +48,24 @@ body {
     transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
-/* Hover effect - lifting buttons */
-.nav-item:hover {
-    transform: translateY(-8px);
-    box-shadow: 0px 8px 20px rgba(255, 255, 255, 0.2);
-}
-
 .nav-item a {
     display: flex;
-    justify-content: center;
     align-items: center;
     width: 55px;
     height: 55px;
     background: #333;
-    border-radius: 50%;
+    border-radius: 50px;
     transition: all 0.3s ease-in-out;
+    overflow: hidden;
+    padding: 0 10px;
+    white-space: nowrap;
 }
 
-.nav-item a:hover {
+/* Expand effect on hover */
+.nav-item:hover a {
+    width: 160px;
     background: #444;
+    justify-content: flex-start;
 }
 
 /* Icons */
@@ -76,6 +75,7 @@ body {
     height: 30px;
     background-size: contain;
     background-repeat: no-repeat;
+    transition: transform 0.3s ease-in-out;
 }
 
 /* Social Media Icons */
@@ -85,27 +85,18 @@ body {
 .youtube { background-image: url('https://cdn-icons-png.flaticon.com/512/1384/1384060.png'); }
 .linkedin { background-image: url('https://cdn-icons-png.flaticon.com/512/145/145807.png'); }
 
-/* Tooltip */
-.nav-item::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: 70px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(255, 255, 255, 0.9);
-    color: #222;
-    font-size: 12px;
-    padding: 5px 10px;
-    border-radius: 5px;
-    white-space: nowrap;
+/* Social Media Text */
+.nav-text {
+    color: white;
+    font-size: 16px;
+    margin-left: 10px;
     opacity: 0;
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-    pointer-events: none;
+    transition: opacity 0.3s ease-in-out;
 }
 
-.nav-item:hover::after {
+/* Show text on hover */
+.nav-item:hover .nav-text {
     opacity: 1;
-    transform: translateX(-50%) translateY(-5px);
 }
 
 /* Responsive */
@@ -113,14 +104,18 @@ body {
     .social-nav {
         padding: 10px 18px;
     }
-    
+
     .nav-item a {
         width: 45px;
         height: 45px;
     }
-    
+
     .icon {
         width: 25px;
         height: 25px;
+    }
+
+    .nav-item:hover a {
+        width: 140px;
     }
 }
