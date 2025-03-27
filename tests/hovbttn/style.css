@@ -1,0 +1,126 @@
+/* Made By BI66IE619 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #121212;
+    font-family: Arial, sans-serif;
+}
+
+/* Social Media Nav */
+.social-nav {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #222;
+    padding: 12px 24px;
+    border-radius: 50px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Floating animation */
+@keyframes float {
+    0%, 100% { transform: translateX(-50%) translateY(0px); }
+    50% { transform: translateX(-50%) translateY(-5px); }
+}
+
+.social-nav ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+.nav-item {
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+/* Hover effect - lifting buttons */
+.nav-item:hover {
+    transform: translateY(-8px);
+    box-shadow: 0px 8px 20px rgba(255, 255, 255, 0.2);
+}
+
+.nav-item a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 55px;
+    height: 55px;
+    background: #333;
+    border-radius: 50%;
+    transition: all 0.3s ease-in-out;
+}
+
+.nav-item a:hover {
+    background: #444;
+}
+
+/* Icons */
+.icon {
+    display: block;
+    width: 30px;
+    height: 30px;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+/* Social Media Icons */
+.twitter { background-image: url('https://cdn-icons-png.flaticon.com/512/733/733579.png'); }
+.facebook { background-image: url('https://cdn-icons-png.flaticon.com/512/733/733547.png'); }
+.instagram { background-image: url('https://cdn-icons-png.flaticon.com/512/2111/2111463.png'); }
+.youtube { background-image: url('https://cdn-icons-png.flaticon.com/512/1384/1384060.png'); }
+.linkedin { background-image: url('https://cdn-icons-png.flaticon.com/512/145/145807.png'); }
+
+/* Tooltip */
+.nav-item::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    color: #222;
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    pointer-events: none;
+}
+
+.nav-item:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-5px);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .social-nav {
+        padding: 10px 18px;
+    }
+    
+    .nav-item a {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .icon {
+        width: 25px;
+        height: 25px;
+    }
+}
