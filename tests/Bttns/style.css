@@ -1,0 +1,82 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    height: 100vh;
+    background-color: #f0f0f0; /* Change as needed */
+}
+
+.navbar {
+    position: fixed;
+    bottom: 20px; /* Adjust for vertical position */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.nav-links {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 20px; /* Space between buttons */
+}
+
+.nav-item {
+    position: relative;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px; /* Circle size */
+    height: 50px; /* Circle size */
+    background-color: black; /* Button color */
+    border-radius: 50%; /* Circular shape */
+    text-decoration: none;
+    color: white;
+    overflow: hidden;
+    transition: background-color 0.3s;
+}
+
+.social-logo {
+    width: 30px; /* Logo size */
+    height: 30px; /* Logo size */
+    transition: transform 0.3s;
+}
+
+.social-name {
+    opacity: 0; /* Hide name initially */
+    white-space: nowrap; /* Prevent text wrapping */
+    position: absolute;
+    left: 60px; /* Space from button */
+    background-color: white; /* Background for name */
+    color: black; /* Text color */
+    padding: 5px 10px; /* Padding for name */
+    border-radius: 5px; /* Rounded corners */
+    transition: opacity 0.3s, transform 0.3s; /* Transition for name */
+}
+
+.nav-link:hover {
+    background-color: #333; /* Darker background on hover */
+}
+
+.nav-link:hover .social-logo {
+    transform: scale(1.1); /* Slightly enlarge logo on hover */
+}
+
+.nav-link:hover .social-name {
+    opacity: 1; /* Show name on hover */
+    transform: translateY(-5px); /* Move name slightly upward */
+}
+
+.nav-link:hover {
+    animation: hoverAnimation 0.5s infinite; /* Continuous hover motion */
+}
+
+@keyframes hoverAnimation {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-5px); } /* Moves up slightly */
+    100% { transform: translateY(0); } /* Returns to original position */
+}
