@@ -1,93 +1,56 @@
-/* Reset default styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
-}
-
-/* Navigation Bar (Horizontal Row at Bottom Center) */
-.nav-bar {
+/* Navigation Container */
+.nav-container {
     position: fixed;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    background: black;
-    padding: 10px;
-    border-radius: 30px;
-    border: 2px solid white;
     gap: 15px;
 }
 
-/* List inside the nav */
-.nav-bar ul {
-    list-style: none;
-    display: flex;
-    gap: 15px;
-}
-
-/* Navigation Items */
+/* Navigation Item */
 .nav-item {
     position: relative;
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
-    overflow: hidden;
     border: 2px solid white;
     background: black;
-    transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-/* Expand Effect */
-.nav-item:hover {
-    width: 180px;
-    border-radius: 30px;
-    animation: floatUpDown 2s infinite alternate ease-in-out;
-}
-
-/* Floating Animation */
-@keyframes floatUpDown {
-    0% { transform: translateY(-3px); }
-    100% { transform: translateY(3px); }
-}
-
-/* Link Styling */
-.nav-item a {
-    display: flex;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-    text-decoration: none;
-    color: white;
-    padding: 0 10px;
-    overflow: hidden;
+    cursor: pointer;
+    overflow: visible; /* Ensures nothing gets clipped */
 }
 
 /* Icon */
 .nav-item img {
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     transition: transform 0.3s ease-in-out;
 }
 
-/* Expand Name */
-.nav-item::after {
-    content: attr(data-name);
+/* Text Label (Hidden by Default) */
+.nav-item .nav-label {
+    position: absolute;
+    left: 80px; /* Moves text to the right of the button */
+    top: 50%;
+    transform: translateY(-50%);
+    background: black;
+    color: white;
     font-size: 16px;
     font-weight: bold;
-    color: white;
-    margin-left: 10px;
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
+    padding: 8px 12px;
+    border-radius: 5px;
     white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
 
-/* Show Name on Hover */
-.nav-item:hover::after {
+/* Show Label on Hover */
+.nav-item:hover .nav-label {
     opacity: 1;
+    transform: translateY(-50%) scale(1.05);
 }
