@@ -1,0 +1,80 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Navigation Bar */
+.nav-bar {
+    position: fixed;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Navigation Items */
+.nav-item {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid white;
+    background: black;
+    transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+/* Expand Effect */
+.nav-item:hover {
+    width: 180px;
+    border-radius: 30px;
+    animation: floatUpDown 2s infinite alternate ease-in-out;
+}
+
+/* Floating Animation */
+@keyframes floatUpDown {
+    0% { transform: translateY(-3px); }
+    100% { transform: translateY(3px); }
+}
+
+/* Link Styling */
+.nav-item a {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    text-decoration: none;
+    color: white;
+    padding: 0 10px;
+    overflow: hidden;
+}
+
+/* Icon */
+.nav-item img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Expand Name */
+.nav-item::after {
+    content: attr(data-name);
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    margin-left: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    white-space: nowrap;
+}
+
+/* Show Name on Hover */
+.nav-item:hover::after {
+    opacity: 1;
+}
