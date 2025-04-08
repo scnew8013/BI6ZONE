@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dreader</title>
+    <link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/x-icon">
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            position: relative; /* Needed for countdown positioning */
+        }
+        iframe {
+            border: none;
+            width: 100%;
+            height: 100%;
+            display: none; /* Hide iframe initially */
+        }
+        /* Countdown styling */
+        .countdown {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            z-index: 1000;
+            text-align: center;
+        }
+    </style>
+
+    <script>
+        window.onload = function () {
+            if (localStorage.getItem('premium') !== 'true') {
+                // Show countdown for free users
+                showCountdown(10); // 10 seconds countdown
+            } else {
+                loadGame(0); // Load the game immediately for premium users
+            }
+        };
+
+        function showCountdown(seconds) {
+            const countdownElement = document.createElement("div");
+            countdownElement.className = "countdown";
+            document.body.appendChild(countdownElement);
+
+            const message = document.createElement("p");
+            message.textContent = "You can play for free, but to skip wait times, consider getting a premium account!";
+            countdownElement.appendChild(message);
+
+            let countdown = seconds;
+            const countdownInterval = setInterval(() => {
+                countdownElement.appendChild(document.createElement("br"));
+                countdownElement.appendChild(document.createTextNode("Game starts in: " + countdown + " seconds..."));
+                countdown--;
+
+                if (countdown < 0) {
+                    clearInterval(countdownInterval);
+                    document.body.removeChild(countdownElement);
+                    loadGame(0); // Load the game after countdown
+                }
+            }, 1000);
+        }
+
+        function loadGame(delay) {
+            // Show the iframe
+            const iframe = document.querySelector('iframe');
+            iframe.style.display = 'block'; // Show iframe
+            iframe.src = "https://mr-funkinguy.github.io/gfile/dreader/index.html"; // Set the game URL
+        }
+    </script>
+</head>
+<body>
+    <iframe title="dreader"></iframe>
+</body>
+</html>
