@@ -33,38 +33,6 @@
     </style>
 
     <script>
-        window.onload = function () {
-            if (localStorage.getItem('premium') !== 'true') {
-                // Show countdown for free users
-                showCountdown(10); // 10 seconds countdown
-            } else {
-                loadGame(0); // Load the game immediately for premium users
-            }
-        };
-
-        function showCountdown(seconds) {
-            const countdownElement = document.createElement("div");
-            countdownElement.className = "countdown";
-            document.body.appendChild(countdownElement);
-
-            const message = document.createElement("p");
-            message.textContent = "You can play for free, but to skip wait times, consider getting a premium account!";
-            countdownElement.appendChild(message);
-
-            let countdown = seconds;
-            const countdownInterval = setInterval(() => {
-                countdownElement.appendChild(document.createElement("br"));
-                countdownElement.appendChild(document.createTextNode("Game starts in: " + countdown + " seconds..."));
-                countdown--;
-
-                if (countdown < 0) {
-                    clearInterval(countdownInterval);
-                    document.body.removeChild(countdownElement);
-                    loadGame(0); // Load the game after countdown
-                }
-            }, 1000);
-        }
-
         function loadGame(delay) {
             // Show the iframe
             const iframe = document.querySelector('iframe');
