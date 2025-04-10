@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>	
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1654900800235927"
+     crossorigin="anonymous"></script>
+	
+	<!-- Google tag (gtag.js) -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5REZTEC3DL"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-5REZTEC3DL');
+</script>
+<meta name="description" content="A Music Site">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Test</title>
+  <link rel="icon" href="https://github.com/Mr-funkinguy/Music-Player-/blob/main/fav.png?raw=true">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  
+
+</head>
+
+<body>
+  <audio id="audio1" src="https://github.com/Mr-funkinguy/Music-Player-/raw/main/splitter/music.mp3"></audio>
+  <audio id="audio2" src="https://github.com/Mr-funkinguy/Music-Player-/raw/main/splitter/vocals.mp3"></audio>
+  <audio id="audio3" src="https://github.com/Mr-funkinguy/Music-Player-/raw/main/splitter/bass.mp3"></audio>
+  <audio id="audio4" src="https://github.com/Mr-funkinguy/Music-Player-/raw/main/splitter/drums.mp3"></audio>
+  
+  <div class="controls">
+    <button id="play">Play</button>
+    <button id="pause">Pause</button>
+    <br>
+    <br>
+    <p style="font-family: Arial, Helvetica, sans-serif;">This Test How A Song Can Be Splitted Into Instrumental, Vocals, Bass And Drums</p>
+    <p style="font-family: Arial, Helvetica, sans-serif;">Song: Ballin</p>
+    <!--p style="font-family: Arial, Helvetica, sans-serif;">Song Position</p>
+    <input id="poss" type="range" min="0" max="100" value="0" class="slider"-->
+    <br>
+    <br>
+
+    <p style="font-family: Arial, Helvetica, sans-serif;">Instrumental - Volume</p>
+    <input type="range" id="vol1" min="0" max="1" step="0.1" value="1">
+    <br>
+    <br>
+    <p style="font-family: Arial, Helvetica, sans-serif;">Vocals - Volume</p>
+    <input type="range" id="vol2" min="0" max="1" step="0.1" value="1">
+    <br>
+    <br>
+    <p style="font-family: Arial, Helvetica, sans-serif;">Bass - Volume</p>
+    <input type="range" id="vol3" min="0" max="1" step="0.1" value="1">
+    <br>
+    <br>
+    <p style="font-family: Arial, Helvetica, sans-serif;">Drums - Volume</p>
+    <input type="range" id="vol4" min="0" max="1" step="0.1" value="1">
+  </div>
+  
+  <script>
+    const audio1 = document.getElementById('audio1');
+    const audio2 = document.getElementById('audio2');
+    const audio3 = document.getElementById('audio3');
+    const audio4 = document.getElementById('audio4');
+  
+   
+    const slider = document.getElementById('poss');
+    /*
+    slider.addEventListener("input", function() {
+      const newPosition = slider.value;
+      audio1.currentTime = newPosition;
+      audio2.currentTime = newPosition;
+      audio3.currentTime = newPosition;
+      audio4.currentTime = newPosition;
+    });
+    */
+
+    const playBtn = document.getElementById('play');
+    const pauseBtn = document.getElementById('pause');
+  
+    const vol1 = document.getElementById('vol1');
+    const vol2 = document.getElementById('vol2');
+    const vol3 = document.getElementById('vol3');
+    const vol4 = document.getElementById('vol4');
+  
+    // play audio function
+    function playAudio() {
+      audio1.play();
+      audio2.play();
+      audio3.play();
+      audio4.play();
+    }
+  
+    // pause audio function
+    function pauseAudio() {
+      audio1.pause();
+      audio2.pause();
+      audio3.pause();
+      audio4.pause();
+    }
+  
+    // set volume function for each audio track
+    function setVolume() {
+      audio1.volume = vol1.value;
+      audio2.volume = vol2.value;
+      audio3.volume = vol3.value;
+      audio4.volume = vol4.value;
+    }
+  
+    // event listeners for play, pause, and volume sliders
+    playBtn.addEventListener('click', playAudio);
+    pauseBtn.addEventListener('click', pauseAudio);
+    vol1.addEventListener('input', setVolume);
+    vol2.addEventListener('input', setVolume);
+    vol3.addEventListener('input', setVolume);
+    vol4.addEventListener('input', setVolume);
+  </script>
+  
+						     
+</body>
+</html>
