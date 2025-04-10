@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BI6ZONE - Music Player</title>
+  <link rel="icon" href="https://files.catbox.moe/m1zg0c.ico" type="image/png" />
+  <style>
+    body {
+      background: url('https://files.catbox.moe/g1zf6v.jpeg') no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .player-container {
+      background: rgba(0, 0, 0, 0.7);
+      border: 2px solid yellow;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+      text-align: center;
+      width: 300px;
+    }
+
+    .player-title {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    }
+
+    audio {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .track-select {
+      background: black;
+      color: yellow;
+      border: 2px solid yellow;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 16px;
+      width: 100%;
+      outline: none;
+    }
+
+    .track-select:hover {
+      box-shadow: 0 0 10px yellow;
+    }
+
+    option {
+      background-color: black;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="player-container">
+    <div class="player-title">🎧 Select a Track</div>
+    <audio id="audioPlayer" controls>
+      <source src="" type="audio/mp3" />
+      Your browser does not support the audio element.
+    </audio>
+    <select class="track-select" id="trackSelector">
+      <option value="/Songs/chill-vibes.mp3">Chill Vibes</option>
+      <option value="/Songs/night-ride.mp3">Night Ride</option>
+      <option value="/Songs/lofi-dreams.mp3">LoFi Dreams</option>
+      <!-- Add more songs here -->
+    </select>
+  </div>
+
+  <script>
+    const player = document.getElementById('audioPlayer');
+    const selector = document.getElementById('trackSelector');
+
+    selector.addEventListener('change', function () {
+      player.src = this.value;
+      player.play();
+    });
+  </script>
+
+</body>
+</html>
