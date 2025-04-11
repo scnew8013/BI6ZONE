@@ -1,11 +1,15 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="https://cdn.counter.dev/script.js" data-id="3b603ac0-8122-4415-8806-3f31aac7d6d2" data-utcoffset="-7"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>apps</title>
-    <link rel="icon" href="https://files.catbox.moe/m1zg0c.ico" type="image/png">
+    <link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/png">
+
+    <!-- 100% privacy-first analytics -->
+<script async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+
 
     <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-SZN69N4SEF"></script>
@@ -17,6 +21,12 @@
   gtag('config', 'G-SZN69N4SEF');
 </script>
     
+    <!-- Tab Cloaking and Utility Scripts -->
+    <script src="scripts/utilities/tab-cloak.js"></script>
+    <script src="scripts/utilities/emergency-escape.js"></script>
+    <script src="scripts/utilities/theme.js"></script>
+    <script src="scripts/utilities/message-system.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -24,7 +34,7 @@
             box-sizing: border-box;
         }
         body {
-            background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROdNIejFmjeKC5u6Xq2yqOCa5y-uJseTCTfA&s') no-repeat center center fixed;
+            background: url('https://img.freepik.com/free-photo/artistic-blurry-colorful-wallpaper-background_58702-8520.jpg?semt=ais_hybrid') no-repeat center center fixed;
             background-size: cover;
             min-height: 100vh;
             display: flex;
@@ -42,32 +52,35 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
-        .icons {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .icon-container {
-            width: 60px;
-            height: 60px;
-            background-color: black;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-            box-shadow: 0 0 10px white;
-        }
-        .icon-container:hover {
-            transform: scale(1.2);
-            box-shadow: 0 0 20px white;
-        }
-        .icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            cursor: pointer;
-        }
+.icons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px; /* Increased margin-top to move icons down */
+}
+
+.icon-container {
+    width: 60px;
+    height: 60px;
+    background-color: black;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    box-shadow: 0 0 10px white;
+}
+
+.icon-container:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 20px white;
+}
+
+.icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    cursor: pointer;
+}
         .coolBlobIdk {
             position: fixed;
             bottom: -30%;
@@ -149,87 +162,47 @@
         
         /* Remove home button styles */
             
-        /* Search Bar Styles */
-        .search-container {
-            position: relative;
-            width: 300px;
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-        }
-        
-        .search-wrapper {
-            position: relative;
-            width: 100%;
-        }
-        
-        .search-wrapper::before {
-            content: "";
-            position: absolute;
-            width: calc(100% + 8px);
-            height: calc(100% + 8px);
-            left: -4px;
-            top: -4px;
-            background: linear-gradient(90deg, #000000, #ffffff, #000000, #ffffff, #000000);
-            background-size: 400%;
-            z-index: 1;
-            border-radius: 35px;
-            animation: animate 20s linear infinite;
-        }
-        
-        .search-wrapper::after {
-            content: "";
-            position: absolute;
-            width: calc(100% + 8px);
-            height: calc(100% + 8px);
-            left: -4px;
-            top: -4px;
-            background: linear-gradient(90deg, #000000, #ffffff, #000000, #ffffff, #000000);
-            background-size: 400%;
-            z-index: 1;
-            filter: blur(20px);
-            border-radius: 35px;
-            animation: animate 20s linear infinite;
-            opacity: 0.9;
-        }
-        
-        @keyframes animate {
-            0% {
-                background-position: 0 0;
-            }
-            50% {
-                background-position: 400% 0;
-            }
-            100% {
-                background-position: 0 0;
-            }
-        }
-        
-        .rainbow-search {
-            width: 100%;
-            padding: 12px 20px;
-            border-radius: 30px;
-            border: none;
-            outline: none;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            font-family: Arial, sans-serif;
-            font-size: 16px;
-            text-align: center;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .rainbow-search::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-    </style>
+/* Search Bar Styles */
+.search-container {
+    position: relative;
+    width: 300px;
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
 
-    <!-- Tab Cloaking and Emergency Escape Scripts -->
-    <script src="scripts/utilities/tab-cloak.js"></script>
-    <script src="scripts/utilities/emergency-escape.js"></script>
-    <script src="scripts/utilities/theme.js"></script>
-    <script src="scripts/utilities/message-system.js"></script>
+.search-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.rainbow-search {
+    width: 100%;
+    padding: 12px 20px;
+    border-radius: 30px;
+    border: none;
+    outline: none;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    text-align: center;
+    box-shadow: 0 0 8px white; /* Subtle constant glow */
+    transition: box-shadow 0.3s ease-in-out; /* Smooth transition for the glow */
+}
+
+.rainbow-search::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Stronger glow on hover and focus */
+.rainbow-search:hover,
+.rainbow-search:focus {
+    box-shadow: 0 0 20px white; /* Stronger white glow on hover or focus */
+}
+
+
+    </style>
 </head>
 <body>
     <div id="particles-js"></div>
@@ -248,22 +221,10 @@
         <a href="/g.html" onclick="event.preventDefault(); window.location.href='/g.html';" class="icon-container"><img src="https://static-00.iconduck.com/assets.00/console-controller-icon-2048x2048-pmmusn7m.png" alt="Games" class="icon"></a>
         <a href="/a.html" onclick="event.preventDefault(); window.location.href='/a.html';" class="icon-container"><img src="https://img.icons8.com/ios7/600/FFFFFF/apple-app-store--v2.png" alt="Apps" class="icon"></a>
         <a href="/e.html" onclick="event.preventDefault(); window.location.href='/e.html';" class="icon-container"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0_6HUhLshuftA_sDchc5pEGqTBPa41EO6Xw&s" alt="Exploits" class="icon"></a>
-        <a href="/disremake.html" onclick="event.preventDefault(); window.location.href='/disremake.html';" class="icon-container"><img src="https://files.catbox.moe/uf0zh5.png" alt="Chat" class="icon"></a>
+        <a href="/es.html" onclick="event.preventDefault(); window.location.href='/es.html';" class="icon-container"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRclWJCEIPuuU-0DeRx9HfoSWM4y8Ei59lGhQ&s" alt="Extra" class="icon"></a>
+        <a href="/disremake.html" onclick="event.preventDefault(); window.location.href='/disremake.html';" class="icon-container"><img src="https://files.catbox.moe/uf0zh5.png" alt="chat" class="icon"></a>
         <a href="/s.html" onclick="event.preventDefault(); window.location.href='/s.html';" class="icon-container"><img src="https://img.icons8.com/m_rounded/512/FFFFFF/settings.png" alt="Settings" class="icon"></a>
-    </div>
-    <div class="rectangle-container">
-        <div class="rectangle" onclick="window.location.href='/a/bing.html'">
-            <img src="https://www.searchenginejournal.com/wp-content/uploads/2017/05/bing-site-search.png" alt="Image 2">
-            <div class="game-name">bing</div>
-        </div>
-        <div class="rectangle" onclick="window.location.href='/a/youtube.html'">
-            <img src="https://lh3.googleusercontent.com/3zkP2SYe7yYoKKe47bsNe44yTgb4Ukh__rBbwXwgkjNRe4PykGG409ozBxzxkrubV7zHKjfxq6y9ShogWtMBMPyB3jiNps91LoNH8A=s500" alt="Image 2">
-            <div class="game-name">youtube</div>
-        </div>
-        <div class="rectangle" onclick="window.location.href='/a/google.html'">
-            <img src="https://media.wired.com/photos/5926ffe47034dc5f91bed4e8/master/pass/google-logo.jpg" alt="Image 2">
-            <div class="game-name">google</div>
-        </div>
+        <a href="/hwhelper/index.html" onclick="event.preventDefault(); window.location.href='/hwhelper/indexhtml';" class="icon-container"><img src="https://files.catbox.moe/ldl2m3.png" alt="Settings" class="icon"></a>
     </div>
      <div class="rectangle-container">
         <div class="rectangle" onclick="window.location.href='/a/poki.html'">
@@ -289,7 +250,7 @@
             <div class="game-name">easyfungg</div>
         </div>
         <div class="rectangle" onclick="window.location.href='/a/crazy-games.html'">
-            <img src="https://files.catbox.moe/uaawhc.jpeg" alt="Image 2">
+            <img src="https://bleedingcool.com/wp-content/uploads/2024/06/CrazyGames-Banner-Logo-1200x675.jpg" alt="Image 2">
             <div class="game-name">crazy games</div>
         </div>
     </div>
@@ -297,20 +258,6 @@
         <div class="rectangle" onclick="window.location.href='/a/blooket-bot.html'">
             <img src="https://res.cloudinary.com/jerrick/image/upload/d_642250b563292b35f27461a7.png,f_jpg,fl_progressive,q_auto,w_1024/645c0edf1cfce5001d87e082.jpg" alt="Image 2">
             <div class="game-name">blooket bot</div>
-        </div>
-        <div class="rectangle" onclick="window.location.href='/a/snapchat.html'">
-            <img src="https://www.usatoday.com/gcdn/presto/2019/08/16/USAT/bd6538e4-5535-41ce-857b-518451c3a958-Snapchat_Logo_H.png?crop=2499,1406,x1,y56&width=2499&height=1406&format=pjpg&auto=webp" alt="Image 2">
-            <div class="game-name">snapchat</div>
-        </div>
-        <div class="rectangle" onclick="window.location.href='/a/instagram.html'">
-            <img src="https://www.internetmatters.org/wp-content/uploads/2024/10/insta-logo-whie-background.png" alt="Image 2">
-            <div class="game-name">instagram</div>
-        </div>
-    </div>
-     <div class="rectangle-container">
-        <div class="rectangle" onclick="window.location.href='/a/roblox.html'">
-            <img src="https://i.ytimg.com/vi/n8Hpsy7xOLs/maxresdefault.jpg" alt="Image 2">
-            <div class="game-name">roblox</div>
         </div>
         <div class="rectangle" onclick="window.location.href='/a/geforcenow.html'">
             <img src="https://static1.xdaimages.com/wordpress/wp-content/uploads/2020/05/NVIDIA-GeForce-NOW.jpg" alt="Image 2">
@@ -323,7 +270,7 @@
     </div>
      <div class="rectangle-container">
         <div class="rectangle" onclick="window.location.href='/a/cool-math-games.html'">
-            <img src="https://files.catbox.moe/ov2kjx.webp" alt="Image 2">
+            <img src="https://defold.com/images/assets/coolmathgames-hero.jpg" alt="Image 2">
             <div class="game-name">cool math games</div>
         </div>
         <div class="rectangle" onclick="window.location.href='/a/github.html'">
@@ -334,6 +281,7 @@
             <img src="https://xxboxnews.blob.core.windows.net/prod/sites/2/2023/08/image004-04165e41841930c0754b-dd52b7ee8b2c45e09b17.png" alt="Image 2">
             <div class="game-name">xbox cloud gaming</div>
         </div>
+    </div>
     </div>
      <div class="rectangle-container">
         <div class="rectangle" onclick="window.location.href='/a/school-cheats.html'">
@@ -350,48 +298,72 @@
         </div>
     </div>
      <div class="rectangle-container">
-        <div class="rectangle" onclick="window.location.href='/a/netflix.html'">
-            <img src="https://files.catbox.moe/r6sgh4.webp" alt="Image 2">
-            <div class="game-name">netflix</div>
+        <div class="rectangle" onclick="window.location.href='/a/voicemod.html'">
+            <img src="https://cdn.prod.website-files.com/661e75fc70756be16764754b/6686811e5bf6c5a6c38bd2b7_voicemod-featured-1.jpeg" alt="Image 2">
+            <div class="game-name">voicemod</div>
         </div>
-        <div class="rectangle" onclick="window.location.href='/a/disney.html'">
-            <img src="https://files.catbox.moe/2jpw77.webp" alt="Image 2">
-            <div class="game-name">disney+</div>
+        <div class="rectangle" onclick="window.location.href='/a/soundboard.html'">
+            <img src="https://i.ytimg.com/vi/dNr7nXvntO8/hq720.jpg?sqp=-oaymwEXCK4FEIIDSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLD9qml9cz8cKj9jQh8m7nh0HK2fnw" alt="Image 2">
+            <div class="game-name">soundboard</div>
         </div>
-        <div class="rectangle" onclick="window.location.href='/a/9anime.html'">
-            <img src="https://files.catbox.moe/oevs1k.jpeg" alt="Image 2">
-            <div class="game-name">9anime</div>
-        </div>
-    </div>
-     <div class="rectangle-container">
-        <div class="rectangle" onclick="window.location.href='/a/nebprox.html'">
-            <img src="https://files.catbox.moe/c6cv0e.jpeg" alt="Image 2">
-            <div class="game-name">nebulaproxy</div>
-        </div>
-        <div class="rectangle" onclick="window.location.href='https://bi66ie619.github.io/Music-Player'">
-  <img src="https://github.com/bi66ie619/Music-Player/blob/main/fav.png?raw=true" alt="Music Player">
-  <div class="game-name">Music Player</div>
-    </div>
-        <div class="rectangle" onclick="window.location.href='/a/.html'">
-            <img src="image" alt="Image 2">
-            <div class="game-name">appname</div>
+        <div class="rectangle" onclick="window.location.href='/a/soundboard-guys.html'">
+            <img src="https://s3.envato.com/files/469089389/preview%20image.__large_preview.jpg" alt="Image 2">
+            <div class="game-name">soundboard guys</div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
-        particlesJS("particles-js", {
-            "particles": {
-                "number": { "value": 30, "density": { "enable": false } },
-                "color": { "value": "#aaa" },
-                "shape": { "type": "circle" },
-                "opacity": { "value": 0.5, "random": true },
-                "size": { "value": 3, "random": true },
-                "move": { "enable": true, "speed": 4, "direction": "random" }
-            },
-            "interactivity": {
-                "events": { "onhover": { "enable": false } }
-            }
+        // Initialize particles with theme colors
+        document.addEventListener('DOMContentLoaded', function() {
+            const theme = window.getCurrentTheme ? window.getCurrentTheme() : {
+                particleColor: "#ffffff",
+                particleLinks: "#ffffff"
+            };
+            
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // Initialize particles with theme colors
+        document.addEventListener('DOMContentLoaded', function() {
+            const theme = window.getCurrentTheme ? window.getCurrentTheme() : {
+                particleColor: "#aaa",
+                particleLinks: "#aaa"
+            };
+            
+            particlesJS("particles-js", {
+                particles: {
+                    number: { value: 20, density: { enable: false } },
+                    color: { value: theme.particleColor },
+                    shape: { type: "circle" },
+                    opacity: { value: 0.5, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: theme.particleLinks,
+                        opacity: 0.4,
+                        width: 1
+                    },
+                    move: { 
+                        enable: true, 
+                        speed: 2, 
+                        direction: "none",
+                        random: true,
+                        straight: false,
+                        out_mode: "out",
+                        bounce: false
+                    }
+                },
+                interactivity: {
+                    detect_on: "canvas",
+                    events: { 
+                        onhover: { enable: false },
+                        onclick: { enable: false },
+                        resize: true 
+                    }
+                },
+                retina_detect: false
+            });
         });
     </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-8PERVFVWRG"></script>
@@ -478,14 +450,79 @@
             });
         });
     </script>
-    <!-- Discord Widget -->
+
+        <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
-        // Show an apps message
-        setTimeout(function() {
-            showGlowingMessage('Browse my collection of apps and tools!');
-        }, 1500);
+        // Initialize particles with theme colors
+        document.addEventListener('DOMContentLoaded', function() {
+            const theme = window.getCurrentTheme ? window.getCurrentTheme() : {
+                particleColor: "#ffffff",
+                particleLinks: "#ffffff"
+            };
+            
+            // Initialize particles
+            particlesJS("particles-js", {
+                "particles": {
+                    "number": { "value": 20, "density": { "enable": false } },
+                    "color": { "value": theme.particleColor || "#ffffff" },
+                    "shape": { "type": "circle" },
+                    "opacity": { "value": 0.7, "random": true },
+                    "size": { "value": 3, "random": true },
+                    "line_linked": {
+                        "enable": true,
+                        "distance": 150,
+                        "color": theme.particleLinks || "#ffffff",
+                        "opacity": 0.6,
+                        "width": 1
+                    },
+                    "move": { 
+                        "enable": true, 
+                        "speed": 2, 
+                        "direction": "none",
+                        "random": true,
+                        "straight": false,
+                        "out_mode": "out",
+                        "bounce": false
+                    }
+                },
+                "interactivity": {
+                    "detect_on": "canvas",
+                    "events": { 
+                        "onhover": { "enable": false },
+                        "onclick": { "enable": false },
+                        "resize": true 
+                    }
+                },
+                "retina_detect": false
+            });
+        });
     </script>
+
+        <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Create the cursor element
+            const cursorDot = document.createElement("div");
+            cursorDot.classList.add("cursor-dot");
+            document.body.appendChild(cursorDot);
+
+            // Update position instantly on mousemove
+            document.addEventListener("mousemove", (e) => {
+                cursorDot.style.left = `${e.clientX}px`;
+                cursorDot.style.top = `${e.clientY}px`;
+            });
+        });
+    </script>
+
+<script>
+    // Show the first games message
+    setTimeout(function() {
+        showGlowingMessage('most apps dont load because of the server issue');
+
+        // Show the second message after a delay
+        setTimeout(function() {
+            showGlowingMessage('we are working on a faster, and better server!');
+        }, 3000); // Adjust delay as needed
+    }, 1500);
+</script>
 </body>
 </html>
-
-
