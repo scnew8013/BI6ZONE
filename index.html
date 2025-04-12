@@ -70,7 +70,6 @@
             background: url('https://files.catbox.moe/m1zg0c.ico') no-repeat center;
             background-size: cover;
             margin-bottom: 30px;
-            animation: pulse 1.5s infinite ease-in-out;
             box-shadow: 0 0 30px rgba(255, 255, 255, 0.8); /* Glow effect */
         }
 
@@ -113,7 +112,7 @@
     </div>
 
     <script>
-        particlesJS("particles-js", {
+        particlesJS("particles-j(s)", {
             particles: {
                 number: { value: 15, density: { enable: false } },  /* Fewer particles */
                 color: { value: "#ffffff" },
@@ -130,7 +129,7 @@
         setTimeout(() => {
             document.body.style.animation = "fadeOut 1s ease-in-out forwards";
             setTimeout(() => {
-                window.location.href = "/home.html"; // Redirect to custom URL
+                window.location.href = "/main.html"; // Redirect to custom URL
             }, 1000); // Wait for fade-out to complete before redirecting
         }, 5000);
     </script>
