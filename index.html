@@ -1,97 +1,138 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Malware *Not* Detected</title>
+    <title>Loading...</title>
+    <link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/png">
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+        <!-- 100% privacy-first analytics -->
+<script async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+    
     <style>
-        body {
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(135deg, #FFFF00, #000000);
+            background-size: 400% 400%;
+            animation: gradientAnimation 8s ease infinite;
             height: 100vh;
             display: flex;
-            flex-direction: column;
-            align-items: flex-start; /* Align text to the left */
             justify-content: center;
-            background-color: #d83025; /* Dark red background */
-            color: white;
-            padding: 20px; /* Padding for spacing */
-            font-family: sans-serif; /* Keep font plain */
-            font-weight: normal; /* Ensure all text is normal weight */
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-in-out forwards;
         }
-        .details {
-            background-color: #d83025; /* Same red as background */
-            color: white;
-            padding: 5px 10px;
-            border: 1px solid white;
-            margin-right: auto; /* Push left */
-            cursor: pointer;
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
-        .back-to-safety {
-            background-color: white;
-            color: #d83025; /* Dark red text */
-            padding: 5px 10px;
-            border: 1px solid #d83025;
-            text-decoration: none;
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
         }
-        .button-container {
-            display: flex;
-            justify-content: space-between;
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        #particles-js {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            margin-top: 20px;
+            height: 100%;
         }
-        .warning-icon {
-            width: 50px; /* Keep same size as previous triangle */
-            height: 50px;
-            margin-bottom: 10px;
+
+        .loader-container {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
         }
-        #details-text {
-            display: none; /* Hidden by default */
-            margin-top: 15px;
-            font-size: 16px;
+
+        .logo {
+            width: 235px;
+            height: 235px;
+            border-radius: 50%;
+            background: url('https://files.catbox.moe/m1zg0c.ico') no-repeat center;
+            background-size: cover;
+            margin-bottom: 30px;
+            animation: pulse 1.5s infinite ease-in-out;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.8); /* Glow effect */
         }
-        .infected-link {
-            text-decoration: underline;
-            color: white;
-            cursor: pointer;
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .progress-bar-container {
+            width: 35%;
+            height: 30px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            width: 0;
+            height: 100%;
+            background-color: white;
+            border-radius: 15px;
+            animation: loadProgress 5s linear forwards;
+        }
+
+        @keyframes loadProgress {
+            0% { width: 0; }
+            100% { width: 100%; }
         }
     </style>
 </head>
 <body>
-    <div>
-        <!-- Replace the warning triangle with the screenshot -->
-        <img src="Screenshot_20250326_113523_Chrome.jpg" alt="Warning" class="warning-icon">
-        
-        <h1 style="font-size: 30px; font-weight: normal; margin: 0;">The site ahead contains malware</h1>
-        <h3 style="font-size: 18px; font-weight: normal; margin: 5px 0;">
-            Attackers currently on <strong>bi66ie619.github.io</strong> *ain't* gon attempt to install dangerous programs on your device that steal or delete your information (for example, photos, passwords, messages, or credit cards). 
-            <a href="https://support.google.com/chrome/answer/99020?hl=en&co=GENIE.Platform%3DDesktop" style="text-decoration: underline; color: white;">Learn More</a> (Hint: Check Details)
-        </h3>
-        <div class="button-container">
-            <div class="details" onclick="toggleDetails()" id="details-button">Details</div>
-            <a href="https://www.google.com" class="back-to-safety">Back To Safety</a>
+    <div id="particles-js"></div>
+    <div class="loader-container">
+        <div class="logo"></div>
+        <div class="progress-bar-container">
+            <div class="progress-bar"></div>
         </div>
-
-        <!-- Hidden details text -->
-        <p id="details-text">
-            Google Safe Browsing never detected phishing on <strong>bi66ie619.github.io</strong>. This "malware detected" is fake so go on and enjoy my site!<br><br>
-            If you understand <em>the fake risks of your security</em>, you may 
-            <a href="https://bi66ie619.github.io/main.html" class="infected-link">visit this infected site</a>.
-        </p>
     </div>
 
     <script>
-        function toggleDetails() {
-            var detailsText = document.getElementById("details-text");
-            var detailsButton = document.getElementById("details-button");
-
-            if (detailsText.style.display === "none" || detailsText.style.display === "") {
-                detailsText.style.display = "block";
-                detailsButton.innerText = "Hide Details";
-            } else {
-                detailsText.style.display = "none";
-                detailsButton.innerText = "Details";
+        particlesJS("particles-js", {
+            particles: {
+                number: { value: 15, density: { enable: false } },  /* Fewer particles */
+                color: { value: "#ffffff" },
+                shape: { type: "circle" },
+                opacity: { value: 0.5, random: true },
+                size: { value: 3, random: true },
+                move: { enable: true, speed: 2, direction: "random" }
+            },
+            interactivity: {
+                events: { onhover: { enable: false } }
             }
-        }
+        });
+
+        setTimeout(() => {
+            document.body.style.animation = "fadeOut 1s ease-in-out forwards";
+            setTimeout(() => {
+                window.location.href = "/home.html"; // Redirect to custom URL
+            }, 1000); // Wait for fade-out to complete before redirecting
+        }, 5000);
     </script>
 </body>
 </html>
