@@ -101,12 +101,12 @@
             transform: scale(1.2);
         }
         .rectangle-container {
-            display: flex;
-            gap: 20px;
-            margin-top: 40px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 columns */
+    gap: 20px;
+    margin-top: 40px;
+    justify-content: center;
+}
         .rectangle {
             width: 400px;
             height: 250px;
