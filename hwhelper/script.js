@@ -1,5 +1,5 @@
-const API_KEY = "AIzaSyD3u5xSsP_IetpsQR70rJJ96rQB6Z4dMfU";
-const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+const API_KEY = "sk-93f939706a2246b5be477b462ad8c2c2";
+const API_URL = "https://api.deepseek.com/v1/chat/completions";
 
 const fileInput = document.getElementById("file-input");
 const questionInput = document.getElementById("question-input");
