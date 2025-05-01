@@ -735,8 +735,8 @@
         let hasVisibleCard = false; // Track if this container should be visible
 
         container.querySelectorAll('.rectangle').forEach(game => {
-            let isMobile = game.querySelector('.badge').classList.contains('mobilesup-badge');
-            let isPC = game.querySelector('.badge').classList.contains('notmobsup-badge');
+            let isMobile = game.querySelector('.badge').classList.contains('mobsup-badge');
+            let isPC = game.querySelector('.badge').classList.contains('mobnotsup-badge');
 
             if (type === 'mobile' && isMobile) {
                 game.style.display = 'block';
