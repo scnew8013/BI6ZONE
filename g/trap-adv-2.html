@@ -15,16 +15,92 @@
             padding: 0;
             height: 100%;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         iframe {
             border: none;
             width: 100%;
             height: 100%;
+            flex-grow: 1;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .control-button {
+            width: 50px;
+            height: 50px;
+            margin: 5px;
+            font-size: 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .control-button:active {
+            background-color: #555;
         }
     </style>
 </head>
 <body>
-    <iframe src="https://bi6zone.vercel.app/active/iframe.html#https://www.crazygames.com/gameframe/trap-adventure-2" title="trap adventure 2"></iframe>
+    <iframe id="gameIframe" src="https://bi6zone.vercel.app/active/iframe.html#https://www.crazygames.com/gameframe/trap-adventure-2" title="trap adventure 2"></iframe>
+
+    <!-- On-screen controls -->
+    <div class="controls">
+        <button class="control-button" id="wKey">W</button>
+        <button class="control-button" id="aKey">A</button>
+        <button class="control-button" id="sKey">S</button>
+        <button class="control-button" id="dKey">D</button>
+        <button class="control-button" id="spaceBar">Space</button>
+    </div>
+
+    <script>
+        // Function to simulate key press event
+        function simulateKeyPress(key) {
+            const iframe = document.getElementById('gameIframe');
+            const event = new KeyboardEvent('keydown', {
+                key: key,
+                code: key.toUpperCase(),
+                keyCode: key === 'w' ? 87 : key === 'a' ? 65 : key === 's' ? 83 : key === 'd' ? 68 : 32,
+                bubbles: true,
+                cancelable: true
+            });
+            iframe.contentWindow.dispatchEvent(event);
+        }
+
+        // Button event listeners for each control button
+        document.getElementById('wKey').addEventListener('click', function() {
+            simulateKeyPress('w');
+        });
+
+        document.getElementById('aKey').addEventListener('click', function() {
+            simulateKeyPress('a');
+        });
+
+        document.getElementById('sKey').addEventListener('click', function() {
+            simulateKeyPress('s');
+        });
+
+        document.getElementById('dKey').addEventListener('click', function() {
+            simulateKeyPress('d');
+        });
+
+        document.getElementById('spaceBar').addEventListener('click', function() {
+            simulateKeyPress(' ');
+        });
+    </script>
 </body>
 </html>
