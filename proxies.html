@@ -65,27 +65,23 @@
     }
 
     .icon-container {
-      width: 60px;
-      height: 60px;
-      background-color: black;
+      width: 80px; /* Adjusted to make a square */
+      height: 80px; /* Adjusted to make a square */
+      background-color: white;
       border-radius: 15px;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
       box-shadow: 0 0 10px white;
+      border: 3px solid yellow; /* Added yellow border */
+      transition: transform 0.3s ease-in-out;
     }
 
-    .icon-container:hover {
-      transform: scale(1.2);
-      box-shadow: 0 0 20px white;
-    }
-
-    .icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      cursor: pointer;
+    .icon-container img {
+      width: 50px; /* Adjust the icon size */
+      height: 50px;
+      object-fit: cover;
+      border-radius: 8px;
     }
 
     .coolBlobIdk {
@@ -126,56 +122,45 @@
     }
 
     .rectangle-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  margin-top: 40px;
-  width: 100%;
-}
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      margin-top: 40px;
+      width: 100%;
+    }
 
     .rectangle {
-  width: 90%; /* or 100% if you want edge-to-edge */
-  max-width: 1000px; /* Optional max width */
-  height: 250px;
-  background-color: black;
-  border-radius: 15px;
-  box-shadow: 0 0 20px white;
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.3s ease-in-out;
-  text-decoration: none;
-}
+      width: 90%; /* or 100% if you want edge-to-edge */
+      max-width: 1000px; /* Optional max width */
+      height: 250px;
+      background-color: black;
+      border-radius: 15px;
+      box-shadow: 0 0 20px white;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s ease-in-out;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
     .rectangle:hover {
       transform: scale(1.05);
     }
 
-    .rectangle img {
-      width: 100%;
-      height: 100%;
-      border-radius: 15px;
-      object-fit: cover;
-      transition: filter 0.3s ease-in-out;
-    }
-
-    .rectangle:hover img {
-      filter: blur(5px) brightness(0.5);
-    }
-
     .game-name {
       position: absolute;
-      top: 20px;
-      left: 20px;
-      font-size: 24px;
+      top: 10px;
+      left: 10px; /* Moved to the top-left corner */
+      font-size: 18px;
+      color: white;
+      font-weight: bold;
+      text-transform: lowercase;
+      letter-spacing: -0.5px;
       opacity: 0;
       transition: opacity 0.3s ease-in-out;
-      color: white;
-      text-align: left;
-      font-weight: bold;
-      letter-spacing: -0.5px;
-      text-transform: lowercase;
     }
 
     .rectangle:hover .game-name {
@@ -235,18 +220,33 @@
     <!-- Replace each link below with your preferred proxy URLs -->
     <a class="rectangle" href="urlhere" target="_blank">
       <div class="game-name">App Name 1</div>
+      <div class="icon-container">
+        <img src="https://via.placeholder.com/50" alt="App Icon">
+      </div>
     </a>
     <a class="rectangle" href="urlhere" target="_blank">
       <div class="game-name">App Name 2</div>
+      <div class="icon-container">
+        <img src="https://via.placeholder.com/50" alt="App Icon">
+      </div>
     </a>
     <a class="rectangle" href="urlhere" target="_blank">
       <div class="game-name">App Name 3</div>
+      <div class="icon-container">
+        <img src="https://via.placeholder.com/50" alt="App Icon">
+      </div>
     </a>
     <a class="rectangle" href="urlhere" target="_blank">
       <div class="game-name">App Name 4</div>
+      <div class="icon-container">
+        <img src="https://via.placeholder.com/50" alt="App Icon">
+      </div>
     </a>
     <a class="rectangle" href="urlhere" target="_blank">
       <div class="game-name">App Name 5</div>
+      <div class="icon-container">
+        <img src="https://via.placeholder.com/50" alt="App Icon">
+      </div>
     </a>
   </div>
 </body>
