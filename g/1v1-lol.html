@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1v1.lol</title>
+    <title>1v1 lol</title>
+
+    <!-- Favicon -->
     <link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/x-icon">
 
     <style>
@@ -12,68 +14,66 @@
             padding: 0;
             height: 100%;
             overflow: hidden;
-            position: relative; /* Needed for countdown positioning */
-        }
-        iframe {
-            border: none;
-            width: 100%;
-            height: 100%;
-            display: none; /* Hide iframe initially */
-        }
-        /* Countdown styling */
-        .countdown {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 24px;
-            z-index: 1000;
-            text-align: center;
         }
     </style>
+</head>
+<body dir="ltr">
+    <script src="https://cdn.jsdelivr.net/gh/n-101-1/1@main/UnityProgress.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/n-101-1/1@main/2.7.js"></script>
+    <script type="text/javascript">
+        var gameInstance;
+
+        window.onload = function () {
+            gameInstance = UnityLoader.instantiate("gameContainer", "https://cdn.jsdelivr.net/gh/n-101-1/1@main/2.7.json", {
+                onProgress: UnityProgress,
+                Module: {
+                    onRuntimeInitialized: function () {
+                        UnityProgress(gameInstance, "complete");
+                    },
+                },
+            });
+        };
+    </script>
+
+    <div class="webgl-content">
+        <div id="gameContainer" style="width: 100%; height: 100%; margin: 0; padding: 0; border: 0; position: relative; background: rgb(0, 0, 0);">
+            <canvas id="#canvas" style="width: 100%; height: 100%; cursor: default;" width="1018" height="926"></canvas>
+            <div class="logo Dark" style="display: none;"></div>
+            <div class="progress Dark" style="display: none;">
+                <div class="empty" style="width: 0%;"></div>
+                <div class="full" style="width: 100%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/gh/n-101-1/1@main/1firebase-app.js"></script>
+
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://cdn.jsdelivr.net/gh/n-101-1/1@main/1firebase-auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/n-101-1/1@main/1firebase-firestore.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/n-101-1/1@main/1firebase.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/n-101-1/1@main/1login.js?v=2"></script>
+    <script src="https://cdn.jsdelivr.net/gh/n-101-1/1@main/1firestore.js"></script>
 
     <script>
-        window.onload = function () {
-            if (localStorage.getItem('premium') !== 'true') {
-                // Show countdown for free users
-                showCountdown(10); // 10 seconds countdown
-            } else {
-                loadGame(0); // Load the game immediately for premium users
-            }
-        };
+        initializeFireBase();
 
-        function showCountdown(seconds) {
-            const countdownElement = document.createElement("div");
-            countdownElement.className = "countdown";
-            document.body.appendChild(countdownElement);
-
-            const message = document.createElement("p");
-            message.textContent = "You can play for free, but to skip wait times, consider getting a premium account!";
-            countdownElement.appendChild(message);
-
-            let countdown = seconds;
-            const countdownInterval = setInterval(() => {
-                countdownElement.appendChild(document.createElement("br"));
-                countdownElement.appendChild(document.createTextNode("Game starts in: " + countdown + " seconds..."));
-                countdown--;
-
-                if (countdown < 0) {
-                    clearInterval(countdownInterval);
-                    document.body.removeChild(countdownElement);
-                    loadGame(0); // Load the game after countdown
-                }
-            }, 1000);
+        function showAds() {
+            console.log("show ads");
         }
 
-        function loadGame(delay) {
-            // Show the iframe
-            const iframe = document.querySelector('iframe');
-            iframe.style.display = 'block'; // Show iframe
-            iframe.src = "https://x12maybeheat.vercel.app/games/1v1lol/index.html"; // Set the game URL
+        function requestNewAd() {
+            // Show video ad
+            unityAdFinishedCallback();
+        }
+
+        function unityAdFinishedCallback() {
+            try {
+                if (gameInstance) gameInstance.SendMessage("AdsManager", "OnWebCallback");
+            } catch (error) {
+                console.log(error);
+            }
         }
     </script>
-</head>
-<body>
-    <iframe title="1v1.lol"></iframe>
 </body>
 </html>
