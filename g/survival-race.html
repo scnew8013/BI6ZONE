@@ -1,0 +1,50 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>survival race</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/x-icon">
+
+    <style>
+        /* Style for full-page embedding */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        iframe {
+            border: none;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+  <script>
+            function loadMainGame(){
+            var html = `<iframe class="game-iframe iframeloader" id="game-area" src="https://www.gamegab.com/content/games/race-survival-arena-king/" width="480" height="800" scrolling="none" frameborder="0" allowfullscreen="" tabindex="0"></iframe>`;
+            document.getElementById("loadgame").innerHTML = html;
+            document.getElementById('loadgame').scrollIntoView();
+            }
+            function open_fullscreen() {
+                let game = document.getElementById("game-area");
+                if (game.requestFullscreen) {
+                    game.requestFullscreen();
+                } else if (game.mozRequestFullScreen) { /* Firefox */
+                    game.mozRequestFullScreen();
+                } else if (game.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+                    game.webkitRequestFullscreen();
+                } else if (game.msRequestFullscreen) { /* IE/Edge */
+                    game.msRequestFullscreen();
+                }
+                };
+        </script>
+</body>
+</html>
