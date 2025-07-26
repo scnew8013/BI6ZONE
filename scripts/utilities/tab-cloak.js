@@ -81,7 +81,7 @@ function cloakTab(title, favicon) {
 // Function to cloak tab with current page name
 function cloakTabWithCurrentPage(favicon) {
     // Get the current page name from URL
-    let pageName = 'unblockzone';
+    let pageName = 'BI6ZONE';
     
     // Extract page name from URL
     const path = window.location.pathname;
