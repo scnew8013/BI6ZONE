@@ -309,11 +309,17 @@ body {
 <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
 <script src="track.js"></script>
     <script>
-        // Show a games message
-        setTimeout(function() {
-            showGlowingMessage('Currently Fixing Games. Cruz, STOP LEAKING THE FAHKING WEBSITE-');
-        }, 1500);
-    </script>
+    function showGlowingMessage(message) {
+        // Assuming there's an HTML element with ID 'message-display'
+        // where this message will be shown.
+        document.getElementById('message-display').innerHTML = message;
+    }
+
+    setTimeout(function() {
+        showGlowingMessage('Version 1.0.1 Update Log:<br>1. Fixed bug in level 3.<br>2. Improved character movement.');
+    }, 1500);
+</script>
+<div id="message-display"></div>
     
 </body>
 </html>
