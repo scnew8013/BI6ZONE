@@ -1,30 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2dcsgo</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Counter-Strike 2D</title>
+    <link rel="icon" type="image/svg+xml" href="./img/favicon.svg" />
+    <link rel="stylesheet" href="../css/main.css" />
+  </head>
+  <body>
+    <div id="navbar"></div>
 
-    <!-- Favicon -->
-    <link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/x-icon">
+    <main class="section">
+      <div class="container">
+        <a href="../projects.html" class="btn-outline" style="margin-bottom: 2rem; display: inline-block;">← Back to Projects</a>
+        <div class="project-details">
+          <h1 class="title-1">Counter-Strike 2D</h1>
+          <img
+            src="../img/projects/cs2d.png"
+            alt="Counter-Strike 2D Preview"
+            class="project-details__cover"
+            style="max-width: 400px;"
+          />
+          <div class="project-details__desc">
+             Counter-Strike 2D is a C++ multiplayer top-down shooter inspired by the classic Counter-Strike game. 
+  It features a client-server architecture, real-time gameplay, and an integrated level editor. 
+  Players connect over a network, join teams (terrorists or counter-terrorists), and engage in tactical combat using a custom-built engine.
+          </div>
+          <ul class="content-list">
+            <li class="content-list__item">
+              <p><strong>Technologies:</strong> C++, SDL2, Box2D, CMake, Git, Bash</p>
+            </li>
+            <li class="content-list__item">
+              <p><strong>Repository:</strong> <a href="https://github.com/SantiagoLocatelli/Counter-Strike-2D" target="_blank">GitHub</a></p>
+            </li>
+            <li class="content-list__item">
+              <p>
+                The project includes modules for client-side rendering (using SDL2), server logic, shared components, and a custom level editor. 
+      Box2D is used for collision detection and physics simulation. Git was used throughout development for version control and collaboration, 
+      and we adopted a continuous delivery approach to maintain rapid iteration and stability. Additionally, we created a Bash-based installer 
+      to automate the setup process and improve ease of deployment across Linux systems.
+              </p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </main>
 
-    <style>
-        /* Style for full-page embedding */
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        iframe {
-            border: none;
-            width: 100%;
-            height: 100%;
-        }
-    </style>
-</head>
-<body>
-    <iframe src="https://bi6zone.vercel.app/active/iframe.html#https://frankplus.github.io" title="crazy cattle 3d"></iframe>
-</body>
+    <div id="footer-container"></div>
+    <script src="./js/main.js"></script>
+    <script>
+        loadFooter();
+        loadNavbar();
+    </script>
+  </body>
 </html>
