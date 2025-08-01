@@ -85,6 +85,23 @@ overflow: hidden;
 from { opacity: 0; }
 to { opacity: 1; }
 }
+
+  @keyframes slideFadeDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-in-on-load {
+  opacity: 0;
+  animation: slideFadeDown 0.6s ease-out forwards;
+}
+
 .title {
 margin-top: 50px;
 font-size: 48px;
@@ -358,6 +375,16 @@ const analytics = getAnalytics(app);
 setTimeout(function() {
 showGlowingMessage('Everything on the site is fixed and running. To hide the url from getting leaked, go into full screen and click the "open blank" button thats over the proxies button. This will completely hide the website name and url name from getting leaked while also having the site still fully playable.');
 }, 1500);
+</script>
+
+  <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const elements = document.querySelectorAll("h1, h2, p, .icon-container, .header, .support-text, .button");
+  elements.forEach((el, i) => {
+    el.classList.add("slide-in-on-load");
+    el.style.animationDelay = `${i * 100}ms`; // staggered effect
+  });
+});
 </script>
 
 </body>
