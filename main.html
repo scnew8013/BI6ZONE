@@ -60,6 +60,21 @@ body {
     transform: scale(1.1); /* Slight zoom effect for smooth interaction */
 }
         
+@keyframes popupEntry {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.popup-animate {
+    animation: popupEntry 0.5s ease-out forwards;
+}
+
 </style>
 
     <style>
@@ -217,6 +232,13 @@ body {
     </script>
 </head>
 <body>
+    <div id="blackout" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 999;"></div>
+
+<div id="popupBox" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #111; color: white; padding: 30px; border: 2px solid yellow; border-radius: 10px; z-index: 1000; width: 80%; max-width: 600px; text-align: center;">
+    <h2 style="margin-bottom: 10px;">BI6ZONE</h2>
+    <button onclick="closePopup()" style="margin-top: 20px; background: none; border: 1px solid yellow; padding: 10px 15px; color: yellow; border-radius: 5px;">Close</button>
+</div>
+
     <div id="particles-js"></div>
     <div class="coolBlobIdk"></div>
 
@@ -359,6 +381,22 @@ body {
             showGlowingMessage('Everything on the site is fixed and running. To hide the url from getting leaked, go into full screen and click the "open blank" button thats over the proxies button. This will completely hide the website name and url name from getting leaked while also having the site still fully playable.');
         }, 1500);
     </script>
-    
+    <script>
+    function closePopup() {
+        document.getElementById("popupBox").style.display = "none";
+        document.getElementById("blackout").style.display = "none";
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        if (!localStorage.getItem("bi6-popup-shown")) {
+            const popup = document.getElementById("popupBox");
+            popup.classList.add("popup-animate");
+            popup.style.display = "block";
+            document.getElementById("blackout").style.display = "block";
+            localStorage.setItem("bi6-popup-shown", "true");
+        }
+    });
+</script>
+
 </body>
 </html>
