@@ -1,365 +1,274 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>BI6ZONE</title>
-    <head>
-        <title>BI6ZONE</title>
-        <script src="https://cdn.counter.dev/script.js" data-id="3b603ac0-8122-4415-8806-3f31aac7d6d2" data-utcoffset="-7"></script>
-    <style>
-        #container {
-            background-color: #f0f8ff;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BI6ZONE</title>
-    <link rel="icon" href="https://files.catbox.moe/m1zg0c.ico" type="image/png">
-
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-SZN69N4SEF"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-SZN69N4SEF');
-</script>
-
-<!-- Tab Cloaking and Emergency Escape Scripts -->
-<script src="scripts/utilities/tab-cloak.js"></script>
-<script src="scripts/utilities/emergency-escape.js"></script>
-<script src="scripts/utilities/theme.js"></script>
-<script src="scripts/utilities/message-system.js"></script>
-    
-    <style>
-/* Moving gradient background */
-@keyframes moveGradient {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-body {
-    background: linear-gradient(-45deg, #0f0f0f, #1a1a1a, #000000, #222222);
-    background-size: 400% 400%;
-    animation: moveGradient 20s infinite alternate ease-in-out;
-}
-
-/* Icon container for smooth shine effect */
-.icon-container {
-    position: relative;
-    overflow: hidden;
-    border-radius: 20px; /* Keeps the shine effect within rounded edges */
-    transition: transform 0.3s ease-in-out;
-}
-
-.icon-container:hover {
-    transform: scale(1.1); /* Slight zoom effect for smooth interaction */
-}
-        
-</style>
-
+    <title>seraph</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            background: url('https://files.catbox.moe/8u3ems.png') no-repeat center center fixed;
-            background-size: cover;
-            height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            min-height: 100vh;
+            background: radial-gradient(ellipse at top, hsl(45, 100%, 15%) 0%, hsl(0, 0%, 5%) 50%, hsl(0, 0%, 0%) 100%);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Halftone pattern overlays */
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            mask-image: radial-gradient(ellipse at center, black 40%, transparent 70%);
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.05) 2px, transparent 2px);
+            background-size: 40px 40px;
+            mask-image: radial-gradient(ellipse at 70% 30%, black 30%, transparent 60%);
+            opacity: 0.2;
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
             display: flex;
             flex-direction: column;
             align-items: center;
-            color: white;
-            font-family: Arial, sans-serif;
-            opacity: 0;
-            animation: fadeIn 1s ease-in forwards;
-            overflow: hidden;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-.title {
-    margin-top: 50px;
-            font-size: 48px;
-            font-weight: bold;
-            text-transform: lowercase;
-            color: white;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
-            text-align: center;
-}
-
-.title:hover {
-    transform: translateX(-50%) scale(1.1);
-}
 
         .header {
-            position: absolute;
-            top: 70%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            height: 60px;
-            background: black;
-            border: 2px solid white;
-            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 900;
+            color: hsl(45, 100%, 70%);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.025em;
+            text-shadow: 
+                0 0 20px hsl(45, 100%, 50%), 
+                0 0 40px hsl(45, 100%, 50%), 
+                0 0 60px hsl(45, 100%, 50%);
+        }
+
+        .cursor {
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .version {
+            color: hsl(45, 50%, 50%);
+            font-size: 1rem;
+            font-weight: 300;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+            max-width: 18rem;
+        }
+
+        .button {
+            width: 4rem;
+            height: 4rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: hsl(45, 100%, 70%);
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 0.75rem;
+            backdrop-filter: blur(8px);
+            transition: all 0.3s ease;
+            font-size: 0.75rem;
+            font-weight: 300;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .button:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .button-icon {
+            width: 18px;
+            height: 18px;
+            margin-bottom: 0.25rem;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .footer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .link-row {
             display: flex;
             align-items: center;
-            padding: 0 15px;
-        }
-        .search-bar {
-            width: 100%;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: white;
-            font-size: 18px;
-        }
-        .icons-container {
-    margin-top: 30px; /* Reduced from 50px to 30px */
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Flexible column count */
-    gap: 10px; /* Reduced spacing */
-    justify-content: center;
-    align-items: center;
-    max-width: 320px; /* Adjust width if needed */
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.icon-container {
-    width: 85px; /* Slightly smaller */
-    height: 90px; /* Adjusted height */
-    background: black;
-    border: 3px solid yellow;
-    border-radius: 15px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    transition: transform 0.2s ease-in-out;
-}
-
-.icon-container:hover {
-    transform: scale(1.1); /* Smaller hover effect */
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
-}
-        .icon {
-            width: 60px;
-            height: 60px;
-            cursor: pointer;
-        }
-        .icon-label {
-            margin-top: 5px;
-            font-size: 14px;
-            color: white;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            gap: 1rem;
+            color: hsl(45, 50%, 50%);
         }
 
-        .support-text {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            font-size: 20px;
-            font-weight: bold;
-            color: white;
-            cursor: pointer;
+        .link-row a {
+            color: inherit;
+            text-decoration: underline;
+            font-size: 0.875rem;
+            transition: color 0.2s ease;
         }
 
-        .coolBlobIdk {
-            position: fixed;
-            bottom: -30%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 600px;
-            height: 400px;
-            background: linear-gradient(135deg, rgba(169, 169, 169, 0.5), rgba(255, 255, 255, 0.4));
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.8;
-            will-change: transform;
+        .link-row a:hover {
+            color: hsl(45, 100%, 70%);
         }
 
-        .update-text {
-            text-align: center;
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            font-size: 16px;
-            font-weight: bold;
-            color: white;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 5px 10px;
-            border-radius: 5px;
+        .separator {
+            margin: 0 1rem;
+        }
+
+        .credit {
+            color: hsl(45, 50%, 50%);
+            font-size: 0.75rem;
+            margin-top: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .title {
+                font-size: 5rem;
+            }
         }
     </style>
-    
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="title">
+                <span id="typewriter"></span><span class="cursor">|</span>
+            </h1>
+            <p class="version">version 10 / release build</p>
+        </div>
+
+        <!-- Main buttons grid -->
+        <div class="button-grid">
+            <a href="#games" class="button">
+                <svg class="button-icon" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="3" rx="2"/><path d="m2 7 20 0"/><path d="m7 21-4-4 4-4"/><path d="m17 21 4-4-4-4"/></svg>
+                games
+            </a>
+            <a href="#apps" class="button">
+                <svg class="button-icon" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+                apps
+            </a>
+            <a href="#settings" class="button">
+                <svg class="button-icon" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                settings
+            </a>
+            <a href="#display" class="button">
+                <svg class="button-icon" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>
+                display
+            </a>
+            <a href="#dev" class="button">
+                <svg class="button-icon" viewBox="0 0 24 24"><polyline points="16,18 22,12 16,6"/><polyline points="8,6 2,12 8,18"/></svg>
+                dev tools
+            </a>
+            <a href="#mobile" class="button">
+                <svg class="button-icon" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18"/></svg>
+                mobile
+            </a>
+            <a href="#links" class="button">
+                <svg class="button-icon" viewBox="0 0 24 24"><path d="m7 17 10-10"/><path d="M17 7h-4"/><path d="M17 7v4"/></svg>
+                links
+            </a>
+            <a href="#tools" class="button">
+                <svg class="button-icon" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                tools
+            </a>
+            <a href="#config" class="button">
+                <svg class="button-icon" viewBox="0 0 24 24"><path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/><path d="M12 2v2"/><path d="M12 22v-2"/><path d="m1.05 9 1.95.87"/><path d="m21.95 15-1.95-.87"/><path d="m2.12 13.12 1.43 1.43"/><path d="m20.45 4.55-1.43 1.43"/><path d="m9 2.05.87 1.95"/><path d="m15 21.95-.87-1.95"/><path d="m4.55 20.45 1.43-1.43"/><path d="m20.45 4.55-1.43 1.43"/></svg>
+                config
+            </a>
+        </div>
+
+        <!-- Footer navigation -->
+        <div class="footer">
+            <!-- Top row links -->
+            <div class="link-row">
+                <a href="#mobile">mobile</a>
+                <span class="separator">•</span>
+                <a href="#rehost">rehost</a>
+                <span class="separator">•</span>
+                <a href="#blank">open blank</a>
+            </div>
+
+            <!-- Bottom row links -->
+            <div class="link-row">
+                <a href="#discord">discord</a>
+                <span class="separator">•</span>
+                <a href="#updates">update log</a>
+                <span class="separator">•</span>
+                <a href="#source">source code</a>
+            </div>
+
+            <!-- Creator credit -->
+            <div class="credit">
+                <span>✦</span>
+                <span>website created/developed by @a456pur</span>
+                <span>✦</span>
+            </div>
+        </div>
+    </div>
+
     <script>
-        function handleSearch(event) {
-            if (event.key === "Enter") {
-                let query = event.target.value.trim();
-                if (query) {
-                    let proxyUrl = `active/iframe.html#https://http://bing.com/search?q=${encodeURIComponent(query)}`;
-                    window.location.href = proxyUrl;
-                }
+        // Typewriter effect
+        const typewriter = document.getElementById('typewriter');
+        const text = 'seraph';
+        let i = 0;
+
+        function typeEffect() {
+            if (i < text.length) {
+                typewriter.textContent += text.charAt(i);
+                i++;
+                setTimeout(typeEffect, 150);
             }
         }
 
-        function openSupportPage() {
-            window.open('https://docs.google.com/forms/d/1t52FBl9fUIm6ftWzFQTSw4dutoIOP1rTe8AnQ4cg1pY/viewform?edit_requested=true', '_blank');
-        }
+        // Start typewriter effect when page loads
+        window.addEventListener('load', typeEffect);
     </script>
-</head>
-<body>
-    <div id="particles-js"></div>
-    <div class="coolBlobIdk"></div>
-
-    <div class="title">BI6ZONE</div>
-
-    <div class="icons-container">
-        <div class="icon-container">
-            <img class="icon" src="https://files.catbox.moe/4yuk01.png" onclick="window.location.href='g.html'">
-            <div class="icon-label">Games</div>
-        </div>
-        <div class="icon-container">
-            <img class="icon" src="https://img.icons8.com/ios7/600/FFFFFF/apple-app-store--v2.png" onclick="window.location.href='a.html'">
-            <div class="icon-label">Apps</div>
-        </div>
-        <div class="icon-container">
-            <img class="icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0_6HUhLshuftA_sDchc5pEGqTBPa41EO6Xw&s" onclick="window.location.href='e.html'">
-            <div class="icon-label">Exploits</div>
-        </div>
-        <div class="icon-container">
-            <img class="icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRclWJCEIPuuU-0DeRx9HfoSWM4y8Ei59lGhQ&s" onclick="window.location.href='es.html'">
-            <div class="icon-label">Extra</div>
-        </div>
-        <div class="icon-container">
-            <img class="icon" src="https://img.icons8.com/m_rounded/512/FFFFFF/settings.png" onclick="window.location.href='s.html'">
-            <div class="icon-label">Settings</div>
-        </div>
-        <div class="icon-container">
-            <img class="icon" src="https://files.catbox.moe/uf0zh5.png" onclick="window.location.href='disremake.html'">
-            <div class="icon-label">Chat</div>
-            </div>
-        <div class="icon-container">
-            <img class="icon" src="https://files.catbox.moe/ldl2m3.png" onclick="window.location.href='/hwhelper/index.html'">
-            <div class="icon-label">HwBot</div>
-        </div>
-        <div class="icon-container">
-            <img class="icon" src="https://files.catbox.moe/mmm6k8.png" onclick="window.location.href='/faq/index.html'">
-            <div class="icon-label">FAQ</div>
-        </div>
-        <div class="icon-container">
-            <img class="icon" src="https://files.catbox.moe/cx3kpy.png" onclick="window.location.href='admin.html'">
-            <div class="icon-label">Admin</div>
-        </div>
-    </div>
-
-    <p>ㅤㅤㅤㅤ</p>
-        
-    <p><a id="openBlankLink">open blank</a></p>
-
-    <div class="header">
-    <button onclick="window.location.href='proxies.html'" class="search-bar">Search... (click me to go to list of proxies)</button>
-    </div>
-
-    <div class="support-text" onclick="openSupportPage()">support</div>
-    
-    <!-- Update Message -->
-<div id="updateBox" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.8); color: white; padding: 10px 15px; border: 2px solid yellow; border-radius: 10px; font-size: 14px; text-align: center; box-shadow: 0 0 15px rgba(255, 255, 255, 0.5); display: none;">
-    🍪 <strong>We Use Cookies</strong> 
-    This website use cookies to grab user data so you get the best experience on our website!
-    <button onclick="document.getElementById('updateBox').style.display='none'" style="background: none; color: yellow; border: 1px solid yellow; padding: 5px 10px; margin-left: 10px; cursor: pointer; border-radius: 5px;">Accept</button>
-    <button onclick="document.getElementById('updateBox').style.display='none'" style="background: none; color: yellow; border: 1px solid yellow; padding: 5px 10px; margin-left: 10px; cursor: pointer; border-radius: 5px;">Reject</button>
-</div>
-
-<script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var openBlankLink = document.getElementById('openBlankLink');
-        
-            openBlankLink.addEventListener('click', function(event) {
-                event.preventDefault();
-        
-                var newTab = window.open('about:blank', '_blank');
-        
-                if (newTab) {
-                    var newTabBody = newTab.document.body;
-                    newTabBody.style.padding = '0';
-                    newTabBody.style.margin = '0';
-                    newTabBody.style.border = 'hidden';
-        
-                    var iframe = document.createElement('iframe');
-                    iframe.src = window.location.href;
-                    iframe.style.width = '100%';
-                    iframe.style.height = '100%';
-                    iframe.style.border = 'hidden';
-
-                    iframe.onload = function() {
-                        var links = iframe.contentDocument.querySelectorAll('a[target="_blank"]');
-                        links.forEach(function(link) {
-                            link.addEventListener('click', function(event) {
-                                event.preventDefault();
-                                iframe.contentWindow.location.href = link.href;
-                            });
-                        });
-                    };
-        
-                    newTab.document.body.appendChild(iframe);
-                } else {
-                    alert("couldn't manage to open a new tab :(");
-                }
-            });
-        });
-        </script> 
-    
-<script>
-    // Show update message after 1.5 seconds
-    setTimeout(() => document.getElementById("updateBox").style.display = "block", 1500);
-</script>
-    
-    <div class="update-text">Last Updated On 7/25/25</div>
-    
-    <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyAe5Rx6v9v7a_AbppRkEWs6tEkVd3DbyLI",
-    authDomain: "bi6zone-51b18.firebaseapp.com",
-    databaseURL: "https://bi6zone-51b18-default-rtdb.firebaseio.com",
-    projectId: "bi6zone-51b18",
-    storageBucket: "bi6zone-51b18.firebasestorage.app",
-    messagingSenderId: "787996595081",
-    appId: "1:787996595081:web:f85edbb0001124f2cf0758",
-    measurementId: "G-HHJW0NJFK5"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-    </script>
-    
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
-<script src="track.js"></script>
-    <script>
-        // Show a games message
-        setTimeout(function() {
-            showGlowingMessage('Everything on the site is fixed and running. To hide the url from getting leaked, go into full screen and click the "open blank" button thats over the proxies button. This will completely hide the website name and url name from getting leaked while also having the site still fully playable.');
-        }, 1500);
-    </script>
-    
 </body>
 </html>
-
