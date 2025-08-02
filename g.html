@@ -1162,22 +1162,5 @@
             });
         });
         </script>
-    <script>
-        // Typewriter effect
-        const typewriter = document.getElementById('typewriter');
-        const text = 'GAMES';
-        let i = 0;
-
-        function typeEffect() {
-            if (i < text.length) {
-                typewriter.textContent += text.charAt(i);
-                i++;
-                setTimeout(typeEffect, 150);
-            }
-        }
-
-        // Start typewriter effect when page loads
-        window.addEventListener('load', typeEffect);
-    </script>
 </body>
 </html>
