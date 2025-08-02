@@ -381,8 +381,11 @@ showGlowingMessage('Everything on the site is fixed and running. To hide the url
 document.addEventListener("DOMContentLoaded", () => {
   const elements = document.body.querySelectorAll("*");
   elements.forEach(el => {
-    el.classList.add("slide-in-on-load");
-    el.style.animationDelay = "0s";
+    // Exclude glowing message by ID or class
+    if (!el.id.includes('glowingMessage') && !el.classList.contains('glowingMessage')) {
+      el.classList.add("slide-in-on-load");
+      el.style.animationDelay = "0s";
+    }
   });
 });
 </script>
