@@ -370,6 +370,77 @@
             .controls { gap: 1rem; }
             .footer-links { gap: 1rem; }
         }
+
+        /* Rectangle Card Style (Matches BI6ZONE Theme) */
+.rectangle-container {
+    display: flex;
+    justify-content: center;
+}
+
+.rectangle {
+    width: 300px;
+    background: rgba(212, 175, 55, 0.05);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    font-family: 'Orbitron', monospace;
+}
+
+.rectangle:hover {
+    border-color: #d4af37;
+    transform: scale(1.03);
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+}
+
+.rectangle img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    filter: blur(1px);
+    transition: transform 0.4s ease;
+}
+
+.rectangle:hover img {
+    transform: scale(1.05);
+}
+
+.rectangle .game-name {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #d4af37;
+    margin: 0.75rem 0 0.25rem;
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: bold;
+    border-radius: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+.mobsup-badge {
+    background: rgba(212, 175, 55, 0.15);
+    color: #d4af37;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    box-shadow: 0 0 5px rgba(212, 175, 55, 0.2);
+}
+
+.pc-badge {
+    background: rgba(212, 175, 55, 0.1);
+    color: #d4af37;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    box-shadow: 0 0 5px rgba(212, 175, 55, 0.15);
+}
+
     </style>
 </head>
 <body>
@@ -443,7 +514,7 @@
         // Game data
         const gameData = [
             { id: 1, name: "subway surfers", category: "mobile", image: "https://files.catbox.moe/nlz4zw.jpeg" },
-            { id: 2, name: "placeholder", category: "pc", image: "" },
+            { id: 2, name: "minecraft", category: "pc", image: "" },
             { id: 3, name: "placeholder", category: "mobile", image: "" },
             { id: 4, name: "placeholder", category: "pc", image: "" },
             { id: 5, name: "placeholder", category: "mobile", image: "" },
@@ -483,30 +554,25 @@
 
         // Create game card
         function createGameCard(game) {
-            const hasImage = game.image && game.image !== '';
-            
-            return `
-                <div class="game-card" onclick="window.location.href='/g/${game.name.replace(/\s+/g, '-')}.html'">
-                    <div class="game-image">
-                        ${hasImage ? 
-                            `<img src="${game.image}" alt="${game.name}">
-                             <div class="game-name-overlay">
-                                 <div class="game-name">${game.name}</div>
-                             </div>` :
-                            `<div class="placeholder-bg">
-                                 <div class="placeholder-text">PLACEHOLDER</div>
-                             </div>`
-                        }
-                    </div>
-                    <div class="game-info">
-                        <div class="game-title">${game.name}</div>
-                        <div class="badge ${game.category === 'mobile' ? 'badge-mobile' : 'badge-pc'}">
-                            ${game.category === 'mobile' ? 'Mobile Supported' : 'PC'}
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
+    const safeName = game.name.replace(/\s+/g, '-').toLowerCase();
+    const hasImage = game.image && game.image !== '';
+    const imageTag = hasImage
+        ? `<img src="${game.image}" alt="${game.name}">`
+        : `<div class="placeholder-bg"><div class="placeholder-text">No Image</div></div>`;
+
+    const badgeText = game.category === 'mobile' ? 'Mobile' : 'PC';
+
+    return `
+        <div class="rectangle-container">
+            <div class="rectangle" onclick="window.location.href='/g/${safeName}.html'">
+                ${imageTag}
+                <div class="game-name">${game.name}</div>
+                <span class="badge">${badgeText}</span>
+            </div>
+        </div>
+    `;
+}
+
 
         // Filter and render games
         function renderGames() {
