@@ -1,528 +1,606 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>apps</title>
-    <link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/png">
-
-    <!-- 100% privacy-first analytics -->
-<script async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
-
-
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-SZN69N4SEF"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-SZN69N4SEF');
-</script>
-    
-    <!-- Tab Cloaking and Utility Scripts -->
-    <script src="scripts/utilities/tab-cloak.js"></script>
-    <script src="scripts/utilities/emergency-escape.js"></script>
-    <script src="scripts/utilities/theme.js"></script>
-    <script src="scripts/utilities/message-system.js"></script>
-    
+    <title>Apps - BI6ZONE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            background: url('https://img.freepik.com/free-photo/artistic-blurry-colorful-wallpaper-background_58702-8520.jpg?semt=ais_hybrid') no-repeat center center fixed;
-            background-size: cover;
+            font-family: 'Orbitron', monospace;
+            background: #000;
+            color: #d4af37;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: white;
-            font-family: Arial, sans-serif;
-            opacity: 0;
-            animation: fadeIn 1s ease-in forwards;
-            position: relative;
             overflow-x: hidden;
-            overflow-y: auto;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
         }
-.icons {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px; /* Increased margin-top to move icons down */
-}
 
-.icon-container {
-    width: 60px;
-    height: 60px;
-    background-color: black;
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-    box-shadow: 0 0 10px white;
-}
-
-.icon-container:hover {
-    transform: scale(1.2);
-    box-shadow: 0 0 20px white;
-}
-
-.icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    cursor: pointer;
-}
-        .coolBlobIdk {
-            position: fixed;
-            bottom: -30%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 600px;
-            height: 400px;
-            background: linear-gradient(135deg, rgba(50, 50, 50, 0.8), rgba(200, 200, 200, 0.6));
-            border-radius: 50%;
-            filter: blur(100px);
-            box-shadow: 0 0 120px rgba(200, 200, 200, 0.5);
-        }
-        #particles-js {
+        /* Background Effects */
+        .background {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
+            z-index: 1;
         }
-        .title {
-            margin-top: 100px;
-            font-size: 48px;
-            font-weight: bold;
-            text-transform: lowercase;
-            color: white;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
-            text-align: center;
-            transition: transform 0.3s ease-in-out;
+
+        .glow-ring {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
         }
-        .title:hover {
-            transform: scale(1.2);
-        }
-        .rectangle-container {
-            display: flex;
-            gap: 20px;
-            margin-top: 40px;
-        }
-        .rectangle {
+
+        .glow-1 {
+            top: 25%;
+            left: 25%;
             width: 400px;
-            height: 250px;
-            background-color: black;
-            border-radius: 15px;
-            box-shadow: 0 0 20px white;
-            position: relative;
+            height: 400px;
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .glow-2 {
+            bottom: 25%;
+            right: 25%;
+            width: 400px;
+            height: 400px;
+            background: rgba(212, 175, 55, 0.08);
+        }
+
+        .glow-3 {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 800px;
+            background: rgba(212, 175, 55, 0.05);
+            filter: blur(120px);
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 0.75rem;
+            color: #d4af37;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .back-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: #d4af37;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #d4af37;
+            text-shadow: 0 0 30px #d4af37, 0 0 60px #d4af37;
+            letter-spacing: 0.2em;
+            margin-bottom: 2rem;
+            animation: glow-pulse 2s ease-in-out infinite alternate;
+        }
+
+        .typewriter {
+            border-right: 2px solid #d4af37;
+            animation: typewriter 4s steps(5) 1s infinite, blink 1s step-end infinite;
+            white-space: nowrap;
             overflow: hidden;
+            width: 5ch;
+            margin: 0 auto;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            width: 300px;
+            height: 3.5rem;
+            padding: 0 1rem 0 3rem;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 0.75rem;
+            color: #d4af37;
+            font-size: 1rem;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(212, 175, 55, 0.6);
+        }
+
+        .select-container {
+            position: relative;
+        }
+
+        .select {
+            height: 3.5rem;
+            padding: 0 2.5rem 0 1rem;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 0.75rem;
+            color: #d4af37;
+            font-size: 1rem;
+            font-family: 'Orbitron', monospace;
             cursor: pointer;
-            transition: transform 0.3s ease-in-out;
+            appearance: none;
         }
+
+        .select:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Games Grid */
+        .games-grid {
+            display: grid;
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+        }
+
+        .grid-mobile { grid-template-columns: 1fr; }
+        .grid-tablet { grid-template-columns: repeat(2, 1fr); }
+        .grid-desktop { grid-template-columns: repeat(3, 1fr); }
+
+        /* Game Card */
+        .rectangle-container {
+            /* Container styles if needed */
+        }
+
+        .rectangle {
+            position: relative;
+            background: rgba(212, 175, 55, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            transition: all 0.5s ease;
+            cursor: pointer;
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+        }
+
         .rectangle:hover {
-            transform: scale(1.05);
+            border-color: #d4af37;
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
         }
+
         .rectangle img {
             width: 100%;
-            height: 100%;
-            border-radius: 15px;
+            height: 200px;
             object-fit: cover;
-            transition: filter 0.3s ease-in-out;
+            transition: transform 0.5s ease;
         }
+
         .rectangle:hover img {
-            filter: blur(5px) brightness(0.5);
+            transform: scale(1.1);
         }
+
         .game-name {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            font-size: 24px;
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
-            color: white;
-            text-align: left;
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.8);
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            height: 50px;
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
             font-weight: bold;
-            letter-spacing: -0.5px;
+            color: #d4af37;
             text-transform: lowercase;
         }
-        .rectangle:hover .game-name {
-            opacity: 1;
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem 0;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            margin-top: 2rem;
         }
-        
-        /* Remove home button styles */
-            
-/* Search Bar Styles */
-.search-container {
-    position: relative;
-    width: 300px;
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-}
 
-.search-wrapper {
-    position: relative;
-    width: 100%;
-}
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
 
-.rainbow-search {
-    width: 100%;
-    padding: 12px 20px;
-    border-radius: 30px;
-    border: none;
-    outline: none;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    font-family: Arial, sans-serif;
-    font-size: 16px;
-    text-align: center;
-    box-shadow: 0 0 8px white; /* Subtle constant glow */
-    transition: box-shadow 0.3s ease-in-out; /* Smooth transition for the glow */
-}
+        .footer-link {
+            color: #d4af37;
+            text-decoration: none;
+            position: relative;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
 
-.rainbow-search::placeholder {
-    color: rgba(255, 255, 255, 0.7);
-}
+        .footer-link::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            bottom: -2px;
+            left: 0;
+            background-color: #d4af37;
+            transform: scaleX(0);
+            transform-origin: bottom right;
+            transition: transform 0.3s ease;
+        }
 
-/* Stronger glow on hover and focus */
-.rainbow-search:hover,
-.rainbow-search:focus {
-    box-shadow: 0 0 20px white; /* Stronger white glow on hover or focus */
-}
+        .footer-link:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
 
+        .footer-link:hover {
+            text-shadow: 0 0 10px #d4af37;
+        }
 
+        /* Animations */
+        @keyframes glow-pulse {
+            0% { text-shadow: 0 0 20px #d4af37, 0 0 40px #d4af37; }
+            100% { text-shadow: 0 0 30px #d4af37, 0 0 60px #d4af37, 0 0 90px #d4af37; }
+        }
+
+        @keyframes typewriter {
+            from { width: 0; }
+            to { width: 5ch; }
+        }
+
+        @keyframes blink {
+            from, to { border-color: transparent; }
+            50% { border-color: #d4af37; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .title { font-size: 2.5rem; }
+            .search-input { width: 250px; }
+            .controls { gap: 1rem; }
+            .footer-links { gap: 1rem; }
+        }
     </style>
 </head>
 <body>
-    <div id="particles-js"></div>
-    <div class="coolBlobIdk"></div>
-    <div class="title">apps</div>
-    
-    <!-- Add search bar -->
-    <div class="search-container">
-        <div class="search-wrapper">
-            <input type="text" id="appSearch" class="rainbow-search" placeholder="search apps...">
-        </div>
-    </div>
-    
-    <div class="icons">
-        <a href="/main.html" onclick="event.preventDefault(); window.location.href='/main.html';" class="icon-container"><img src="https://img.icons8.com/ios-filled/50/FFFFFF/home.png" alt="Home" class="icon"></a>
-        <a href="/g.html" onclick="event.preventDefault(); window.location.href='/g.html';" class="icon-container"><img src="https://static-00.iconduck.com/assets.00/console-controller-icon-2048x2048-pmmusn7m.png" alt="Games" class="icon"></a>
-        <a href="/a.html" onclick="event.preventDefault(); window.location.href='/a.html';" class="icon-container"><img src="https://img.icons8.com/ios7/600/FFFFFF/apple-app-store--v2.png" alt="Apps" class="icon"></a>
-        <a href="/e.html" onclick="event.preventDefault(); window.location.href='/e.html';" class="icon-container"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0_6HUhLshuftA_sDchc5pEGqTBPa41EO6Xw&s" alt="Exploits" class="icon"></a>
-        <a href="/es.html" onclick="event.preventDefault(); window.location.href='/es.html';" class="icon-container"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRclWJCEIPuuU-0DeRx9HfoSWM4y8Ei59lGhQ&s" alt="Extra" class="icon"></a>
-        <a href="/disremake.html" onclick="event.preventDefault(); window.location.href='/disremake.html';" class="icon-container"><img src="https://files.catbox.moe/uf0zh5.png" alt="chat" class="icon"></a>
-        <a href="/s.html" onclick="event.preventDefault(); window.location.href='/s.html';" class="icon-container"><img src="https://img.icons8.com/m_rounded/512/FFFFFF/settings.png" alt="Settings" class="icon"></a>
-        <a href="/hwhelper/index.html" onclick="event.preventDefault(); window.location.href='/hwhelper/indexhtml';" class="icon-container"><img src="https://files.catbox.moe/ldl2m3.png" alt="Settings" class="icon"></a>
-    </div>
-     <div class="rectangle-container">
-        <div class="rectangle" onclick="window.location.href='/a/poki.html'">
-            <img src="https://i0.wp.com/pune.news/wp-content/uploads/2024/03/Poki-Games.webp?resize=800%2C422&ssl=1" alt="Image 2">
-            <div class="game-name">poki</div>
-        </div>
-        <div class="rectangle" onclick="window.location.href='/a/y8.html'">
-            <img src="https://play-lh.googleusercontent.com/HDM9SZ44_fEMODThQZhGRD4rM0dg0CQMVYZ1_nVIdNkuz3MASA-7JOgdaDvqzgw0J3ux=w600-h300-pc0xffffff-pd" alt="Image 2">
-            <div class="game-name">y8</div>
-        </div>
-        <div class="rectangle" onclick="window.location.href='/a/nowgg.html'">
-            <img src="https://static1.anpoimages.com/wordpress/wp-content/uploads/2024/07/now-gg-logo-pink.jpg" alt="Image 2">
-            <div class="game-name">nowgg</div>
-        </div>
-    </div>
-     <div class="rectangle-container">
-        <div class="rectangle" onclick="window.location.href='/a/x.html'">
-            <img src="https://pimpmytype.com/wp-content/uploads/2023/08/twitter-x-app-icon-1400x788.png" alt="Image 2">
-            <div class="game-name">x</div>
-        </div>
-        <div class="rectangle" onclick="window.location.href='/a/easyfungg.html'">
-            <img src="https://www.24-7pressrelease.com/attachments/051/press_release_distribution_0513207_207175.jpg" alt="Image 2">
-            <div class="game-name">easyfungg</div>
-        </div>
-        <div class="rectangle" onclick="window.location.href='/a/crazy-games.html'">
-            <img src="https://bleedingcool.com/wp-content/uploads/2024/06/CrazyGames-Banner-Logo-1200x675.jpg" alt="Image 2">
-            <div class="game-name">crazy games</div>
-        </div>
-    </div>
-     <div class="rectangle-container">
-        <div class="rectangle" onclick="window.location.href='/a/blooket-bot.html'">
-            <img src="https://res.cloudinary.com/jerrick/image/upload/d_642250b563292b35f27461a7.png,f_jpg,fl_progressive,q_auto,w_1024/645c0edf1cfce5001d87e082.jpg" alt="Image 2">
-            <div class="game-name">blooket bot</div>
-        </div>
-        <div class="rectangle" onclick="window.location.href='/a/geforcenow.html'">
-            <img src="https://static1.xdaimages.com/wordpress/wp-content/uploads/2020/05/NVIDIA-GeForce-NOW.jpg" alt="Image 2">
-            <div class="game-name">geforce now</div>
-        </div>
-        <div class="rectangle" onclick="window.location.href='/a/tiktok.html'">
-            <img src="https://img.pixers.pics/pho(s3:700/PI/54/88/85/48/91/700_PI5488854891_fd892e1ebe755b56602e9f6421f22762_5f9fed4c9f302_.,700,700,jpg)/stickers-tiktok-vector-logo.jpg.jpg" alt="Image 2">
-            <div class="game-name">tiktok</div>
-        </div>
-    </div>
-     <div class="rectangle-container">
-        <div class="rectangle" onclick="window.location.href='/a/cool-math-games.html'">
-            <img src="https://defold.com/images/assets/coolmathgames-hero.jpg" alt="Image 2">
-            <div class="game-name">cool math games</div>
-        </div>
-        <div class="rectangle" onclick="window.location.href='/a/github.html'">
-            <img src="https://cdn.textstudio.com/output/graphic/preview/large/0/6/9/9/9960_a863ac94.webp" alt="Image 2">
-            <div class="game-name">github</div>
-        </div>
-        <div class="rectangle" onclick="window.location.href='/a/xbox-cloud-gaming.html'">
-            <img src="https://xxboxnews.blob.core.windows.net/prod/sites/2/2023/08/image004-04165e41841930c0754b-dd52b7ee8b2c45e09b17.png" alt="Image 2">
-            <div class="game-name">xbox cloud gaming</div>
-        </div>
-    </div>
-    </div>
-     <div class="rectangle-container">
-        <div class="rectangle" onclick="window.location.href='/a/school-cheats.html'">
-            <img src="https://files.catbox.moe/ielqzb.png" alt="Image 2">
-            <div class="game-name">school cheats</div>
-        </div>
-        <div class="rectangle" onclick="window.location.href='/a/reddit.html'">
-            <img src="https://static-00.iconduck.com/assets.00/reddit-icon-2048x2048-ya82zt8l.png" alt="Image 2">
-            <div class="game-name">reddit</div>
-        </div>
-        <div class="rectangle" onclick="window.location.href='/a/pinterest.html'">
-            <img src="https://images.ctfassets.net/h67z7i6sbjau/5zteWRcC1qbgLZoClcMmYl/a0391fdc321eddce7de41152108723b5/Brand_Guidelines_hero_2x.jpg?fm=webp&q=85" alt="Image 2">
-            <div class="game-name">pinterest</div>
-        </div>
-    </div>
-     <div class="rectangle-container">
-        <div class="rectangle" onclick="window.location.href='/a/voicemod.html'">
-            <img src="https://cdn.prod.website-files.com/661e75fc70756be16764754b/6686811e5bf6c5a6c38bd2b7_voicemod-featured-1.jpeg" alt="Image 2">
-            <div class="game-name">voicemod</div>
-        </div>
-        <div class="rectangle" onclick="window.location.href='/a/soundboard.html'">
-            <img src="https://i.ytimg.com/vi/dNr7nXvntO8/hq720.jpg?sqp=-oaymwEXCK4FEIIDSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLD9qml9cz8cKj9jQh8m7nh0HK2fnw" alt="Image 2">
-            <div class="game-name">soundboard</div>
-        </div>
-        <div class="rectangle" onclick="window.location.href='/a/soundboard-guys.html'">
-            <img src="https://s3.envato.com/files/469089389/preview%20image.__large_preview.jpg" alt="Image 2">
-            <div class="game-name">soundboard guys</div>
-        </div>
+    <div class="background">
+        <div class="glow-ring glow-1"></div>
+        <div class="glow-ring glow-2"></div>
+        <div class="glow-ring glow-3"></div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-    <script>
-        // Initialize particles with theme colors
-        document.addEventListener('DOMContentLoaded', function() {
-            const theme = window.getCurrentTheme ? window.getCurrentTheme() : {
-                particleColor: "#ffffff",
-                particleLinks: "#ffffff"
-            };
+    <div class="container">
+        <header class="header">
+            <a href="main.html" class="back-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9,22 9,12 15,12 15,22"/>
+                </svg>
+                Back to Homepage
+            </a>
             
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-    <script>
-        // Initialize particles with theme colors
-        document.addEventListener('DOMContentLoaded', function() {
-            const theme = window.getCurrentTheme ? window.getCurrentTheme() : {
-                particleColor: "#aaa",
-                particleLinks: "#aaa"
-            };
-            
-            particlesJS("particles-js", {
-                particles: {
-                    number: { value: 20, density: { enable: false } },
-                    color: { value: theme.particleColor },
-                    shape: { type: "circle" },
-                    opacity: { value: 0.5, random: true },
-                    size: { value: 3, random: true },
-                    line_linked: {
-                        enable: true,
-                        distance: 150,
-                        color: theme.particleLinks,
-                        opacity: 0.4,
-                        width: 1
-                    },
-                    move: { 
-                        enable: true, 
-                        speed: 2, 
-                        direction: "none",
-                        random: true,
-                        straight: false,
-                        out_mode: "out",
-                        bounce: false
-                    }
-                },
-                interactivity: {
-                    detect_on: "canvas",
-                    events: { 
-                        onhover: { enable: false },
-                        onclick: { enable: false },
-                        resize: true 
-                    }
-                },
-                retina_detect: false
-            });
-        });
-    </script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-8PERVFVWRG"></script>
-    
-    <script src="scripts/utilities/shared.js"></script>
-    <script>
-        // Apps page specific code
-        
-        // App search functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const searchBar = document.getElementById('appSearch');
-            const appCards = document.querySelectorAll('.rectangle');
-            
-            // Create an index of all apps for quick lookup
-            const appIndex = [];
-            appCards.forEach(card => {
-                // Skip iframes
-                if (!card.querySelector('.game-name')) return;
+            <h1 class="title">
+                <span class="typewriter">APPS</span>
+            </h1>
+
+            <div class="controls">
+                <div class="search-container">
+                    <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="M21 21l-4.35-4.35"/>
+                    </svg>
+                    <input type="text" class="search-input" placeholder="Search games..." id="searchInput">
+                </div>
+
+                <div class="select-container">
+                    <select class="select" id="gridSelect">
+                        <option value="auto">Auto Grid</option>
+                        <option value="mobile">Mobile (1 col)</option>
+                        <option value="tablet">Tablet (2 col)</option>
+                        <option value="desktop">Desktop (3 col)</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="games-grid grid-desktop" id="gamesGrid">
+                <!-- Manual game cards - add each game here -->
                 
-                const appName = card.querySelector('.game-name').textContent.toLowerCase().trim();
-                const onclickAttr = card.getAttribute('onclick');
-                let appUrl = null;
+                <!-- Game cards -->
+                <div class="rectangle-container">
+                    <div class="rectangle" data-category="placeholder" onclick="window.location.href='/g/placeholder.html'">
+                        <img src="placeholder" alt="placeholder">
+                        <div class="game-name">placeholder</div>
+                    </div>
+                </div>
                 
-                // Extract URL from onclick attribute
-                if (onclickAttr && onclickAttr.includes("window.location.href='")) {
-                    appUrl = onclickAttr.split("window.location.href='")[1].split("'")[0];
-                    appIndex.push({
-                        name: appName,
-                        element: card,
-                        url: appUrl
-                    });
+                <div class="rectangle-container">
+                    <div class="rectangle" data-category="placeholder" onclick="window.location.href='/g/placeholder.html'">
+                        <img src="placeholder" alt="placeholder">
+                        <div class="game-name">placeholder</div>
+                    </div>
+                </div>
+
+                <div class="rectangle-container">
+                    <div class="rectangle" data-category="placeholder" onclick="window.location.href='/g/placeholder.html'">
+                        <img src="placeholder" alt="placeholder">
+                        <div class="game-name">placeholder</div>
+                    </div>
+                </div>
+
+                <div class="rectangle-container">
+                    <div class="rectangle" data-category="placeholder" onclick="window.location.href='/g/placeholder.html'">
+                        <img src="placeholder" alt="placeholder">
+                        <div class="game-name">placeholder</div>
+                    </div>
+                </div>
+
+                <div class="rectangle-container">
+                    <div class="rectangle" data-category="placeholder" onclick="window.location.href='/g/placeholder.html'">
+                        <img src="placeholder" alt="placeholder">
+                        <div class="game-name">placeholder</div>
+                    </div>
+                </div>
+
+                <div class="rectangle-container">
+                    <div class="rectangle" data-category="placeholder" onclick="window.location.href='/g/placeholder.html'">
+                        <img src="placeholder" alt="placeholder">
+                        <div class="game-name">placeholder</div>
+                    </div>
+                </div>
+
+                <div class="rectangle-container">
+                    <div class="rectangle" data-category="placeholder" onclick="window.location.href='/g/placeholder.html'">
+                        <img src="placeholder" alt="placeholder">
+                        <div class="game-name">placeholder</div>
+                    </div>
+                </div>
+
+                <div class="rectangle-container">
+                    <div class="rectangle" data-category="placeholder" onclick="window.location.href='/g/placeholder.html'">
+                        <img src="placeholder" alt="placeholder">
+                        <div class="game-name">placeholder</div>
+                    </div>
+                </div>
+
+                <div class="rectangle-container">
+                    <div class="rectangle" data-category="placeholder" onclick="window.location.href='/g/placeholder.html'">
+                        <img src="placeholder" alt="placeholder">
+                        <div class="game-name">placeholder</div>
+                    </div>
+                </div>
+
+                <div class="rectangle-container">
+                    <div class="rectangle" data-category="placeholder" onclick="window.location.href='/g/placeholder.html'">
+                        <img src="placeholder" alt="placeholder">
+                        <div class="game-name">placeholder</div>
+                    </div>
+                </div>
+
+                <div class="rectangle-container">
+                    <div class="rectangle" data-category="placeholder" onclick="window.location.href='/g/placeholder.html'">
+                        <img src="placeholder" alt="placeholder">
+                        <div class="game-name">placeholder</div>
+                    </div>
+                </div>
+
+                <div class="rectangle-container">
+                    <div class="rectangle" data-category="placeholder" onclick="window.location.href='/g/placeholder.html'">
+                        <img src="placeholder" alt="placeholder">
+                        <div class="game-name">placeholder</div>
+                    </div>
+                </div>
+
+                <div class="rectangle-container">
+                    <div class="rectangle" data-category="placeholder" onclick="window.location.href='/g/placeholder.html'">
+                        <img src="placeholder" alt="placeholder">
+                        <div class="game-name">placeholder</div>
+                    </div>
+                </div>
+
+                <div class="rectangle-container">
+                    <div class="rectangle" data-category="placeholder" onclick="window.location.href='/g/placeholder.html'">
+                        <img src="placeholder" alt="placeholder">
+                        <div class="game-name">placeholder</div>
+                    </div>
+                </div>
+
+                <div class="rectangle-container">
+                    <div class="rectangle" data-category="placeholder" onclick="window.location.href='/g/placeholder.html'">
+                        <img src="placeholder" alt="placeholder">
+                        <div class="game-name">placeholder</div>
+                    </div>
+                </div>
+
+                <div class="rectangle-container">
+                    <div class="rectangle" data-category="placeholder" onclick="window.location.href='/g/placeholder.html'">
+                        <img src="placeholder" alt="placeholder">
+                        <div class="game-name">placeholder</div>
+                    </div>
+                </div>
+
+                <div class="rectangle-container">
+                    <div class="rectangle" data-category="placeholder" onclick="window.location.href='/g/placeholder.html'">
+                        <img src="placeholder" alt="placeholder">
+                        <div class="game-name">placeholder</div>
+                    </div>
+                </div>
+
+                <div class="rectangle-container">
+                    <div class="rectangle" data-category="placeholder" onclick="window.location.href='/g/placeholder.html'">
+                        <img src="placeholder" alt="placeholder">
+                        <div class="game-name">placeholder</div>
+                    </div>
+                </div>
+
+
+                <!-- Add more apps here -->
+                
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-links">
+                <a href="pp.html" class="footer-link">privacy policy</a>
+                <a href="#" class="footer-link">update log</a>
+                <a href="/faq/index.html" class="footer-link">faq</a>
+                <a id="openBlankList" class="footer-link">open blank</a>
+                <a href="https://github.com/bi66ie619" target="_blank" class="footer-link">github</a>
+                <a href="https://docs.google.com/forms/d/1t52FBl9fUIm6ftWzFQTSw4dutoIOP1rTe8AnQ4cg1pY/viewform?edit_requested=true" target="_blank" class="footer-link">support</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Get elements
+        const searchInput = document.getElementById('searchInput');
+        const categorySelect = document.getElementById('categorySelect');
+        const gridSelect = document.getElementById('gridSelect');
+        const gamesGrid = document.getElementById('gamesGrid');
+        const gameCards = document.querySelectorAll('.rectangle-container');
+
+        // Search functionality
+        searchInput.addEventListener('input', filterGames);
+        categorySelect.addEventListener('change', filterGames);
+        gridSelect.addEventListener('change', changeGrid);
+
+        function filterGames() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const category = categorySelect.value;
+
+            gameCards.forEach(container => {
+                const gameCard = container.querySelector('.rectangle');
+                const gameName = gameCard.querySelector('.game-name').textContent.toLowerCase();
+                const gameCategory = gameCard.dataset.category || 'mobile'; // default to mobile
+
+                const matchesSearch = gameName.includes(searchTerm);
+                const matchesCategory = category === 'all' || gameCategory === category;
+
+                if (matchesSearch && matchesCategory) {
+                    container.style.display = 'block';
+                } else {
+                    container.style.display = 'none';
                 }
             });
+        }
+
+        function changeGrid() {
+            const gridType = gridSelect.value;
             
-            // Function to filter apps based on search input
-            function filterApps(query) {
-                if (!query) {
-                    // Show all apps if query is empty
-                    appCards.forEach(card => card.style.display = '');
-                    document.querySelectorAll('.rectangle-container').forEach(container => {
-                        container.style.display = 'flex';
-                    });
-                    return null;
-                }
-                
-                // Filter apps by search query
-                const matches = appIndex.filter(app => app.name.includes(query));
-                
-                // Hide all apps first
-                appCards.forEach(card => card.style.display = 'none');
-                
-                // Show only matching apps
-                matches.forEach(match => match.element.style.display = '');
-                
-                // Show/hide containers based on visible cards
-                document.querySelectorAll('.rectangle-container').forEach(container => {
-                    const hasVisibleCards = Array.from(container.querySelectorAll('.rectangle')).some(
-                        card => card.style.display !== 'none'
-                    );
-                    container.style.display = hasVisibleCards ? 'flex' : 'none';
-                });
-                
-                return matches.length > 0 ? matches[0] : null;
+            // Remove all grid classes
+            gamesGrid.classList.remove('grid-mobile', 'grid-tablet', 'grid-desktop');
+            
+            // Add appropriate grid class
+            if (gridType === 'auto') {
+                gamesGrid.classList.add('grid-desktop'); // default to desktop
+            } else {
+                gamesGrid.classList.add(`grid-${gridType}`);
             }
-            
-            // Input event for real-time filtering
-            searchBar.addEventListener('input', function() {
-                filterApps(this.value.toLowerCase().trim());
-            });
-            
-            // Enter key press to navigate to first result
-            searchBar.addEventListener('keydown', function(event) {
-                if (event.key === 'Enter') {
-                    event.preventDefault();
-                    
-                    const query = this.value.toLowerCase().trim();
-                    const match = filterApps(query);
-                    
-                    if (match && match.url) {
-                        // Use direct window.location assignment for more reliable navigation
-                        window.location.href = match.url;
-                    }
+        }
+
+        // Auto grid functionality (responsive)
+        function handleAutoGrid() {
+            if (gridSelect.value === 'auto') {
+                const width = window.innerWidth;
+                gamesGrid.classList.remove('grid-mobile', 'grid-tablet', 'grid-desktop');
+                
+                if (width <= 768) {
+                    gamesGrid.classList.add('grid-mobile');
+                } else if (width <= 1024) {
+                    gamesGrid.classList.add('grid-tablet');
+                } else {
+                    gamesGrid.classList.add('grid-desktop');
+                }
+            }
+        }
+
+        // Listen for window resize for auto grid
+        window.addEventListener('resize', handleAutoGrid);
+        
+        // Initial auto grid setup
+        handleAutoGrid();
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var openBlankLink = document.getElementById('openBlankLink');
+        
+            openBlankLink.addEventListener('click', function(event) {
+                event.preventDefault();
+        
+                var newTab = window.open('about:blank', '_blank');
+        
+                if (newTab) {
+                    var newTabBody = newTab.document.body;
+                    newTabBody.style.padding = '0';
+                    newTabBody.style.margin = '0';
+                    newTabBody.style.border = 'hidden';
+        
+                    var iframe = document.createElement('iframe');
+                    iframe.src = window.location.href;
+                    iframe.style.width = '100%';
+                    iframe.style.height = '100%';
+                    iframe.style.border = 'hidden';
+
+                    iframe.onload = function() {
+                        var links = iframe.contentDocument.querySelectorAll('a[target="_blank"]');
+                        links.forEach(function(link) {
+                            link.addEventListener('click', function(event) {
+                                event.preventDefault();
+                                iframe.contentWindow.location.href = link.href;
+                            });
+                        });
+                    };
+        
+                    newTab.document.body.appendChild(iframe);
+                } else {
+                    alert("couldn't manage to open a new tab :(");
                 }
             });
         });
-    </script>
-
-        <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-    <script>
-        // Initialize particles with theme colors
-        document.addEventListener('DOMContentLoaded', function() {
-            const theme = window.getCurrentTheme ? window.getCurrentTheme() : {
-                particleColor: "#ffffff",
-                particleLinks: "#ffffff"
-            };
-            
-            // Initialize particles
-            particlesJS("particles-js", {
-                "particles": {
-                    "number": { "value": 20, "density": { "enable": false } },
-                    "color": { "value": theme.particleColor || "#ffffff" },
-                    "shape": { "type": "circle" },
-                    "opacity": { "value": 0.7, "random": true },
-                    "size": { "value": 3, "random": true },
-                    "line_linked": {
-                        "enable": true,
-                        "distance": 150,
-                        "color": theme.particleLinks || "#ffffff",
-                        "opacity": 0.6,
-                        "width": 1
-                    },
-                    "move": { 
-                        "enable": true, 
-                        "speed": 2, 
-                        "direction": "none",
-                        "random": true,
-                        "straight": false,
-                        "out_mode": "out",
-                        "bounce": false
-                    }
-                },
-                "interactivity": {
-                    "detect_on": "canvas",
-                    "events": { 
-                        "onhover": { "enable": false },
-                        "onclick": { "enable": false },
-                        "resize": true 
-                    }
-                },
-                "retina_detect": false
-            });
-        });
-    </script>
-
-        <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            // Create the cursor element
-            const cursorDot = document.createElement("div");
-            cursorDot.classList.add("cursor-dot");
-            document.body.appendChild(cursorDot);
-
-            // Update position instantly on mousemove
-            document.addEventListener("mousemove", (e) => {
-                cursorDot.style.left = `${e.clientX}px`;
-                cursorDot.style.top = `${e.clientY}px`;
-            });
-        });
-    </script>
-
-<script>
-    // Show the first games message
-    setTimeout(function() {
-        showGlowingMessage('most apps dont load because of the server issue');
-
-        // Show the second message after a delay
-        setTimeout(function() {
-            showGlowingMessage('we are working on a faster, and better server!');
-        }, 3000); // Adjust delay as needed
-    }, 1500);
-</script>
+        </script>
 </body>
 </html>
