@@ -188,7 +188,7 @@
         .grid-desktop { grid-template-columns: repeat(3, 1fr); }
 
         /* Game Card */
-        .rectangle {
+        .game-card {
             position: relative;
             background: rgba(212, 175, 55, 0.05);
             border: 1px solid rgba(212, 175, 55, 0.3);
@@ -199,7 +199,7 @@
             height: 250px;
         }
 
-        .rectangle:hover {
+        .game-card:hover {
             border-color: #d4af37;
             transform: scale(1.02);
             box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
@@ -290,13 +290,13 @@
             text-transform: uppercase;
         }
 
-        .mobsup-badge {
+        .badge-mobile {
             background: rgba(212, 175, 55, 0.2);
             color: #d4af37;
             border: 1px solid rgba(212, 175, 55, 0.4);
         }
 
-        .mobnotsup-badge {
+        .badge-pc {
             background: rgba(212, 175, 55, 0.1);
             color: #d4af37;
             border: 1px solid rgba(212, 175, 55, 0.3);
@@ -370,7 +370,6 @@
             .controls { gap: 1rem; }
             .footer-links { gap: 1rem; }
         }
-
     </style>
 </head>
 <body>
@@ -382,7 +381,7 @@
 
     <div class="container">
         <header class="header">
-            <a href="main.html" class="back-btn">
+            <a href="#" class="back-btn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                     <polyline points="9,22 9,12 15,12 15,22"/>
@@ -427,566 +426,7 @@
                 <!-- Games will be populated by JavaScript -->
             </div>
         </main>
-<div class="rectangle-container">
-        <div class="rectangle" onclick="window.location.href='/g/subway-surfers.html'">
-            <img src="https://files.catbox.moe/nlz4zw.jpeg" alt="subway surfers">
-            <div class="game-name">subway surfers</div>
-            <span class="badge mobsup-badge">Mobile Supported</span>
-        </div>
-    <div class="rectangle" onclick="window.location.href='/g/minecraft.html'">
-        <img src="https://gaming-cdn.com/images/news/articles/7191/cover/minecraft-gets-a-new-artwork-cover66856ea7d02ad.jpg" alt="minecraft">
-        <div class="game-name">minecraft</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/block-blast.html'">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDbz7CYwoe4wulDfOJ5Z5sUZOCiX0QfzRhqQ&s" alt="block blast">
-        <div class="game-name">block blast</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/fruit-ninja.html'">
-        <img src="https://preteen-ministry.net/cdn/shop/products/Fruit_Ninja_-_Cover_1024x.jpg?v=1507262323" alt="Fruit Ninja">
-        <div class="game-name">Fruit Ninja</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/crossy-road.html'">
-        <img src="https://static1.squarespace.com/static/5e3bb512203ccf3516032e33/t/616f889f61fabc726422fa0c/1634699424702/CR_AndroidTV_01.png" alt="Crossy Road">
-        <div class="game-name">Crossy Road</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/monkeymart/index.html'">
-        <img src="https://files.catbox.moe/xfim7j.jpeg" alt="Monkey Mart">
-        <div class="game-name">Monkey Mart</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/lazy-jump-3d.html'">
-        <img src="https://play-lh.googleusercontent.com/49tmTkafs_EYS--F6LA83IsiTGqjwhfayLuNACFlMM-EDhOJO4ijMa_3jhWl9aee4Q" alt="Lazy Jump 3D">
-        <div class="game-name">Lazy Jump 3D</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/bubble-shooter.html'">
-        <img src="https://i.ytimg.com/vi/npfxxsxj_ho/maxresdefault.jpg" alt="Bubble Shooter">
-        <div class="game-name">Bubble Shooter</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/stair-race-3d.html'">
-        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj0jI9UiKYmsYw6malhXwMKmrZLb8lf-ni4WqhhIdXbBXqa3h3hnGeUYiWrIoVIHCWPkkaRcCZxXc__3ULMJwLVy-OeVZEdfjr00AX2Dig3qEKDeDD2huF9w8Bf_ial889CrhLh9fs60_5tnEKRbUyr_AxKytDnUElO9gKFI591cKKigI-t8WP1VY7NCQ/w1280-h720-p-k-no-nu/Stair%20Race%203D%20.jpg" alt="Stair Race 3D">
-        <div class="game-name">Stair Race 3D</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/granny-offline.html'">
-        <img src="https://files.catbox.moe/k11vfr.webp" alt="Granny Offline">
-        <div class="game-name">Granny Offline</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/granny-2.html'">
-        <img src="https://i.ytimg.com/vi/M2oAjzvjljw/maxresdefault.jpg" alt="Granny 2">
-        <div class="game-name">Granny 2</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/baldis-basics.html'">
-        <img src="https://i.ytimg.com/vi/EmyYCa_BC9s/maxresdefault.jpg" alt="Baldi's Basics">
-        <div class="game-name">Baldi's Basics</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/1v1-lol.html'">
-        <img src="https://fiverr-res.cloudinary.com/images/q_auto,f_auto/gigs2/200042732/original/024f8a22e06d58c1eed316a539687253e49625c1/ill-edit-your-1v1-lol-videos-and-give-you-thumbnails.jpg" alt="1v1 LOL">
-        <div class="game-name">1v1 LOL</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/paper-io-2.html'">
-        <img src="https://files.catbox.moe/6mkaql.jpeg" alt="Paper Io 2">
-        <div class="game-name">Paper Io 2</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/super-hot.html'">
-        <img src="https://i.ytimg.com/vi/bkzwi0Y-mWk/maxresdefault.jpg" alt="Super Hot">
-        <div class="game-name">Super Hot</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/basket-random.html'">
-        <img src="https://play-lh.googleusercontent.com/6AN9KKe5M9udzoQA1J00dc6po5dNY9JInI_ewDKcPXocPjEHWTqJV0d2CwSWxYRhTh4=w526-h296-rw" alt="Basket Random">
-        <div class="game-name">Basket Random</div>
-        <span class="badge mobsup-badge">Mobile Supported</span> 
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/drift-hunters.html'">
-        <img src="https://i.ytimg.com/vi/xjdLbUxmV_o/maxresdefault.jpg" alt="Drift Hunters">
-        <div class="game-name">Drift Hunters</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/drift-boss.html'">
-        <img src="https://files.catbox.moe/jsm5jl.jpeg" alt="Drift Boss">
-        <div class="game-name">Drift Boss</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/run3.html'">
-        <img src="https://files.catbox.moe/vr3bs9.jpg" alt="Run 3">
-        <div class="game-name">Run 3</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/dreader.html'">
-        <img src="https://files.catbox.moe/dcxlrl.jpeg" alt="Dreader">
-        <div class="game-name">Dreader</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/drive-mad.html'">
-        <img src="https://i.ytimg.com/vi/Bx3bt6HnOSs/hq720.jpg?sqp=-oaymwExCK4FEIIDSFryq4qpAyMIARUAAIhCGAHwAQH4Ab4HgALQBYoCDAgAEAEYMiBnKHIwDw==&rs=AOn4CLBvQgoYjUrnam3ck28CT-S_vlX_mQ" alt="Drive Mad">
-        <div class="game-name">Drive Mad</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/wbwwb.html'">
-        <img src="https://files.catbox.moe/o7n5d9.png" alt="WBWWB">
-        <div class="game-name">WBWWB</div>
-        <span class="badge mobsup-badge">Mobile Supported<span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='templates/game.html?id=ultdrivesim'">
-        <img src="https://files.catbox.moe/lnxk6l.jpeg" alt="Ultimate Driving Simulator">
-        <div class="game-name">Ultimate Driving Simulator</div>
-        <span class="badge fixing-badge">fixing</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/hole-io.html'">
-        <img src="https://lh3.googleusercontent.com/kdoWsI9fctfXqwInmRRn57jqohctanZvPrGIQIPxh-JPcMlK-U2Q3WgOJV2uHj0io1avUi2UTE_7mfFsjqjgT9xI=s1280-w1280-h800" alt="Hole.io">
-        <div class="game-name">Hole.io</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/geometry-dash.html'">
-        <img src="https://images3.alphacoders.com/120/thumb-1920-1202615.jpg" alt="Geometry Dash">
-        <div class="game-name">Geometry Dash</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/basketball-stars.html'">
-        <img src="https://play-lh.googleusercontent.com/WReGOclxXI481lMXvvAP8VGxSywci4vy-KmrZLKDeVO0ewmCZPzRzbAIVls-qwFzEw=w526-h296-rw" alt="Basketball Stars">
-        <div class="game-name">Basketball Stars</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/slither-io.html'">
-        <img src="https://files.catbox.moe/jz2zkq.png" alt="Slither.io">
-        <div class="game-name">Slither.io</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/snowball-io.html'">
-        <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/8b/29/7c/8b297c9a-14ee-8271-5615-4b96f1838b6d/AppIcon-1x_U007emarketing-0-7-0-85-220-0.png/1200x600wa.png" alt="Snowball.io">
-        <div class="game-name">Snowball.io</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/retro-bowl.html'">
-        <img src="https://files.catbox.moe/0k3fg4.png" alt="Retro Bowl">
-        <div class="game-name">Retro Bowl</div>
-        <span class="badge fixing-badge">Fixing</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/just-fall-io.html'">
-        <img src="https://files.catbox.moe/0ii2a5.jpeg" alt="Just Fall.io">
-        <div class="game-name">Just Fall.io</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/gladihoppers.html'">
-        <img src="https://i.ytimg.com/vi/_kuLMGMoGAY/maxresdefault.jpg" alt="Gladihoppers">
-        <div class="game-name">Gladihoppers</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/ragdoll-io.html'">
-        <img src="https://files.catbox.moe/2vqace.png" alt="Ragdoll.io">
-        <div class="game-name">Ragdoll.io</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/temple-run-2'">
-        <img src="https://i.ytimg.com/vi/9aK2zoFBbKY/maxresdefault.jpg" alt="Temple Run 2">
-        <div class="game-name">Temple Run 2</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/stickman-hook.html'">
-        <img src="https://files.catbox.moe/554x1d.jpeg" alt="Stickman Hook">
-        <div class="game-name">Stickman Hook</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/flappy-bird.html'">
-        <img src="https://mir-s3-cdn-cf.behance.net/projects/404/c4b80d143006427.Y3JvcCw4NjksNjgwLDI1LDA.png" alt="Flappy Bird">
-        <div class="game-name">Flappy Bird</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/minecraft-shooter.html'">
-        <img src="https://i.ytimg.com/vi/k_wBPps8fMA/maxresdefault.jpg" alt="Minecraft Shooter">
-        <div class="game-name">Minecraft Shooter</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/helix-jump.html'">
-        <img src="https://files.catbox.moe/64wqaw.png" alt="Helix Jump">
-        <div class="game-name">Helix Jump</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/fnaf.html'">
-        <img src="https://i.ytimg.com/vi/JKWVjXeNdM4/maxresdefault.jpg" alt="FNAF">
-        <div class="game-name">FNAF</div>
-        <span class="badge fixing-badge">Fixing</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/fnaf-2.html'">
-        <img src="https://i.ytimg.com/vi/JNNgQKlr77c/maxresdefault.jpg" alt="FNAF 2">
-        <div class="game-name">FNAF 2</div>
-        <span class="badge fixing-badge">Fixing</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/moto-x3m-pool.html'">
-        <img src="https://files.catbox.moe/u4ij0e.jpeg" alt="Moto X3M Pool">
-        <div class="game-name">Moto X3M Pool</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/moto-x3m.html'">
-        <img src="https://files.catbox.moe/jzvmhe.jpeg" alt="Moto X3M">
-        <div class="game-name">Moto X3M</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/among-us.html'">
-        <img src="https://gaming-cdn.com/images/products/7522/616x353/among-us-pc-game-steam-cover.jpg?v=1715242071" alt="Among Us">
-        <div class="game-name">Among Us</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/rocket-soccer.html'">
-        <img src="https://us-west-2-epicgames.graphassets.com/A0Gpf4ZpfQzaTePr3NRc1z/resize=fit:clip,height:1080,width:1920/output=format:webp/2FE6uJltT6WKtdIEG2rc" alt="Rocket Soccer">
-        <div class="game-name">Rocket Soccer</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/ovo.html'">
-        <img src="https://files.catbox.moe/n391wc.jpeg" alt="Ovo">
-        <div class="game-name">Ovo</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/knife-hit.html'">
-        <img src="https://files.catbox.moe/ylesb2.jpeg" alt="Knife Hit">
-        <div class="game-name">Knife Hit</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/sky-race-3d.html'">
-        <img src="https://files.catbox.moe/9efq0t.png" alt="Sky Race 3D">
-        <div class="game-name">Sky Race 3D</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/slope.html'">
-        <img src="https://files.catbox.moe/kod1r6.png" alt="Slope">
-        <div class="game-name">Slope</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/poly-track.html'">
-        <img src="https://files.catbox.moe/g4qowk.jpeg" alt="poly track">
-        <div class="game-name">poly track</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/cod-zombies.html'">
-        <img src="https://files.catbox.moe/4qe4nk.jpeg" alt="COD Zombies">
-        <div class="game-name">COD Zombies</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/cs16.html'">
-        <img src="https://files.catbox.moe/25uka5.jpg" alt="Counter Strike 1.6">
-        <div class="game-name">Counter Strike 1.6</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='templates/game.html?id=codknock'">
-        <img src="https://files.catbox.moe/2z5jxi.jpeg" alt="CODKNOCK">
-        <div class="game-name">CODKNOCK</div>
-        <span class="badge fixing-badge">fixing</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/tiny-fishing.html'">
-        <img src="https://files.catbox.moe/s7a2jp.jpeg" alt="Tiny Fishing">
-        <div class="game-name">Tiny Fishing</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/eggy-car.html'">
-        <img src="https://files.catbox.moe/b8df7a.jpeg" alt="Eggy Car">
-        <div class="game-name">Eggy Car</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/sm64.html'">
-        <img src="https://files.catbox.moe/wkj4s5.jpeg" alt="Super Mario 64">
-        <div class="game-name">Super Mario 64</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/Mariokart-SC.html'">
-        <img src="https://files.catbox.moe/ywad53.jpeg" alt="Mariokart Super Circut">
-        <div class="game-name">Mariokart Super Circut</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/pokemon-red.html'">
-        <img src="https://files.catbox.moe/kl609y.jpeg" alt="Pokemon Red">
-        <div class="game-name">Pokemon Red</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/pokemon-ruby.html'">
-        <img src="https://files.catbox.moe/ja9eh5.jpeg" alt="Pokemon Ruby">
-        <div class="game-name">Pokemon Ruby</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/pokemon-emerald.html'">
-        <img src="https://files.catbox.moe/a08oj5.jpeg" alt="Pokemon Emerald">
-        <div class="game-name">Pokemon Emerald</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/pokemon-green.html'">
-        <img src="https://files.catbox.moe/ktg8ps.jpeg" alt="Pokemon Leaf Green">
-        <div class="game-name">Pokemon Lead Green</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/infinite-craft.html'">
-        <img src="https://files.catbox.moe/jnw57p.png" alt="Infinite Craft">
-        <div class="game-name">Infinite Craft</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/papas-burgeria.html'">
-        <img src="https://files.catbox.moe/hfnrmf.jpeg" alt="Papas Burgeria">
-        <div class="game-name">Papas Burgeria</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/papas-freezeria.html'">
-        <img src="https://files.catbox.moe/1h7ecv.jpeg" alt="Papas Freezeria">
-        <div class="game-name">Papas Freezeria</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/papas-pizzeria.html'">
-        <img src="https://files.catbox.moe/6fcvcu.jpeg" alt="Papas Pizzaria">
-        <div class="game-name">Papas Pizzaria</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='templates/game.html?id=pwgame'">
-        <img src="https://files.catbox.moe/ownj6k.png" alt="Password Game">
-        <div class="game-name">Password Game</div>
-        <span class="badge fixing-badge">Fixing</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/craft-mine.html'">
-        <img src="https://files.catbox.moe/ua1mkd.jpeg" alt="CraftMine">
-        <div class="game-name">CraftMine</div>
-        <span class="badge fixing-badge">fixing</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/getting-over-it.html'">
-        <img src="https://files.catbox.moe/xfqd0r.png" alt="Getting Over It">
-        <div class="game-name">Getting Over It</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='g/flash-sonic.html'">
-        <img src="https://files.catbox.moe/iscjcv.jpeg" alt="Flash Sonic">
-        <div class="game-name">Flash Sonic</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/google-baseball.html'">
-        <img src="https://files.catbox.moe/zwjz83.gif" alt="Google Baseball">
-        <div class="game-name">Google Baseball</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/bitlife.html'">
-        <img src="https://files.catbox.moe/9idhu7.jpeg" alt="Bitlife">
-        <div class="game-name">Bitlife</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/cc3d.html'">
-        <img src="https://files.catbox.moe/t8l4o8.jpeg" alt="crazy cattle 3d">
-        <div class="game-name">crazy cattle 3d</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/tetris.html'">
-        <img src="https://www.designyourway.net/blog/wp-content/uploads/2024/11/Tetris-Logo-featured.jpg" alt="tetris">
-        <div class="game-name">tetris</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/cluster-rush.html'">
-        <img src="https://files.catbox.moe/6utpeo.jpeg" alt="cluster rush">
-        <div class="game-name">cluster rush</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/trap-adv-2.html'">
-        <img src="https://files.catbox.moe/lzuqsl.webp" alt="Trap Adventure 2">
-        <div class="game-name">Trap Adventure 2</div>
-        <span class="badge fixing-badge">Fixing</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/chrome-dino.html'">
-        <img src="https://files.catbox.moe/dv4479.png" alt="Chrome Dino Offline">
-        <div class="game-name">Chrome Dino Game</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/survival-race.html'">
-        <img src="https://files.catbox.moe/zzhwxz.webp" alt="Survival Race">
-        <div class="game-name">Survival Race</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/level-devil-2.html'">
-        <img src="https://files.catbox.moe/su250c.jpeg" alt="Level Devil 2">
-        <div class="game-name">Level Devil 2</div>
-        <span class="badge fixing-badge">fixing</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/half-life.html'">
-        <img src="https://files.catbox.moe/guoxir.jpg" alt="Half-Life">
-        <div class="game-name">Half-Life</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/ultrakill.html'">
-        <img src="https://files.catbox.moe/ku5nm8.jpg" alt="Ultrakill">
-        <div class="game-name">Ultrakill</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/tabs.html'">
-        <img src="https://files.catbox.moe/jkuhq8.jpg" alt="TABS">
-        <div class="game-name">TABS</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/papers-please.html'">
-        <img src="https://files.catbox.moe/n98gy8.png" alt="Papers Please">
-        <div class="game-name">Papers, Please!</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/station-141.html'">
-        <img src="https://files.catbox.moe/nrbdif.png" alt="Station 141">
-        <div class="game-name">Station 141</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/aquapark-io.html'">
-        <img src="https://files.catbox.moe/u0jn9u.avif" alt="aquapark io">
-        <div class="game-name">Aquapark IO</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/batim.html'">
-        <img src="https://files.catbox.moe/y10rwj.jpg" alt="batim">
-        <div class="game-name">Bendy And The Ink Machine!</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/undertale.html'">
-        <img src="https://files.catbox.moe/435go1.jpg" alt="Placeholder">
-        <div class="game-name">Undertale</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/backrooms.html'">
-        <img src="https://files.catbox.moe/4rgjpj.jpg" alt="Backrooms">
-        <div class="game-name">Backrooms</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/fnf.html'">
-        <img src="https://files.catbox.moe/6al6bp.png" alt="FNF">
-        <div class="game-name">Friday Night Funkin</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/happy-wheels.html'">
-        <img src="https://files.catbox.moe/p76uyw.jpg" alt="Happy Wheels">
-        <div class="game-name">Happy Wheels</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/cookie-clicker.html'">
-        <img src="https://files.catbox.moe/vq2oc1.jpg" alt="Cookie Clicker">
-        <div class="game-name">Cookie Clicker</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/csgo-clicker.html'">
-        <img src="https://files.catbox.moe/zsg898.png" alt="CSGO Clicker">
-        <div class="game-name">CSGO Clicker</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/bad-parenting.html'">
-        <img src="https://files.catbox.moe/1r424z.jpg" alt="bad parenting">
-        <div class="game-name">Bad Parenting</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/whg.html'">
-        <img src="https://files.catbox.moe/xzgr6n.jpg" alt="worlds hardest game">
-        <div class="game-name">Worlds Hardest Game</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/whg2.html'">
-        <img src="https://files.catbox.moe/ascjlc.jpg" alt="worlds hardest game 2">
-        <div class="game-name">Worlds Hardest Game 2</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/whg3.html'">
-        <img src="https://files.catbox.moe/jb35pq.jpg" alt="worlds hardest game 3">
-        <div class="game-name">Worlds Hardest Game 3</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/theimpossiblequiz.html'">
-        <img src="https://files.catbox.moe/ztyc0h.png" alt="the impossible quiz">
-        <div class="game-name">The Impossible Quiz</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/theimpossiblequiz2.html'">
-        <img src="https://files.catbox.moe/sqb5az.jpg" alt="the impossible quiz 2">
-        <div class="game-name">The Impossible Quiz 2</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/uno.html'">
-        <img src="https://files.catbox.moe/az314b.avif" alt="UNO">
-        <div class="game-name">UNO</div>
-        <span class="badge mobsup-badge">Mobile Supported</span>
-    </div>
-</div>
-<div class="rectangle-container">
-    <div class="rectangle" onclick="window.location.href='/g/mariokartds/index.html'">
-        <img src="https://files.catbox.moe/fh7ktm.jpg" alt="Mario Kart DS">
-        <div class="game-name">Mario Kart DS</div>
-        <span class="badge mobnotsup-badge">Mobile Not Supported</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/Placeholder.html'">
-        <img src="Placeholder" alt="Placeholder">
-        <div class="game-name">Placeholder</div>
-        <span class="badge Placeholder-badge">Placeholder</span>
-    </div>
-    <div class="rectangle" onclick="window.location.href='/g/Placeholder.html'">
-        <img src="Placeholder" alt="Placeholder">
-        <div class="game-name">Placeholder</div>
-        <span class="badge Placeholder-badge">Placeholder</span>
-        
+
         <footer class="footer">
             <div class="footer-links">
                 <a href="#" class="footer-link">privacy policy</a>
@@ -998,6 +438,109 @@
             </div>
         </footer>
     </div>
-    
+
+    <script>
+        // Game data
+        const gameData = [
+            { id: 1, name: "subway surfers", category: "mobile", image: "https://files.catbox.moe/nlz4zw.jpeg" },
+            { id: 2, name: "placeholder game", category: "pc", image: "" },
+            { id: 3, name: "mobile adventure", category: "mobile", image: "" },
+            { id: 4, name: "desktop strategy", category: "pc", image: "" },
+            { id: 5, name: "puzzle master", category: "mobile", image: "" },
+            { id: 6, name: "action hero", category: "pc", image: "" },
+            { id: 7, name: "racing legends", category: "mobile", image: "" },
+            { id: 8, name: "space odyssey", category: "pc", image: "" },
+            { id: 9, name: "brain teaser", category: "mobile", image: "" }
+        ];
+
+        // DOM elements
+        const gamesGrid = document.getElementById('gamesGrid');
+        const searchInput = document.getElementById('searchInput');
+        const categorySelect = document.getElementById('categorySelect');
+        const gridSelect = document.getElementById('gridSelect');
+
+        // State
+        let currentSearch = '';
+        let currentCategory = 'all';
+        let currentGrid = 'auto';
+
+        // Device detection
+        function detectDevice() {
+            const width = window.innerWidth;
+            if (width < 768) return 'mobile';
+            if (width < 1024) return 'tablet';
+            return 'desktop';
+        }
+
+        // Update grid class
+        function updateGridClass() {
+            const gridType = currentGrid === 'auto' ? detectDevice() : currentGrid;
+            gamesGrid.className = `games-grid grid-${gridType}`;
+        }
+
+        // Create game card
+        function createGameCard(game) {
+            const hasImage = game.image && game.image !== '';
+            
+            return `
+                <div class="game-card" onclick="window.location.href='/g/${game.name.replace(/\s+/g, '-')}.html'">
+                    <div class="game-image">
+                        ${hasImage ? 
+                            `<img src="${game.image}" alt="${game.name}">
+                             <div class="game-name-overlay">
+                                 <div class="game-name">${game.name}</div>
+                             </div>` :
+                            `<div class="placeholder-bg">
+                                 <div class="placeholder-text">PLACEHOLDER</div>
+                             </div>`
+                        }
+                    </div>
+                    <div class="game-info">
+                        <div class="game-title">${game.name}</div>
+                        <div class="badge ${game.category === 'mobile' ? 'badge-mobile' : 'badge-pc'}">
+                            ${game.category === 'mobile' ? 'Mobile Supported' : 'PC'}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Filter and render games
+        function renderGames() {
+            const filteredGames = gameData.filter(game => {
+                const matchesSearch = game.name.toLowerCase().includes(currentSearch.toLowerCase());
+                const matchesCategory = currentCategory === 'all' || game.category === currentCategory;
+                return matchesSearch && matchesCategory;
+            });
+
+            gamesGrid.innerHTML = filteredGames.map(createGameCard).join('');
+            updateGridClass();
+        }
+
+        // Event listeners
+        searchInput.addEventListener('input', (e) => {
+            currentSearch = e.target.value;
+            renderGames();
+        });
+
+        categorySelect.addEventListener('change', (e) => {
+            currentCategory = e.target.value;
+            renderGames();
+        });
+
+        gridSelect.addEventListener('change', (e) => {
+            currentGrid = e.target.value;
+            updateGridClass();
+        });
+
+        window.addEventListener('resize', () => {
+            if (currentGrid === 'auto') {
+                updateGridClass();
+            }
+        });
+
+        // Initial render
+        renderGames();
+    </script>
 </body>
 </html>
