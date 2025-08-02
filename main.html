@@ -113,22 +113,6 @@ body {
             align-items: center;
             padding: 0 15px;
         }
-      
-      @keyframes slideDownOnLoad {
-  0% {
-    opacity: 0;
-    transform: translateY(-50vh); /* start off screen above */
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0); /* final position */
-  }
-}
-
-.slide-in-on-load {
-  animation: slideDownOnLoad 0.8s ease forwards;
-}
-        }
         .search-bar {
             width: 100%;
             background: transparent;
@@ -375,16 +359,7 @@ body {
             showGlowingMessage('Everything on the site is fixed and running. To hide the url from getting leaked, go into full screen and click the "open blank" button thats over the proxies button. This will completely hide the website name and url name from getting leaked while also having the site still fully playable.');
         }, 1500);
     </script>
-    <script>
-document.addEventListener("DOMContentLoaded", () => {
-  const elements = document.body.querySelectorAll("*");
-  elements.forEach(el => {
-    el.classList.add("slide-in-on-load");
-    el.style.animationDelay = "0s";
-  });
-});
-</script>
-
+    
 </body>
 </html>
 
