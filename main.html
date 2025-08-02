@@ -87,18 +87,18 @@ to { opacity: 1; }
 }
 
 @keyframes slideDownOnLoad {
-  0% {
-    opacity: 0;
-    transform: translateY(-120vh); /* start off screen above */
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0); /* final position */
-  }
+0% {
+opacity: 0;
+transform: translateY(-120vh); /* start off screen above */
+}
+100% {
+opacity: 1;
+transform: translateY(0); /* final position */
+}
 }
 
 .slide-in-on-load {
-  animation: slideDownOnLoad 0.8s ease forwards;
+animation: slideDownOnLoad 0.8s ease forwards;
 }
 
 .title {
@@ -377,16 +377,16 @@ showGlowingMessage('Everything on the site is fixed and running. To hide the url
 }, 1500);
 </script>
 
-  <script>
+<script>
 document.addEventListener("DOMContentLoaded", () => {
-  const elements = document.body.querySelectorAll("*");
-  elements.forEach(el => {
-    // Exclude glowing message by ID or class
-    if (!el.id.includes('glowingMessage') && !el.classList.contains('glowingMessage')) {
-      el.classList.add("slide-in-on-load");
-      el.style.animationDelay = "0s";
-    }
-  });
+const elements = document.body.querySelectorAll("*");
+elements.forEach(el => {
+// Exclude glowing message by ID or class
+if (!el.id.includes('glowingMessage') && !el.classList.contains('glowingMessage')) {
+el.classList.add("slide-in-on-load");
+el.style.animationDelay = "0s";
+}
+});
 });
 </script>
 
