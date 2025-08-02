@@ -86,10 +86,10 @@ from { opacity: 0; }
 to { opacity: 1; }
 }
 
-  @keyframes slideFadeDown {
+@keyframes slideDownOnLoad {
   0% {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(50vh);
   }
   100% {
     opacity: 1;
@@ -98,8 +98,8 @@ to { opacity: 1; }
 }
 
 .slide-in-on-load {
-  opacity: 0;
-  animation: slideFadeDown 0.6s ease-out forwards;
+  animation: slideDownOnLoad 0.8s ease forwards;
+  /* remove animation-delay here to avoid override */
 }
 
 .title {
@@ -380,10 +380,12 @@ showGlowingMessage('Everything on the site is fixed and running. To hide the url
 
   <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const elements = document.querySelectorAll("h1, h2, p, .icon-container, .header, .support-text, .button");
-  elements.forEach((el, i) => {
+  // Select everything visible inside body
+  const elements = document.body.querySelectorAll("*");
+
+  elements.forEach(el => {
     el.classList.add("slide-in-on-load");
-    el.style.animationDelay = `${i * 100}ms`; // staggered effect
+    el.style.animationDelay = "0s"; // no stagger, all animate at once
   });
 });
 </script>
