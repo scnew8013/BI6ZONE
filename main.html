@@ -89,17 +89,16 @@ to { opacity: 1; }
 @keyframes slideDownOnLoad {
   0% {
     opacity: 0;
-    transform: translateY(50vh);
+    transform: translateY(-50vh); /* start off screen above */
   }
   100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0); /* final position */
   }
 }
 
 .slide-in-on-load {
   animation: slideDownOnLoad 0.8s ease forwards;
-  /* remove animation-delay here to avoid override */
 }
 
 .title {
@@ -380,12 +379,10 @@ showGlowingMessage('Everything on the site is fixed and running. To hide the url
 
   <script>
 document.addEventListener("DOMContentLoaded", () => {
-  // Select everything visible inside body
   const elements = document.body.querySelectorAll("*");
-
   elements.forEach(el => {
     el.classList.add("slide-in-on-load");
-    el.style.animationDelay = "0s"; // no stagger, all animate at once
+    el.style.animationDelay = "0s";
   });
 });
 </script>
