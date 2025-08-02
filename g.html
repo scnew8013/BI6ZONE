@@ -188,7 +188,7 @@
         .grid-desktop { grid-template-columns: repeat(3, 1fr); }
 
         /* Game Card */
-        .game-card {
+        .rectangle {
             position: relative;
             background: rgba(212, 175, 55, 0.05);
             border: 1px solid rgba(212, 175, 55, 0.3);
@@ -199,7 +199,7 @@
             height: 250px;
         }
 
-        .game-card:hover {
+        .rectangle:hover {
             border-color: #d4af37;
             transform: scale(1.02);
             box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
@@ -290,13 +290,13 @@
             text-transform: uppercase;
         }
 
-        .badge-mobile {
+        .mobsup-badge {
             background: rgba(212, 175, 55, 0.2);
             color: #d4af37;
             border: 1px solid rgba(212, 175, 55, 0.4);
         }
 
-        .badge-pc {
+        .mobnotsup-badge {
             background: rgba(212, 175, 55, 0.1);
             color: #d4af37;
             border: 1px solid rgba(212, 175, 55, 0.3);
@@ -370,76 +370,6 @@
             .controls { gap: 1rem; }
             .footer-links { gap: 1rem; }
         }
-
-        /* Rectangle Card Style (Matches BI6ZONE Theme) */
-.rectangle-container {
-    display: flex;
-    justify-content: center;
-}
-
-.rectangle {
-    width: 300px;
-    background: rgba(212, 175, 55, 0.05);
-    border: 1px solid rgba(212, 175, 55, 0.3);
-    border-radius: 0.75rem;
-    overflow: hidden;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-align: center;
-    font-family: 'Orbitron', monospace;
-}
-
-.rectangle:hover {
-    border-color: #d4af37;
-    transform: scale(1.03);
-    box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
-}
-
-.rectangle img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    filter: blur(1px);
-    transition: transform 0.4s ease;
-}
-
-.rectangle:hover img {
-    transform: scale(1.05);
-}
-
-.rectangle .game-name {
-    font-size: 1.25rem;
-    font-weight: bold;
-    color: #d4af37;
-    margin: 0.75rem 0 0.25rem;
-    letter-spacing: 0.1em;
-    text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
-}
-
-.badge {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    font-size: 0.75rem;
-    font-weight: bold;
-    border-radius: 1rem;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-}
-
-.mobsup-badge {
-    background: rgba(212, 175, 55, 0.15);
-    color: #d4af37;
-    border: 1px solid rgba(212, 175, 55, 0.3);
-    box-shadow: 0 0 5px rgba(212, 175, 55, 0.2);
-}
-
-.pc-badge {
-    background: rgba(212, 175, 55, 0.1);
-    color: #d4af37;
-    border: 1px solid rgba(212, 175, 55, 0.2);
-    box-shadow: 0 0 5px rgba(212, 175, 55, 0.15);
-}
 
     </style>
 </head>
