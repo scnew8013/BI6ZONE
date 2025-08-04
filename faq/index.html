@@ -3,307 +3,427 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FAQ - Unblocked Games</title>
-    <link rel="stylesheet" href="style.css"> <!-- Link to your CSS file -->
+    <title>BI6ZONE - FAQ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            min-height: 100vh;
+            background: radial-gradient(ellipse at top, hsl(45, 100%, 15%) 0%, hsl(0, 0%, 5%) 50%, hsl(0, 0%, 0%) 100%);
+            position: relative;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Halftone pattern overlays */
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            mask-image: radial-gradient(ellipse at center, black 40%, transparent 70%);
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.05) 2px, transparent 2px);
+            background-size: 40px 40px;
+            mask-image: radial-gradient(ellipse at 70% 30%, black 30%, transparent 60%);
+            opacity: 0.2;
+            pointer-events: none;
+        }
+
+        /* Slide-in animations */
+        @keyframes slideInFromTop {
+            0% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInFromLeft {
+            0% {
+                transform: translateX(-50px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: slideInFromTop 0.8s ease-out;
+        }
+
+        .title {
+            font-size: 3rem;
+            font-weight: 900;
+            color: hsl(45, 100%, 70%);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.025em;
+            text-shadow: 
+                0 0 20px hsl(45, 100%, 50%), 
+                0 0 40px hsl(45, 100%, 50%), 
+                0 0 60px hsl(45, 100%, 50%);
+        }
+
+        .subtitle {
+            color: hsl(45, 50%, 50%);
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+
+        .content {
+            animation: slideInFromTop 1s ease-out 0.3s both;
+        }
+
+        .faq-item {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 1rem;
+            backdrop-filter: blur(8px);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            animation: slideInFromLeft 0.8s ease-out calc(var(--delay) * 0.1s) both;
+        }
+
+        .faq-item:hover {
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+        }
+
+        .faq-question {
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: hsl(45, 100%, 70%);
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+
+        .faq-question:hover {
+            color: hsl(45, 100%, 80%);
+        }
+
+        .faq-question::after {
+            content: '+';
+            font-size: 1.5rem;
+            margin-left: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .faq-question.active::after {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .faq-answer.active {
+            max-height: 500px;
+            padding: 0 1.5rem 1.5rem 1.5rem;
+        }
+
+        .faq-answer-content {
+            color: hsl(45, 80%, 80%);
+            line-height: 1.7;
+        }
+
+        .faq-answer-content p {
+            margin-bottom: 1rem;
+        }
+
+        .faq-answer-content ul {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .faq-answer-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .highlight {
+            color: hsl(45, 100%, 85%);
+            font-weight: 500;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            animation: slideInFromTop 1.2s ease-out 0.6s both;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: hsl(45, 100%, 70%);
+            text-decoration: none;
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 0.75rem;
+            backdrop-filter: blur(8px);
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 300;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        @media (min-width: 768px) {
+            .title {
+                font-size: 4rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .title {
+                font-size: 2.5rem;
+            }
+            
+            .faq-item {
+                margin-bottom: 1rem;
+            }
+
+            .faq-question {
+                padding: 1rem;
+                font-size: 1rem;
+            }
+
+            .faq-answer.active {
+                padding: 0 1rem 1rem 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1 class="title">Frequently Asked Questions (FAQ)</h1> <!-- Updated to include class -->
-    </header>
-
-    <main>
-        <input type="text" id="search" placeholder="Search FAQs..." onkeyup="searchFAQs()">
-        
-        <section id="games">
-            <h2>Games</h2>
-            <h3>1. What types of games are available on the Games page?</h3>
-            <p>We offer a variety of genres including action, adventure, puzzle, sports, and more.</p>
-
-            <h3>2. How can I filter games to find my favorite genre?</h3>
-            <p>You can use the filter buttons available on the Games page to select categories like mobile games, PC games, or view all games.</p>
-
-            <h3>3. Are there any multiplayer games on this site?</h3>
-            <p>No, but multiplayer is under development and will work soon. Stay tuned for the next big updates!</p>
-
-            <h3>4. How do I report a bug or issue with a specific game?</h3>
-            <p>Please use the contact form on the Support page to report any bugs or issues you encounter.</p>
-
-            <h3>5. Can I save my progress in the games?</h3>
-            <p>Progress saving is enabled in certain games. We use localstorage data to store game info that only YOU have.</p>
-            
-            <h3>6. How do I find the controls for a game?</h3>
-            <p>Each game has a controls section in its settings or instructions area.</p>
-
-            <h3>7. Can I play games without an internet connection?</h3>
-            <p>No, this is a web based app/site so you will need wifi/data to continue playing.</p>
-
-            <h3>8. How often are new games added to the site?</h3>
-            <p>New games are added regularly, so be sure to check back often for the latest additions!</p>
-
-            <h3>9. Can I suggest a game to be added to the site?</h3>
-            <p>Yes! You can submit your suggestions through the contact form located in extra.</p>
-
-            <h3>10. Are there any age restrictions for playing games on this site?</h3>
-            <p>No, there are no age restrictions so you can freely play any game.</p>
-        </section>
-
-        <section id="apps">
-            <h2>Apps</h2>
-            <h3>1. What apps are available on the Apps page?</h3>
-            <p>We provide a range of apps for various purposes, including productivity, entertainment, and more.</p>
-
-            <h3>2. How do I download an app from the site?</h3>
-            <p>We are a web based site so we do the pre-download and you get to use without the wait time.</p>
-
-            <h3>3. Are the apps free to use?</h3>
-            <p>Yes, all apps available on our site are free to use.</p>
-
-            <h3>4. What platforms are compatible with the apps?</h3>
-            <p>The apps are compatible with various platforms including Windows, Mac, and mobile devices.</p>
-
-            <h3>5. How can I provide feedback on an app I’ve used?</h3>
-            <p>You can leave feedback directly on the contact form on the Support page.</p>
-
-            <h3>6. How do I install the apps on my device?</h3>
-            <p>We are used on the web so we do the downloading for you and you csn just use in your own time.</p>
-
-            <h3>7. Can I use the apps offline?</h3>
-            <p>All web-based apps require an internet connection for all features.</p>
-
-            <h3>8. Are there any in-app purchases for the apps?</h3>
-            <p>No, all apps available on our site are completely free with no hidden fees.</p>
-
-            <h3>9. What should I do if an app crashes or does not work?</h3>
-            <p>Please report the issue using the contact form, and we will look into it.</p>
-
-            <h3>10. Are there any age restrictions for using the apps?</h3>
-            <p>No apps have age restrictions, so you may use them freely.</p>
-        </section>
-
-        <section id="exploits">
-            <h2>Exploits</h2>
-            <h3>1. What are exploits, and how can I find them on this site?</h3>
-            <p>Exploits (in our definition) are hacks that we can use to create wallbreaks and getarounds by disabling any key guarding apps located/planted in the computers files. WE WILL NOT BE HELD RESPONSIBLE FOR ANY SERIOUS DAMAGES OR CONSEQUENCES SO USE AT YOUR OWN RISK.</p>
-
-            <h3>2. Are the exploits safe to use?</h3>
-            <p>While exploits can provide advantages, use them at your own risk as they may lead to damages or serious consiquences (may be legal).</p>
-
-            <h3>3. How do I use an exploit?</h3>
-            <p>Instructions for each exploit are provided on the Exploits page. Follow the guidelines carefully.</p>
-
-            <h3>4. Can I report an exploit that I found?</h3>
-            <p>No! You tattletale😱</p>
-
-            <h3>5. Are there any risks associated with using exploits?</h3>
-            <p>Yes, using exploits can lead to damages or other penalties. Use them responsibly.</p>
-
-            <h3>6. How do I know if an exploit is still active?</h3>
-            <p>Check your system for any active exploits or head over to the Exploits page for any changes or patches affecting the exploits.</p>
-
-            <h3>7. Can I share exploits with other users?</h3>
-            <p>Yes, you can share exploits through emails or contacts. But be aware you may be held responsible for someone elses actions.</p>
-
-            <h3>8. What should I do if an exploit causes my device to crash?</h3>
-            <p>If an exploit causes issues, please report it using the contact form on a separate device, so we can do our best to fix/replace it. But be aware we will not be held responsible for your actions.</p>
-
-            <h3>9. Are there tutorials on how to use exploits?</h3>
-            <p>Yes, the Exploits page may have tutorials or guides on how to use certain exploits effectively.</p>
-
-            <h3>10. Can I be in trouble for using exploits?</h3>
-            <p>Yes, many schools have strict policies against exploiting/getarounds. Use them at your own risk.</p>
-        </section>
-
-        <section id="chat">
-            <h2>Chat</h2>
-            <h3>1. How do I access the chat feature?</h3>
-            <p>You can access the chat feature from the main menu on the website.</p>
-
-            <h3>2. What can I do in the chat?</h3>
-            <p>In the chat, you can interact with other online users, ask questions, and share gaming tips.</p>
-
-            <h3>3. Is there a way to report inappropriate behavior in the chat?</h3>
-            <p>No. But we will be coming soon with a reporting tool that temp bans other user for a short amount of time</p>
-
-            <h3>4. Can I chat with friends or only with other players?</h3>
-            <p>You can chat with other players and friends but in only 1 pulblic chatroom, we are slowly working on making other rooms so stay tuned for the next chat updates!</p>
-
-            <h3>5. Are there any rules for using the chat feature?</h3>
-            <p>Please adhere to  basic community guidelines in any other chat apps/rooms, which include being respectful and avoiding spam.</p>
-
-            <h3>6. Can I mute or block other users in the chat?</h3>
-            <p>No, you cant mute or block users who are being disruptive or disrespectful. But were working on that!</p>
-
-            <h3>7. Is there a limit on how much I can chat?</h3>
-            <p>There are no strict limits, but please be mindful of others and avoid spamming.</p>
-
-            <h3>8. Can I use emojis or special characters in the chat?</h3>
-            <p>Yes, you can use emojis and special characters, but please keep it appropriate.</p>
-
-            <h3>9. Is the chat monitored for safety?</h3>
-            <p>Yes, chat moderators monitor conversations to ensure a safe and friendly environment.</p>
-
-            <h3>10. How do I leave the chat?</h3>
-            <p>You can leave the chat by simply closing the chat window as usernames are always randomized every new chat tab.</p>
-        </section>
-
-        <section id="admin">
-            <h2>Admin (Staff Only)</h2>
-            <h3>1. What features are available in the Admin panel?</h3>
-            <p>The Admin panel allows you to view games, apps, user reports, and more!.</p>
-
-            <h3>2. How do I access the Admin panel?</h3>
-            <p>You can access the Admin panel by being apart of staff and knowing the credential (password).</p>
-
-            <h3>3. What can I do if I forget my Admin password?</h3>
-            <p>If you forgot the password, please refer to me (the owner) for the password rememberancy.</p>
-
-            <h3>4. Can I change the settings for games and apps from the Admin panel?</h3>
-            <p>No you may only view statistics and analytics from BI6ZONE.</p>
-
-            <h3>5. How do I track user activity on the site through the Admin panel?</h3>
-            <p>Refer to the tabs located in the admin panel.</p>
-
-            <h3>6. Can I add new games or apps from the Admin panel?</h3>
-            <p>No, You cannot add or manage any type of file from the admin panel.</p>
-
-            <h3>7. How do I handle user reports in the Admin panel?</h3>
-            <p>User reports can be viewed and monitored through the responses tab on the support/contact (google) forms.</p>
-
-            <h3>8. Can I manage user accounts from the Admin panel?</h3>
-            <p>You cannot manage any account as we do not yet support account logging.</p>
-
-            <h3>9. Are there logs of changes made in the Admin panel?</h3>
-            <p>Yes view the commits tab to view the 10 most recent changes made to the BI6ZONE REPO/Website/Github Page.</p>
-
-            <h3>10. How do I log out of the Admin panel?</h3>
-            <p>There is yet to be account logging so just simply close out the tab or go back to the main page by clicking the home button. We simply use localstorage data to store saved login so theres no need to enter a password again.</p>
-        </section>
-
-        <section id="extra">
-            <h2>Extra</h2>
-            <h3>1. What kind of extra content can I find on this page?</h3>
-            <p>The extra page has early website testers and the game/feature contact forms in it.</p>
-
-            <h3>2. Are there any special events or promotions listed in the Extra section?</h3>
-            <p>No, we dont not support or commote any special promotions on our website. In other words, we dont charge anyone.</p>
-
-            <h3>3. How do I participate in community events mentioned on the Extra page?</h3>
-            <p>There are no community evemts, just stay tuned fkr intergalactic updates and changes made to the website.</p>
-
-            <h3>4. Can I suggest new content for the Extra page?</h3>
-            <p>Yes, you may use the feature contact form located in the extra page to reccommend new features to our site. We always go with our community!</p>
-
-            <h3>5. How often is the Extra page updated with new content?</h3>
-            <p>The extra page is never updated.</p>
-
-            <h3>6. What types of promotions can I expect on the Extra page?</h3>
-            <p>None, we dont commote special promotions on our page.</p>
-
-            <h3>7. How can I stay informed about updates on the Extra page?</h3>
-            <p>We dont update our extra page, but you can stay tuned for updates on our page in general such as new games, apps, and features!</p>
-
-            <h3>8. Are there any exclusive rewards for participating in events on the Extra page?</h3>
-            <p>No. We dont commote giveaways or hand out rewards for any type of participation. Maybe in the future!</p>
-
-            <h3>9. Can I view past events on the Extra page?</h3>
-            <p>We dont host any type of events, but we add alerts to our home/main page for new updates that dropped.</p>
-
-            <h3>10. How can I access additional resources related to the Extra content?</h3>
-            <p>We do not have any additional resources related to our extra page.</p>
-        </section>
-
-        <section id="settings">
-            <h2>Settings</h2>
-            <h3>1. How do I change my account settings?</h3>
-            <p>You can change your account settings by navigating to the Settings page in your profile.</p>
-
-            <h3>2. Can I customize my game controls in the settings?</h3>
-            <p>Yes, many games allow you to customize your controls in the game settings.</p>
-
-            <h3>3. How do I change my display settings for better performance?</h3>
-            <p>You can adjust display settings in the game's options menu or through your account settings.</p>
-
-            <h3>4. Is there an option to change the language of the website?</h3>
-            <p>Yes, you can change the language preference in the Settings page.</p>
-
-            <h3>5. How do I reset my settings to default?</h3>
-            <p>You can reset your settings by clicking the "Reset to Default" option in the settings menu.</p>
-
-            <h3>6. How do I manage my notification preferences?</h3>
-            <p>You can manage your notification settings in the Settings page under "Notifications."</p>
-
-            <h3>7. Can I change my username in the settings?</h3>
-            <p>Yes, you can change your username as long as it complies with community guidelines.</p>
-
-            <h3>8. What should I do if I encounter issues changing my settings?</h3>
-            <p>If you experience issues, please contact support for assistance.</p>
-
-            <h3>9. Is there an option to enable dark mode for the website?</h3>
-            <p>Yes, dark mode can be enabled in the Display Settings section.</p>
-
-            <h3>10. How do I log out of my account?</h3>
-            <p>You can log out by clicking the "Logout" button located in your account settings.</p>
-        </section>
-
-        <section id="homework-bot">
-            <h2>Homework Bot</h2>
-            <h3>1. How does the Homework Bot work?</h3>
-            <p>The Homework Bot uses AI to answer questions related to homework and study topics.</p>
-
-            <h3>2. What types of questions can I ask the Homework Bot?</h3>
-            <p>You can ask questions on various subjects, including math, science, history, and more.</p>
-
-            <h3>3. Is there a limit to how many questions I can ask the Homework Bot?</h3>
-            <p>There is currently no limit, but please be mindful of your usage to ensure fair access for all users.</p>
-
-            <h3>4. Can the Homework Bot provide answers for all subjects?</h3>
-            <p>The Homework Bot covers a wide range of subjects, but it may not have information on every topic.</p>
-
-            <h3>5. How do I provide feedback on the Homework Bot's responses?</h3>
-            <p>You can provide feedback through the feedback form available on the Homework Bot page.</p>
-
-            <h3>6. How accurate are the Homework Bot's answers?</h3>
-            <p>The Homework Bot strives for accuracy, but users should verify answers for critical assignments.</p>
-
-            <h3>7. Can I ask follow-up questions to the Homework Bot?</h3>
-            <p>Yes, you can ask follow-up questions for clarification or additional information.</p>
-
-            <h3>8. How does the Homework Bot learn and improve over time?</h3>
-            <p>The Homework Bot uses machine learning algorithms that improve based on user interactions.</p>
-
-            <h3>9. Is the Homework Bot available 24/7?</h3>
-            <p>Yes, the Homework Bot is available at any time for users to ask questions.</p>
-
-            <h3>10. What should I do if the Homework Bot cannot answer my question?</h3>
-            <p>If the Homework Bot is unable to answer your question, please consider seeking help from a teacher or tutor.</p>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2025 BI6ZONE. All rights reserved.</p>
-    </footer>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="title">FAQ</h1>
+            <p class="subtitle">Frequently Asked Questions about BI6ZONE</p>
+        </div>
+
+        <!-- FAQ Content -->
+        <div class="content">
+            <div class="faq-item" style="--delay: 1">
+                <div class="faq-question">
+                    What is BI6ZONE?
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>BI6ZONE is a comprehensive web platform that provides access to unblocked games, apps, and various utilities. It's designed to offer entertainment and productivity tools in environments where access might be restricted.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" style="--delay: 2">
+                <div class="faq-question">
+                    Is BI6ZONE safe to use?
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p><span class="highlight">Yes, BI6ZONE is safe to use.</span> We prioritize user security and privacy. All content is carefully curated, and we don't collect personal information beyond basic analytics for site improvement.</p>
+                        <p>However, always be mindful of your organization's policies regarding internet usage.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" style="--delay: 3">
+                <div class="faq-question">
+                    How do I access blocked content through BI6ZONE?
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Simply navigate to the relevant section (Games, Apps, Proxies) and click on the content you want to access. Most games and apps load directly in your browser without requiring downloads or installations.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" style="--delay: 4">
+                <div class="faq-question">
+                    Why use the "Open Blank" feature?
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>The "Open Blank" feature opens BI6ZONE in a new tab with <span class="highlight">about:blank</span> as the URL, which can help:</p>
+                        <ul>
+                            <li>Avoid detection in browser history</li>
+                            <li>Bypass certain URL-based filters</li>
+                            <li>Provide a cleaner browsing experience</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" style="--delay: 5">
+                <div class="faq-question">
+                    What types of games are available?
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>BI6ZONE offers a wide variety of games including:</p>
+                        <ul>
+                            <li>Classic arcade games</li>
+                            <li>Puzzle and strategy games</li>
+                            <li>Action and adventure games</li>
+                            <li>Multiplayer online games</li>
+                            <li>Educational games</li>
+                        </ul>
+                        <p>All games are browser-based and require no downloads.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" style="--delay: 6">
+                <div class="faq-question">
+                    How do the proxy features work?
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Our proxy section provides various web proxy services that route your internet traffic through different servers, potentially allowing access to restricted websites. <span class="highlight">Use responsibly</span> and in accordance with your local policies.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" style="--delay: 7">
+                <div class="faq-question">
+                    What is the HWBot feature?
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>HWBot (Homework Helper Bot) is an AI-powered assistant designed to help with educational tasks and homework questions. It provides explanations, solutions, and guidance across various subjects.</p>
+                        <p><span class="highlight">Note:</span> Always use this tool as a learning aid, not as a replacement for your own work and understanding.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" style="--delay: 8">
+                <div class="faq-question">
+                    Can I request new games or features?
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Absolutely! We welcome community feedback and suggestions. You can:</p>
+                        <ul>
+                            <li>Submit requests through our support form</li>
+                            <li>Contact us via GitHub</li>
+                            <li>Check our update log for recently added features</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" style="--delay: 9">
+                <div class="faq-question">
+                    Does BI6ZONE work on mobile devices?
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p><span class="highlight">Yes!</span> BI6ZONE is fully responsive and works on smartphones, tablets, and desktop computers. The interface adapts to your screen size for optimal usability.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" style="--delay: 10">
+                <div class="faq-question">
+                    What should I do if something isn't working?
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>If you encounter issues:</p>
+                        <ul>
+                            <li>Try refreshing the page or clearing your browser cache</li>
+                            <li>Check if the issue persists in incognito/private mode</li>
+                            <li>Try a different browser or device</li>
+                            <li>Contact support through our GitHub or support form</li>
+                        </ul>
+                        <p>Most issues are browser-related and can be resolved with these basic troubleshooting steps.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <a href="/" class="back-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m12 19-7-7 7-7"/>
+                    <path d="M19 12H5"/>
+                </svg>
+                Back to BI6ZONE
+            </a>
+        </div>
+    </div>
 
     <script>
-        function searchFAQs() {
-            const input = document.getElementById('search').value.toLowerCase();
-            const sections = document.querySelectorAll('section');
-
-            sections.forEach(section => {
-                const questions = section.querySelectorAll('h3');
-                let hasVisibleQuestion = false;
-
-                questions.forEach(question => {
-                    if (question.innerText.toLowerCase().includes(input)) {
-                        question.style.display = 'block';
-                        hasVisibleQuestion = true;
-                    } else {
-                        question.style.display = 'none';
+        // FAQ accordion functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqQuestions = document.querySelectorAll('.faq-question');
+            
+            faqQuestions.forEach(question => {
+                question.addEventListener('click', function() {
+                    const answer = this.nextElementSibling;
+                    const isActive = this.classList.contains('active');
+                    
+                    // Close all other FAQ items
+                    faqQuestions.forEach(q => {
+                        q.classList.remove('active');
+                        q.nextElementSibling.classList.remove('active');
+                    });
+                    
+                    // Toggle current item
+                    if (!isActive) {
+                        this.classList.add('active');
+                        answer.classList.add('active');
                     }
                 });
-
-                section.style.display = hasVisibleQuestion ? 'block' : 'none';
             });
-        }
+        });
     </script>
 </body>
 </html>
