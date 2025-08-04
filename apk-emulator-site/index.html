@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>APK Cloud Emulator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>📱 Upload & Run APK</h1>
+    <form id="apkForm">
+      <input type="file" id="apkInput" accept=".apk" required />
+      <button type="submit">Upload & Launch</button>
+    </form>
+    <div id="status">Waiting for APK...</div>
+    <iframe id="emulatorFrame" style="display:none;" src=""></iframe>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
