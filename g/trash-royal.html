@@ -1,21 +1,27 @@
-<style>
-  .responsive-iframe-container {
-    position: relative;
-    width: 100%;
-    padding-top: 56.25%; /* 16:9 aspect ratio (change if needed) */
-    overflow: hidden;
-  }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trash Clash Royale</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background: black;
+    }
 
-  .responsive-iframe-container iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-  }
-</style>
-
-<div class="responsive-iframe-container">
+    iframe {
+      border: none;
+      width: 100vw;
+      height: 100vh;
+      display: block;
+    }
+  </style>
+</head>
+<body>
   <iframe src="https://www.greenfoot.org/scenarios/27793?embed=true" allowfullscreen></iframe>
-</div>
+</body>
+</html>
