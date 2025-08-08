@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Haven - Multiplayer RPG</title>
+    <style>
+        /* Gaming Theme Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, hsl(220, 13%, 8%), hsl(220, 13%, 12%));
+            color: hsl(120, 100%, 85%);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .game-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .game-canvas {
+            border: 2px solid hsl(120, 100%, 30%);
+            border-radius: 8px;
+            box-shadow: 0 0 20px hsl(120, 100%, 50%, 0.5);
+            cursor: crosshair;
+        }
+
+        .game-ui {
+            position: fixed;
+            background: hsl(220, 13%, 10%);
+            border: 1px solid hsl(120, 100%, 30%);
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 0 20px hsl(120, 100%, 50%, 0.5);
+        }
+
+        .player-stats {
+            top: 16px;
+            left: 16px;
+            min-width: 280px;
+        }
+
+        .online-players {
+            top: 16px;
+            right: 16px;
+            max-width: 250px;
+        }
+
+        .chat-panel {
+            bottom: 16px;
+            left: 16px;
+            width: 384px;
+            height: 320px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .controls-panel {
+            bottom: 16px;
+            right: 16px;
+            max-width: 300px;
+        }
+
+        .neon-text {
+            color: hsl(120, 100%, 50%);
+            text-shadow: 0 0 10px hsl(120, 100%, 50%, 0.8);
+        }
+
+        .health-bar, .mana-bar {
+            height: 12px;
+            border-radius: 6px;
+            transition: width 0.3s ease;
+        }
+
+        .health-bar {
+            background: hsl(0, 100%, 60%);
+            box-shadow: 0 0 10px hsl(0, 100%, 60%, 0.7);
+        }
+
+        .mana-bar {
+            background: hsl(240, 100%, 60%);
+            box-shadow: 0 0 10px hsl(240, 100%, 60%, 0.7);
+        }
+
+        .bar-background {
+            background: hsl(220, 13%, 15%);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        input, button {
+            background: hsl(220, 13%, 15%);
+            border: 1px solid hsl(120, 100%, 30%);
+            color: hsl(120, 100%, 85%);
+            padding: 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        button {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: hsl(120, 100%, 20%);
+            box-shadow: 0 0 10px hsl(120, 100%, 50%, 0.3);
+        }
+
+        .character-select {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: hsl(220, 13%, 10%);
+            border: 2px solid hsl(120, 100%, 30%);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 0 30px hsl(120, 100%, 50%, 0.5);
+            text-align: center;
+            min-width: 400px;
+        }
+
+        .class-selection {
+            display: flex;
+            gap: 16px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+
+        .class-button {
+            padding: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        .class-button:hover, .class-button.selected {
+            background: hsl(120, 100%, 20%);
+            box-shadow: 0 0 15px hsl(120, 100%, 50%, 0.5);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            background: hsl(220, 13%, 8%);
+            border-radius: 4px;
+            margin-bottom: 12px;
+            max-height: 200px;
+        }
+
+        .message {
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .message .username {
+            color: hsl(120, 100%, 50%);
+            font-weight: bold;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-input {
+            flex: 1;
+        }
+
+        .player-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+        }
+
+        .current-player {
+            background: hsl(120, 100%, 20%, 0.3);
+            border: 1px solid hsl(120, 100%, 30%);
+        }
+
+        .other-player {
+            background: hsl(220, 13%, 8%, 0.5);
+        }
+
+        .player-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .current-player .player-dot {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .interaction-dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: hsl(220, 13%, 10%);
+            border: 2px solid hsl(120, 100%, 30%);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 0 30px hsl(120, 100%, 50%, 0.5);
+            min-width: 400px;
+            max-width: 500px;
+            z-index: 1000;
+        }
+
+        .shop-items {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 16px 0;
+        }
+
+        .shop-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: hsl(220, 13%, 8%);
+            border-radius: 4px;
+            border: 1px solid hsl(120, 100%, 20%);
+        }
+
+        .shop-item:hover {
+            background: hsl(120, 100%, 15%);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+        }
+
+        .controls-text {
+            font-size: 12px;
+            color: hsl(120, 20%, 65%);
+            line-height: 1.4;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .gold-amount {
+            color: hsl(60, 100%, 50%);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <canvas id="gameCanvas" class="game-canvas" width="1200" height="800"></canvas>
+    </div>
+
+    <!-- Character Selection -->
+    <div id="characterSelect" class="character-select">
+        <h1 class="neon-text" style="margin-bottom: 24px;">Welcome to Pixel Haven</h1>
+        <p style="margin-bottom: 20px;">Enter your name and choose your class:</p>
+        
+        <input type="text" id="playerName" placeholder="Enter your name..." style="width: 100%; margin-bottom: 20px;">
+        
+        <div class="class-selection">
+            <div class="class-button" data-class="warrior">
+                <div style="font-size: 24px;">⚔</div>
+                <div>Warrior</div>
+                <div style="font-size: 10px;">High HP, Low MP</div>
+            </div>
+            <div class="class-button" data-class="mage">
+                <div style="font-size: 24px;">✦</div>
+                <div>Mage</div>
+                <div style="font-size: 10px;">Low HP, High MP</div>
+            </div>
+            <div class="class-button" data-class="archer">
+                <div style="font-size: 24px;">➵</div>
+                <div>Archer</div>
+                <div style="font-size: 10px;">Balanced Stats</div>
+            </div>
+        </div>
+        
+        <button id="startGame" style="width: 100%; margin-top: 20px;">Start Adventure</button>
+    </div>
+
+    <!-- Player Stats Panel -->
+    <div id="playerStats" class="game-ui player-stats hidden">
+        <div style="text-align: center; margin-bottom: 16px;">
+            <h3 class="neon-text" id="playerNameDisplay"></h3>
+            <p style="font-size: 12px; color: hsl(120, 20%, 65%);" id="playerClassDisplay"></p>
+        </div>
+        
+        <div>
+            <div class="stat-row">
+                <span>HP</span>
+                <span id="healthDisplay"></span>
+            </div>
+            <div class="bar-background" style="margin-bottom: 12px;">
+                <div id="healthBar" class="health-bar" style="width: 100%;"></div>
+            </div>
+
+            <div class="stat-row">
+                <span>MP</span>
+                <span id="manaDisplay"></span>
+            </div>
+            <div class="bar-background" style="margin-bottom: 12px;">
+                <div id="manaBar" class="mana-bar" style="width: 100%;"></div>
+            </div>
+
+            <div class="stat-row">
+                <span>Gold:</span>
+                <span id="goldDisplay" class="gold-amount"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Online Players Panel -->
+    <div id="onlinePlayers" class="game-ui online-players hidden">
+        <h3 class="neon-text" style="margin-bottom: 12px;">Online Players (<span id="playerCount">0</span>)</h3>
+        <div id="playersList" style="max-height: 160px; overflow-y: auto;"></div>
+    </div>
+
+    <!-- Chat Panel -->
+    <div id="chatPanel" class="game-ui chat-panel hidden">
+        <h3 class="neon-text" style="margin-bottom: 12px;">Chat</h3>
+        <div id="chatMessages" class="chat-messages"></div>
+        <div class="chat-input-container">
+            <input type="text" id="chatInput" class="chat-input" placeholder="Type a message...">
+            <button id="sendButton">Send</button>
+        </div>
+    </div>
+
+    <!-- Controls Panel -->
+    <div id="controlsPanel" class="game-ui controls-panel hidden">
+        <h3 class="neon-text" style="margin-bottom: 12px;">Controls</h3>
+        <div class="controls-text">
+            <div>🎮 <strong>WASD</strong> or <strong>Arrow Keys</strong> - Move</div>
+            <div>⚡ <strong>E</strong> or <strong>Space</strong> - Interact with NPCs</div>
+            <div>💬 <strong>Enter</strong> - Send chat message</div>
+            <div>🌟 Walk near NPCs to interact with them</div>
+        </div>
+    </div>
+
+    <!-- Interaction Dialog -->
+    <div id="interactionOverlay" class="overlay hidden"></div>
+    <div id="interactionDialog" class="interaction-dialog hidden">
+        <h3 class="neon-text" id="npcName"></h3>
+        <p id="npcDialogue" style="margin: 16px 0;"></p>
+        <div id="shopItems" class="shop-items hidden"></div>
+        <div style="text-align: right; margin-top: 16px;">
+            <button id="closeDialog">Close</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Supabase Configuration
+        const SUPABASE_URL = "https://yxtihsvpirmpmrffdbnt.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4dGloc3ZwaXJtcG1yZmZkYm50Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1MzUwMjAsImV4cCI6MjA3MDExMTAyMH0.0edpLL1XlfmyTEYfqyGnaUt0kMBcwwnjt0XlORrHRwQ";
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Game Constants
+        const TILE_SIZE = 32;
+        const MOVE_SPEED = 120;
+        const UPDATE_INTERVAL = 50;
+        const WORLD_WIDTH = 60;
+        const WORLD_HEIGHT = 30;
+
+        // Game State
+        let gameState = {
+            players: {},
+            messages: [],
+            currentPlayer: null,
+            isConnected: false,
+            keys: {},
+            animationFrame: 0,
+            lastUpdate: Date.now(),
+            interactionTarget: null
+        };
+
+        // World Data
+        const TILES = {
+            grass: { id: 'grass', type: 'grass', walkable: true, color: '#10b981' },
+            stone: { id: 'stone', type: 'stone', walkable: true, color: '#64748b' },
+            water: { id: 'water', type: 'water', walkable: false, color: '#3b82f6' },
+            dirt: { id: 'dirt', type: 'dirt', walkable: true, color: '#a3540f' },
+            wood: { id: 'wood', type: 'wood', walkable: false, color: '#92400e' },
+            roof: { id: 'roof', type: 'roof', walkable: false, color: '#7c2d12' },
+            door: { id: 'door', type: 'door', walkable: true, color: '#fbbf24' },
+            wall: { id: 'wall', type: 'wall', walkable: false, color: '#525252' },
+            floor: { id: 'floor', type: 'floor', walkable: true, color: '#d6d3d1' }
+        };
+
+        const BUILDINGS = [
+            {
+                id: 'weapon-shop',
+                name: 'Iron & Steel Armory',
+                type: 'shop',
+                x: 10, y: 5, width: 10, height: 10,
+                entrance: { x: 15, y: 15 },
+                icon: '⚔️',
+                description: 'Finest weapons and armor in the realm'
+            },
+            {
+                id: 'potion-shop',
+                name: 'Mystic Potions',
+                type: 'shop',
+                x: 25, y: 5, width: 10, height: 10,
+                entrance: { x: 30, y: 15 },
+                icon: '🧪',
+                description: 'Magical potions and remedies'
+            },
+            {
+                id: 'hair-salon',
+                name: 'Glamour & Style',
+                type: 'salon',
+                x: 40, y: 5, width: 10, height: 10,
+                entrance: { x: 45, y: 15 },
+                icon: '✂️',
+                description: 'Transform your appearance'
+            },
+            {
+                id: 'arena',
+                name: 'Combat Arena',
+                type: 'arena',
+                x: 15, y: 20, width: 30, height: 5,
+                entrance: { x: 30, y: 25 },
+                icon: '🏟️',
+                description: 'Test your skills in combat'
+            }
+        ];
+
+        const NPCS = [
+            {
+                id: 'blacksmith',
+                name: 'Gareth the Blacksmith',
+                type: 'shopkeeper',
+                x: 15, y: 10,
+                sprite: '🔨',
+                color: '#dc2626',
+                dialogue: [
+                    "Welcome to my forge!",
+                    "I craft the finest weapons in the land.",
+                    "What can I make for you today?"
+                ],
+                shop: [
+                    { id: 'iron-sword', name: 'Iron Sword', type: 'weapon', price: 100, description: 'A sturdy iron blade', icon: '⚔️' },
+                    { id: 'steel-armor', name: 'Steel Armor', type: 'armor', price: 200, description: 'Protective steel plating', icon: '🛡️' },
+                    { id: 'iron-helmet', name: 'Iron Helmet', type: 'armor', price: 75, description: 'Basic head protection', icon: '⛑️' }
+                ]
+            },
+            {
+                id: 'alchemist',
+                name: 'Luna the Alchemist',
+                type: 'shopkeeper',
+                x: 30, y: 10,
+                sprite: '🧙‍♀️',
+                color: '#7c3aed',
+                dialogue: [
+                    "Greetings, traveler!",
+                    "My potions will aid you on your journey.",
+                    "Each brew is made with ancient recipes."
+                ],
+                shop: [
+                    { id: 'health-potion', name: 'Health Potion', type: 'potion', price: 25, description: 'Restores 50 HP', icon: '❤️' },
+                    { id: 'mana-potion', name: 'Mana Potion', type: 'potion', price: 30, description: 'Restores 50 MP', icon: '💙' },
+                    { id: 'strength-potion', name: 'Strength Elixir', type: 'potion', price: 50, description: 'Temporarily increases attack', icon: '💪' }
+                ]
+            },
+            {
+                id: 'stylist',
+                name: 'Vera the Stylist',
+                type: 'shopkeeper',
+                x: 45, y: 10,
+                sprite: '💇‍♀️',
+                color: '#ec4899',
+                dialogue: [
+                    "Darling! You simply must try a new look!",
+                    "I can change your entire appearance!",
+                    "Beauty is power, don't you agree?"
+                ]
+            },
+            {
+                id: 'arena-master',
+                name: 'Commander Rex',
+                type: 'trainer',
+                x: 30, y: 22,
+                sprite: '🛡️',
+                color: '#f59e0b',
+                dialogue: [
+                    "Welcome to the Arena, warrior!",
+                    "Prove your worth in combat!",
+                    "Only the strongest survive here."
+                ]
+            }
+        ];
+
+        const SPAWN_POINTS = [
+            { x: 30, y: 27 },
+            { x: 28, y: 27 },
+            { x: 32, y: 27 }
+        ];
+
+        // Generate world map
+        function createWorldMap() {
+            const map = [];
+            for (let y = 0; y < WORLD_HEIGHT; y++) {
+                const row = [];
+                for (let x = 0; x < WORLD_WIDTH; x++) {
+                    if (y < 2 || y >= WORLD_HEIGHT - 2 || x < 2 || x >= WORLD_WIDTH - 2) {
+                        row.push(TILES.grass);
+                    } else if ((x >= 10 && x <= 20 && y >= 5 && y <= 15) ||
+                               (x >= 25 && x <= 35 && y >= 5 && y <= 15) ||
+                               (x >= 40 && x <= 50 && y >= 5 && y <= 15)) {
+                        if (y === 5 || y === 15) row.push(TILES.wall);
+                        else if (x === 10 || x === 20 || x === 25 || x === 35 || x === 40 || x === 50) row.push(TILES.wall);
+                        else if ((x === 15 && y === 15) || (x === 30 && y === 15) || (x === 45 && y === 15)) {
+                            row.push(TILES.door);
+                        } else row.push(TILES.floor);
+                    } else if (x >= 15 && x <= 45 && y >= 20 && y <= 25) {
+                        if (y === 20 || y === 25 || x === 15 || x === 45) row.push(TILES.stone);
+                        else row.push(TILES.dirt);
+                    } else if ((x + y) % 4 === 0) {
+                        row.push(TILES.stone);
+                    } else {
+                        row.push(TILES.grass);
+                    }
+                }
+                map.push(row);
+            }
+            return map;
+        }
+
+        const worldMap = createWorldMap();
+
+        // Utility Functions
+        function getClassStats(playerClass) {
+            switch (playerClass) {
+                case 'warrior': return { health: 120, mana: 30 };
+                case 'mage': return { health: 80, mana: 100 };
+                case 'archer': return { health: 100, mana: 50 };
+                default: return { health: 100, mana: 50 };
+            }
+        }
+
+        function getClassColor(playerClass) {
+            switch (playerClass) {
+                case 'warrior': return '#ef4444';
+                case 'mage': return '#3b82f6';
+                case 'archer': return '#10b981';
+                default: return '#6b7280';
+            }
+        }
+
+        function getClassIcon(playerClass) {
+            switch (playerClass) {
+                case 'warrior': return '⚔';
+                case 'mage': return '✦';
+                case 'archer': return '➵';
+                default: return '●';
+            }
+        }
+
+        function canMoveTo(x, y) {
+            const tileX = Math.floor(x / TILE_SIZE);
+            const tileY = Math.floor(y / TILE_SIZE);
+            
+            if (tileX < 0 || tileX >= WORLD_WIDTH || tileY < 0 || tileY >= WORLD_HEIGHT) {
+                return false;
+            }
+            
+            return worldMap[tileY][tileX].walkable;
+        }
+
+        function lightenColor(color, amount) {
+            if (color.startsWith('#')) {
+                const r = parseInt(color.slice(1, 3), 16);
+                const g = parseInt(color.slice(3, 5), 16);
+                const b = parseInt(color.slice(5, 7), 16);
+                const newR = Math.min(255, r + amount * 255);
+                const newG = Math.min(255, g + amount * 255);
+                const newB = Math.min(255, b + amount * 255);
+                return `rgb(${newR}, ${newG}, ${newB})`;
+            }
+            return color;
+        }
+
+        function darkenColor(color, amount) {
+            if (color.startsWith('#')) {
+                const r = parseInt(color.slice(1, 3), 16);
+                const g = parseInt(color.slice(3, 5), 16);
+                const b = parseInt(color.slice(5, 7), 16);
+                const newR = Math.max(0, r - amount * 255);
+                const newG = Math.max(0, g - amount * 255);
+                const newB = Math.max(0, b - amount * 255);
+                return `rgb(${newR}, ${newG}, ${newB})`;
+            }
+            return color;
+        }
+
+        // Game Functions
+        async function initializePlayer(name, playerClass) {
+            const spawnPoint = SPAWN_POINTS[Math.floor(Math.random() * SPAWN_POINTS.length)];
+            const stats = getClassStats(playerClass);
+            
+            const newPlayer = {
+                name,
+                x: spawnPoint.x * TILE_SIZE,
+                y: spawnPoint.y * TILE_SIZE,
+                health: stats.health,
+                maxHealth: stats.health,
+                mana: stats.mana,
+                maxMana: stats.mana,
+                level: 1,
+                class: playerClass,
+                color: getClassColor(playerClass),
+                isMoving: false,
+                direction: 'down',
+                gold: 100,
+                inventory: []
+            };
+
+            try {
+                const { data, error } = await supabase
+                    .from('players')
+                    .insert({
+                        username: name,
+                        x: newPlayer.x,
+                        y: newPlayer.y,
+                        health: newPlayer.health,
+                        max_health: newPlayer.maxHealth,
+                        mana: newPlayer.mana,
+                        max_mana: newPlayer.maxMana,
+                        level: newPlayer.level,
+                        player_class: playerClass,
+                        color: newPlayer.color,
+                        direction: newPlayer.direction,
+                        is_moving: false,
+                        gold: newPlayer.gold,
+                        zone_id: 'main-town'
+                    })
+                    .select()
+                    .single();
+
+                if (error) throw error;
+
+                gameState.currentPlayer = {
+                    id: data.id,
+                    name: data.username,
+                    x: data.x,
+                    y: data.y,
+                    health: data.health,
+                    maxHealth: data.max_health,
+                    mana: data.mana,
+                    maxMana: data.max_mana,
+                    level: data.level,
+                    class: data.player_class,
+                    color: data.color,
+                    isMoving: data.is_moving,
+                    direction: data.direction,
+                    gold: data.gold,
+                    inventory: []
+                };
+
+                gameState.isConnected = true;
+                showGameUI();
+                updatePlayerStats();
+                setupRealtimeSubscriptions();
+                loadInitialData();
+                startGameLoop();
+            } catch (error) {
+                console.error('Error creating player:', error);
+                alert('Failed to create player. Please try again.');
+            }
+        }
+
+        function showGameUI() {
+            document.getElementById('characterSelect').classList.add('hidden');
+            document.getElementById('playerStats').classList.remove('hidden');
+            document.getElementById('onlinePlayers').classList.remove('hidden');
+            document.getElementById('chatPanel').classList.remove('hidden');
+            document.getElementById('controlsPanel').classList.remove('hidden');
+        }
+
+        function updatePlayerStats() {
+            if (!gameState.currentPlayer) return;
+            
+            const player = gameState.currentPlayer;
+            document.getElementById('playerNameDisplay').textContent = player.name;
+            document.getElementById('playerClassDisplay').textContent = `Level ${player.level} ${player.class}`;
+            document.getElementById('healthDisplay').textContent = `${player.health}/${player.maxHealth}`;
+            document.getElementById('manaDisplay').textContent = `${player.mana}/${player.maxMana}`;
+            document.getElementById('goldDisplay').textContent = player.gold;
+            
+            const healthPercent = (player.health / player.maxHealth) * 100;
+            const manaPercent = (player.mana / player.maxMana) * 100;
+            
+            document.getElementById('healthBar').style.width = `${healthPercent}%`;
+            document.getElementById('manaBar').style.width = `${manaPercent}%`;
+        }
+
+        function updatePlayersList() {
+            const playersList = document.getElementById('playersList');
+            const playerCount = document.getElementById('playerCount');
+            
+            playersList.innerHTML = '';
+            playerCount.textContent = Object.keys(gameState.players).length;
+            
+            // Current player first
+            if (gameState.currentPlayer) {
+                const div = document.createElement('div');
+                div.className = 'player-item current-player';
+                div.innerHTML = `
+                    <div class="player-dot" style="background-color: ${gameState.currentPlayer.color}"></div>
+                    <span style="font-size: 12px; font-weight: bold;">${gameState.currentPlayer.name} (You)</span>
+                `;
+                playersList.appendChild(div);
+            }
+            
+            // Other players
+            Object.values(gameState.players).forEach(player => {
+                if (player.id !== gameState.currentPlayer?.id) {
+                    const div = document.createElement('div');
+                    div.className = 'player-item other-player';
+                    div.innerHTML = `
+                        <div class="player-dot" style="background-color: ${player.color}"></div>
+                        <span style="font-size: 12px;">${player.name}</span>
+                    `;
+                    playersList.appendChild(div);
+                }
+            });
+        }
+
+        function addChatMessage(message) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+            messageDiv.innerHTML = `
+                <span class="username">${message.username}:</span> ${message.message}
+            `;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Keep only last 20 messages
+            while (chatMessages.children.length > 20) {
+                chatMessages.removeChild(chatMessages.firstChild);
+            }
+        }
+
+        async function sendMessage(message) {
+            if (!gameState.currentPlayer || !message.trim()) return;
+
+            try {
+                await supabase
+                    .from('chat_messages')
+                    .insert({
+                        player_id: gameState.currentPlayer.id,
+                        username: gameState.currentPlayer.name,
+                        message: message.trim(),
+                        zone_id: 'main-town'
+                    });
+            } catch (error) {
+                console.error('Error sending message:', error);
+            }
+        }
+
+        async function updatePlayerPosition(player) {
+            if (!player.id) return;
+
+            try {
+                await supabase
+                    .from('players')
+                    .update({
+                        x: player.x,
+                        y: player.y,
+                        direction: player.direction,
+                        is_moving: player.isMoving,
+                        last_seen: new Date().toISOString()
+                    })
+                    .eq('id', player.id);
+            } catch (error) {
+                console.error('Error updating player position:', error);
+            }
+        }
+
+        function checkInteractions(playerX, playerY) {
+            const playerTileX = Math.round(playerX / TILE_SIZE);
+            const playerTileY = Math.round(playerY / TILE_SIZE);
+            
+            for (const npc of NPCS) {
+                const distance = Math.abs(npc.x - playerTileX) + Math.abs(npc.y - playerTileY);
+                if (distance <= 1) {
+                    return { type: 'npc', target: npc };
+                }
+            }
+            
+            return null;
+        }
+
+        function showInteractionDialog(npc) {
+            gameState.interactionTarget = npc;
+            
+            document.getElementById('npcName').textContent = npc.name;
+            document.getElementById('npcDialogue').textContent = npc.dialogue[0];
+            
+            const shopItems = document.getElementById('shopItems');
+            shopItems.innerHTML = '';
+            
+            if (npc.shop && npc.shop.length > 0) {
+                shopItems.classList.remove('hidden');
+                npc.shop.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'shop-item';
+                    itemDiv.innerHTML = `
+                        <div>
+                            <strong>${item.icon} ${item.name}</strong>
+                            <div style="font-size: 11px; color: hsl(120, 20%, 65%);">${item.description}</div>
+                        </div>
+                        <div>
+                            <div style="color: hsl(60, 100%, 50%); font-weight: bold;">${item.price} Gold</div>
+                            <button onclick="purchaseItem('${item.id}')" style="margin-top: 4px; padding: 4px 8px; font-size: 11px;">Buy</button>
+                        </div>
+                    `;
+                    shopItems.appendChild(itemDiv);
+                });
+            } else {
+                shopItems.classList.add('hidden');
+            }
+            
+            document.getElementById('interactionOverlay').classList.remove('hidden');
+            document.getElementById('interactionDialog').classList.remove('hidden');
+        }
+
+        function closeInteractionDialog() {
+            document.getElementById('interactionOverlay').classList.add('hidden');
+            document.getElementById('interactionDialog').classList.add('hidden');
+            gameState.interactionTarget = null;
+        }
+
+        async function purchaseItem(itemId) {
+            if (!gameState.interactionTarget || !gameState.currentPlayer) return;
+            
+            const item = gameState.interactionTarget.shop?.find(i => i.id === itemId);
+            if (!item) return;
+            
+            if (gameState.currentPlayer.gold >= item.price) {
+                // Update gold locally
+                gameState.currentPlayer.gold -= item.price;
+                updatePlayerStats();
+                
+                // Send chat message about purchase
+                await sendMessage(`Purchased ${item.name} for ${item.price} gold!`);
+                
+                // Update player in database
+                try {
+                    await supabase
+                        .from('players')
+                        .update({ gold: gameState.currentPlayer.gold })
+                        .eq('id', gameState.currentPlayer.id);
+                } catch (error) {
+                    console.error('Error updating gold:', error);
+                }
+                
+                closeInteractionDialog();
+            } else {
+                alert('Not enough gold!');
+            }
+        }
+
+        async function loadInitialData() {
+            // Load players
+            const { data: playersData } = await supabase
+                .from('players')
+                .select('*')
+                .eq('zone_id', 'main-town');
+
+            if (playersData) {
+                playersData.forEach(dbPlayer => {
+                    gameState.players[dbPlayer.id] = {
+                        id: dbPlayer.id,
+                        name: dbPlayer.username,
+                        x: dbPlayer.x,
+                        y: dbPlayer.y,
+                        health: dbPlayer.health,
+                        maxHealth: dbPlayer.max_health,
+                        mana: dbPlayer.mana,
+                        maxMana: dbPlayer.max_mana,
+                        level: dbPlayer.level,
+                        class: dbPlayer.player_class,
+                        color: dbPlayer.color,
+                        isMoving: dbPlayer.is_moving,
+                        direction: dbPlayer.direction,
+                        gold: dbPlayer.gold,
+                        inventory: []
+                    };
+                });
+                updatePlayersList();
+            }
+
+            // Load recent messages
+            const { data: messagesData } = await supabase
+                .from('chat_messages')
+                .select('*')
+                .eq('zone_id', 'main-town')
+                .order('created_at', { ascending: false })
+                .limit(20);
+
+            if (messagesData) {
+                messagesData.reverse().forEach(msg => {
+                    addChatMessage({
+                        id: msg.id,
+                        username: msg.username,
+                        message: msg.message,
+                        created_at: msg.created_at,
+                        zone_id: msg.zone_id
+                    });
+                });
+            }
+        }
+
+        function setupRealtimeSubscriptions() {
+            // Subscribe to player updates
+            supabase
+                .channel('players')
+                .on(
+                    'postgres_changes',
+                    {
+                        event: '*',
+                        schema: 'public',
+                        table: 'players',
+                        filter: 'zone_id=eq.main-town'
+                    },
+                    (payload) => {
+                        if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+                            const dbPlayer = payload.new;
+                            gameState.players[dbPlayer.id] = {
+                                id: dbPlayer.id,
+                                name: dbPlayer.username,
+                                x: dbPlayer.x,
+                                y: dbPlayer.y,
+                                health: dbPlayer.health,
+                                maxHealth: dbPlayer.max_health,
+                                mana: dbPlayer.mana,
+                                maxMana: dbPlayer.max_mana,
+                                level: dbPlayer.level,
+                                class: dbPlayer.player_class,
+                                color: dbPlayer.color,
+                                isMoving: dbPlayer.is_moving,
+                                direction: dbPlayer.direction,
+                                gold: dbPlayer.gold,
+                                inventory: []
+                            };
+                            updatePlayersList();
+                        } else if (payload.eventType === 'DELETE') {
+                            delete gameState.players[payload.old.id];
+                            updatePlayersList();
+                        }
+                    }
+                )
+                .subscribe();
+
+            // Subscribe to chat messages
+            supabase
+                .channel('chat_messages')
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'INSERT',
+                        schema: 'public',
+                        table: 'chat_messages',
+                        filter: 'zone_id=eq.main-town'
+                    },
+                    (payload) => {
+                        addChatMessage({
+                            id: payload.new.id,
+                            username: payload.new.username,
+                            message: payload.new.message,
+                            created_at: payload.new.created_at,
+                            zone_id: payload.new.zone_id
+                        });
+                    }
+                )
+                .subscribe();
+        }
+
+        // Game Loop
+        let updateTimeout;
+        let animationFrame;
+
+        function startGameLoop() {
+            const gameLoop = () => {
+                const now = Date.now();
+                const deltaTime = (now - gameState.lastUpdate) / 1000;
+                gameState.lastUpdate = now;
+
+                if (gameState.currentPlayer) {
+                    let newX = gameState.currentPlayer.x;
+                    let newY = gameState.currentPlayer.y;
+                    let isMoving = false;
+                    let direction = gameState.currentPlayer.direction;
+
+                    const moveDistance = MOVE_SPEED * deltaTime;
+                    
+                    if (gameState.keys.w || gameState.keys.arrowup) {
+                        const testY = Math.max(TILE_SIZE, newY - moveDistance);
+                        if (canMoveTo(newX, testY)) {
+                            newY = testY;
+                            isMoving = true;
+                            direction = 'up';
+                        }
+                    }
+                    if (gameState.keys.s || gameState.keys.arrowdown) {
+                        const testY = Math.min((WORLD_HEIGHT - 1) * TILE_SIZE, newY + moveDistance);
+                        if (canMoveTo(newX, testY)) {
+                            newY = testY;
+                            isMoving = true;
+                            direction = 'down';
+                        }
+                    }
+                    if (gameState.keys.a || gameState.keys.arrowleft) {
+                        const testX = Math.max(TILE_SIZE, newX - moveDistance);
+                        if (canMoveTo(testX, newY)) {
+                            newX = testX;
+                            isMoving = true;
+                            direction = 'left';
+                        }
+                    }
+                    if (gameState.keys.d || gameState.keys.arrowright) {
+                        const testX = Math.min((WORLD_WIDTH - 1) * TILE_SIZE, newX + moveDistance);
+                        if (canMoveTo(testX, newY)) {
+                            newX = testX;
+                            isMoving = true;
+                            direction = 'right';
+                        }
+                    }
+
+                    // Update player if position changed
+                    if (newX !== gameState.currentPlayer.x || newY !== gameState.currentPlayer.y || isMoving !== gameState.currentPlayer.isMoving) {
+                        gameState.currentPlayer.x = newX;
+                        gameState.currentPlayer.y = newY;
+                        gameState.currentPlayer.isMoving = isMoving;
+                        gameState.currentPlayer.direction = direction;
+                        
+                        // Throttle database updates
+                        if (updateTimeout) {
+                            clearTimeout(updateTimeout);
+                        }
+                        updateTimeout = setTimeout(() => {
+                            updatePlayerPosition(gameState.currentPlayer);
+                        }, UPDATE_INTERVAL);
+                    }
+                }
+
+                // Render the game
+                render();
+                
+                gameState.animationFrame += 0.1;
+                animationFrame = requestAnimationFrame(gameLoop);
+            };
+
+            animationFrame = requestAnimationFrame(gameLoop);
+        }
+
+        // Rendering
+        function render() {
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas with gradient background
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, 'hsl(220, 13%, 8%)');
+            gradient.addColorStop(1, 'hsl(220, 13%, 12%)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Calculate camera offset
+            let cameraX = 0;
+            let cameraY = 0;
+            
+            if (gameState.currentPlayer) {
+                cameraX = canvas.width / 2 - gameState.currentPlayer.x;
+                cameraY = canvas.height / 2 - gameState.currentPlayer.y;
+                
+                const maxX = canvas.width - WORLD_WIDTH * TILE_SIZE;
+                const maxY = canvas.height - WORLD_HEIGHT * TILE_SIZE;
+                cameraX = Math.min(0, Math.max(maxX, cameraX));
+                cameraY = Math.min(0, Math.max(maxY, cameraY));
+            }
+
+            ctx.save();
+            ctx.translate(cameraX, cameraY);
+
+            // Draw tiles
+            drawTiles(ctx);
+            
+            // Draw buildings
+            BUILDINGS.forEach(building => drawBuilding(ctx, building));
+            
+            // Draw NPCs
+            NPCS.forEach(npc => drawNPC(ctx, npc));
+            
+            // Draw players
+            Object.values(gameState.players).forEach(player => {
+                const isCurrentPlayer = gameState.currentPlayer && player.id === gameState.currentPlayer.id;
+                drawPlayer(ctx, player, isCurrentPlayer);
+            });
+
+            ctx.restore();
+        }
+
+        function drawTiles(ctx) {
+            for (let y = 0; y < WORLD_HEIGHT; y++) {
+                for (let x = 0; x < WORLD_WIDTH; x++) {
+                    const tile = worldMap[y][x];
+                    const tileX = x * TILE_SIZE;
+                    const tileY = y * TILE_SIZE;
+
+                    // Create gradient for tiles
+                    const gradient = ctx.createRadialGradient(
+                        tileX + TILE_SIZE/2, tileY + TILE_SIZE/2, 0,
+                        tileX + TILE_SIZE/2, tileY + TILE_SIZE/2, TILE_SIZE/2
+                    );
+
+                    if (tile.type === 'water') {
+                        const wave = Math.sin(gameState.animationFrame + x * 0.5 + y * 0.3) * 0.2;
+                        gradient.addColorStop(0, `hsl(200, 100%, ${50 + wave * 10}%)`);
+                        gradient.addColorStop(1, `hsl(200, 100%, ${40 + wave * 5}%)`);
+                    } else {
+                        gradient.addColorStop(0, tile.color);
+                        gradient.addColorStop(1, darkenColor(tile.color, 0.2));
+                    }
+
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(tileX, tileY, TILE_SIZE, TILE_SIZE);
+
+                    // Add texture for grass
+                    if (tile.type === 'grass') {
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+                        for (let i = 0; i < 2; i++) {
+                            const px = tileX + Math.random() * TILE_SIZE;
+                            const py = tileY + Math.random() * TILE_SIZE;
+                            ctx.fillRect(px, py, 1, 1);
+                        }
+                    }
+
+                    // Tile borders
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+                    ctx.lineWidth = 0.5;
+                    ctx.strokeRect(tileX, tileY, TILE_SIZE, TILE_SIZE);
+                }
+            }
+        }
+
+        function drawBuilding(ctx, building) {
+            const x = building.x * TILE_SIZE;
+            const y = building.y * TILE_SIZE;
+            const w = building.width * TILE_SIZE;
+            const h = building.height * TILE_SIZE;
+
+            // Shadow
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+            ctx.fillRect(x + 4, y + 4, w, h);
+
+            // Building gradient
+            const gradient = ctx.createLinearGradient(x, y, x + w, y + h);
+            const buildingColor = getBuildingColor(building.type);
+            gradient.addColorStop(0, buildingColor);
+            gradient.addColorStop(1, darkenColor(buildingColor, 0.3));
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(x, y, w, h);
+
+            // Border with glow
+            ctx.shadowColor = buildingColor;
+            ctx.shadowBlur = 10;
+            ctx.strokeStyle = lightenColor(buildingColor, 0.3);
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x, y, w, h);
+            ctx.shadowBlur = 0;
+
+            // Icon
+            ctx.save();
+            ctx.shadowColor = '#ffffff';
+            ctx.shadowBlur = 5;
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `${Math.min(w, h) * 0.3}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillText(building.icon, x + w / 2, y + h / 2 + 6);
+            ctx.restore();
+
+            // Name
+            ctx.save();
+            ctx.shadowColor = '#10b981';
+            ctx.shadowBlur = 3;
+            ctx.fillStyle = '#10b981';
+            ctx.font = '12px "Courier New", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(building.name, x + w / 2, y - 6);
+            ctx.restore();
+        }
+
+        function drawNPC(ctx, npc) {
+            const x = npc.x * TILE_SIZE + TILE_SIZE / 2;
+            const y = npc.y * TILE_SIZE + TILE_SIZE / 2;
+            const size = TILE_SIZE * 0.8;
+            
+            const float = Math.sin(gameState.animationFrame * 2 + npc.x * 0.5) * 2;
+
+            // Shadow
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.beginPath();
+            ctx.ellipse(x, y + size/2 + 4, size/2 * 0.8, size/4, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Body gradient
+            const gradient = ctx.createRadialGradient(x, y + float, 0, x, y + float, size/2);
+            gradient.addColorStop(0, lightenColor(npc.color, 0.2));
+            gradient.addColorStop(1, npc.color);
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(x, y + float, size/2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Glow
+            ctx.shadowColor = npc.color;
+            ctx.shadowBlur = 15;
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(x, y + float, size/2, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            // Sprite
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `${size * 0.6}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillText(npc.sprite, x, y + float + size * 0.2);
+
+            // Name
+            ctx.save();
+            ctx.shadowColor = '#10b981';
+            ctx.shadowBlur = 5;
+            ctx.fillStyle = '#10b981';
+            ctx.font = '10px "Courier New", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(npc.name, x, y + float - size/2 - 6);
+            ctx.restore();
+
+            // Interaction indicator
+            const pulse = Math.sin(gameState.animationFrame * 4) * 0.5 + 0.5;
+            ctx.fillStyle = getNPCTypeColor(npc.type);
+            ctx.globalAlpha = 0.7 + pulse * 0.3;
+            ctx.beginPath();
+            ctx.arc(x + size/2 - 4, y + float - size/2 + 4, 4 + pulse * 2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+        }
+
+        function drawPlayer(ctx, player, isCurrentPlayer) {
+            const size = TILE_SIZE * 0.85;
+            const bob = player.isMoving ? Math.sin(gameState.animationFrame * 8) * 2 : 0;
+
+            // Shadow
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+            ctx.beginPath();
+            ctx.ellipse(player.x, player.y + size/2 + 6, size/2 * 0.8, size/4, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Glow for current player
+            if (isCurrentPlayer) {
+                const pulse = Math.sin(gameState.animationFrame * 2) * 0.3 + 0.7;
+                ctx.shadowColor = player.color;
+                ctx.shadowBlur = 25 * pulse;
+            }
+
+            // Body gradient
+            const gradient = ctx.createRadialGradient(
+                player.x, player.y + bob, 0,
+                player.x, player.y + bob, size/2
+            );
+            gradient.addColorStop(0, lightenColor(player.color, 0.3));
+            gradient.addColorStop(1, player.color);
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(player.x, player.y + bob, size/2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Border
+            ctx.strokeStyle = isCurrentPlayer ? '#10b981' : 'rgba(255, 255, 255, 0.8)';
+            ctx.lineWidth = isCurrentPlayer ? 3 : 2;
+            ctx.beginPath();
+            ctx.arc(player.x, player.y + bob, size/2, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Class icon
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `${size * 0.6}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillText(getClassIcon(player.class), player.x, player.y + bob + size * 0.2);
+
+            // Name
+            ctx.save();
+            ctx.shadowColor = isCurrentPlayer ? '#10b981' : 'rgba(255, 255, 255, 0.5)';
+            ctx.shadowBlur = 5;
+            ctx.fillStyle = isCurrentPlayer ? '#10b981' : '#ffffff';
+            ctx.font = '10px "Courier New", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(player.name, player.x, player.y + bob - size/2 - 6);
+            ctx.restore();
+
+            // Health bar for current player
+            if (isCurrentPlayer) {
+                const barWidth = size;
+                const barHeight = 4;
+                const barY = player.y + bob + size/2 + 10;
+                
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fillRect(player.x - barWidth/2, barY, barWidth, barHeight);
+                
+                const healthPercent = player.health / player.maxHealth;
+                const healthColor = healthPercent > 0.5 ? '#10b981' : 
+                                   healthPercent > 0.25 ? '#fbbf24' : '#ef4444';
+                ctx.fillStyle = healthColor;
+                ctx.fillRect(player.x - barWidth/2, barY, barWidth * healthPercent, barHeight);
+            }
+        }
+
+        function getBuildingColor(type) {
+            switch (type) {
+                case 'shop': return '#dc2626';
+                case 'market': return '#059669';
+                case 'salon': return '#ec4899';
+                case 'arena': return '#f59e0b';
+                case 'tavern': return '#92400e';
+                case 'guild': return '#7c3aed';
+                case 'bank': return '#1f2937';
+                default: return '#6b7280';
+            }
+        }
+
+        function getNPCTypeColor(type) {
+            switch (type) {
+                case 'shopkeeper': return '#fbbf24';
+                case 'vendor': return '#10b981';
+                case 'trainer': return '#f59e0b';
+                case 'questgiver': return '#3b82f6';
+                case 'guard': return '#ef4444';
+                default: return '#6b7280';
+            }
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Character selection
+            let selectedClass = 'warrior';
+            
+            document.querySelectorAll('.class-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('.class-button').forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedClass = this.dataset.class;
+                });
+            });
+            
+            // Default selection
+            document.querySelector('.class-button[data-class="warrior"]').classList.add('selected');
+
+            document.getElementById('startGame').addEventListener('click', function() {
+                const playerName = document.getElementById('playerName').value.trim();
+                if (playerName) {
+                    initializePlayer(playerName, selectedClass);
+                } else {
+                    alert('Please enter your name!');
+                }
+            });
+
+            // Keyboard controls
+            document.addEventListener('keydown', function(e) {
+                const key = e.key.toLowerCase();
+                if (['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key)) {
+                    e.preventDefault();
+                    gameState.keys[key] = true;
+                } else if (key === 'e' || key === ' ') {
+                    if (document.activeElement?.tagName !== 'INPUT') {
+                        e.preventDefault();
+                        handleInteraction();
+                    }
+                } else if (key === 'enter') {
+                    if (document.activeElement === document.getElementById('chatInput')) {
+                        e.preventDefault();
+                        handleSendMessage();
+                    }
+                }
+            });
+
+            document.addEventListener('keyup', function(e) {
+                const key = e.key.toLowerCase();
+                gameState.keys[key] = false;
+            });
+
+            // Chat functionality
+            document.getElementById('sendButton').addEventListener('click', handleSendMessage);
+            
+            function handleSendMessage() {
+                const chatInput = document.getElementById('chatInput');
+                const message = chatInput.value.trim();
+                if (message) {
+                    sendMessage(message);
+                    chatInput.value = '';
+                }
+            }
+
+            function handleInteraction() {
+                if (!gameState.currentPlayer) return;
+                
+                const interaction = checkInteractions(gameState.currentPlayer.x, gameState.currentPlayer.y);
+                if (interaction?.type === 'npc') {
+                    showInteractionDialog(interaction.target);
+                }
+            }
+
+            // Interaction dialog
+            document.getElementById('closeDialog').addEventListener('click', closeInteractionDialog);
+            document.getElementById('interactionOverlay').addEventListener('click', closeInteractionDialog);
+
+            // Global purchase function
+            window.purchaseItem = purchaseItem;
+
+            // Cleanup on page unload
+            window.addEventListener('beforeunload', async function() {
+                if (gameState.currentPlayer?.id) {
+                    try {
+                        await supabase
+                            .from('players')
+                            .delete()
+                            .eq('id', gameState.currentPlayer.id);
+                    } catch (error) {
+                        console.error('Error cleaning up player:', error);
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
