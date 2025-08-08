@@ -2300,69 +2300,420 @@
         console.log('JavaScript is loading...');
         
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM Content Loaded - Setting up event listeners');
+            console.log('=== NEW MENU SYSTEM INITIALIZING ===');
             
-            // Character selection
-            let selectedClass = 'warrior';
-            
-            // Function to handle class selection
-            function selectClass(classType) {
-                console.log('Selecting class:', classType);
-                document.querySelectorAll('.class-button').forEach(b => b.classList.remove('selected'));
-                const targetButton = document.querySelector(`.class-button[data-class="${classType}"]`);
-                if (targetButton) {
-                    targetButton.classList.add('selected');
-                    selectedClass = classType;
-                    console.log('Class selected successfully:', selectedClass);
-                } else {
-                    console.error('Could not find button for class:', classType);
+            // === NEW MENU SYSTEM ===
+            const MenuSystem = {
+                selectedClass: null,
+                animationState: {
+                    buttonsAnimated: false,
+                    titleAnimated: false
+                },
+                
+                // Class data with enhanced stats and descriptions
+                classes: {
+                    warrior: {
+                        name: 'Warrior',
+                        icon: '⚔',
+                        description: 'A mighty fighter with exceptional strength and defense',
+                        stats: { hp: 150, mp: 50, strength: 18, defense: 16, agility: 12, magic: 8 },
+                        abilities: ['Shield Bash', 'Berserker Rage', 'Armor Mastery'],
+                        color: 'hsl(0, 70%, 50%)'
+                    },
+                    mage: {
+                        name: 'Mage',
+                        icon: '✦',
+                        description: 'A master of arcane arts wielding devastating magical power',
+                        stats: { hp: 80, mp: 200, strength: 8, defense: 10, agility: 14, magic: 20 },
+                        abilities: ['Fireball', 'Lightning Bolt', 'Mana Shield'],
+                        color: 'hsl(240, 80%, 60%)'
+                    },
+                    archer: {
+                        name: 'Archer',
+                        icon: '➵',
+                        description: 'A precise marksman with unmatched agility and ranged combat',
+                        stats: { hp: 110, mp: 100, strength: 14, defense: 12, agility: 18, magic: 12 },
+                        abilities: ['Multi-Shot', 'Eagle Eye', 'Stealth Strike'],
+                        color: 'hsl(120, 60%, 50%)'
+                    }
+                },
+                
+                // Initialize the menu system
+                init() {
+                    console.log('Initializing enhanced menu system...');
+                    this.setupClassButtons();
+                    this.setupStartButton();
+                    this.setupAnimations();
+                    this.selectClass('warrior'); // Default selection
+                    this.animateIntro();
+                },
+                
+                // Enhanced class selection with visual feedback
+                selectClass(classType) {
+                    if (!this.classes[classType]) {
+                        console.error('Invalid class type:', classType);
+                        return;
+                    }
+                    
+                    console.log('=== CLASS SELECTION ===', classType);
+                    this.selectedClass = classType;
+                    
+                    // Remove previous selections
+                    document.querySelectorAll('.class-button').forEach(btn => {
+                        btn.classList.remove('selected');
+                        btn.style.transform = 'scale(1)';
+                        btn.style.boxShadow = '';
+                    });
+                    
+                    // Apply selection to new class
+                    const selectedButton = document.querySelector(`.class-button[data-class="${classType}"]`);
+                    if (selectedButton) {
+                        selectedButton.classList.add('selected');
+                        selectedButton.style.transform = 'scale(1.05)';
+                        selectedButton.style.boxShadow = `0 0 25px ${this.classes[classType].color}`;
+                        
+                        // Add pulsing animation
+                        selectedButton.style.animation = 'classPulse 2s ease-in-out infinite';
+                        
+                        // Update class preview
+                        this.updateClassPreview(classType);
+                    }
+                },
+                
+                // Update class preview with stats and abilities
+                updateClassPreview(classType) {
+                    const classData = this.classes[classType];
+                    
+                    // Create or update preview panel
+                    let preview = document.getElementById('classPreview');
+                    if (!preview) {
+                        preview = document.createElement('div');
+                        preview.id = 'classPreview';
+                        preview.style.cssText = `
+                            position: absolute;
+                            top: 50%;
+                            right: -320px;
+                            transform: translateY(-50%);
+                            width: 280px;
+                            background: hsl(220, 13%, 10%);
+                            border: 2px solid ${classData.color};
+                            border-radius: 12px;
+                            padding: 20px;
+                            transition: all 0.5s ease;
+                            box-shadow: 0 0 30px ${classData.color}40;
+                        `;
+                        document.getElementById('characterSelect').appendChild(preview);
+                    }
+                    
+                    preview.innerHTML = `
+                        <h3 style="color: ${classData.color}; margin-bottom: 12px; text-align: center;">
+                            ${classData.icon} ${classData.name}
+                        </h3>
+                        <p style="font-size: 12px; margin-bottom: 16px; color: hsl(120, 20%, 75%);">
+                            ${classData.description}
+                        </p>
+                        <div style="margin-bottom: 16px;">
+                            <h4 style="color: hsl(120, 100%, 50%); margin-bottom: 8px;">Base Stats:</h4>
+                            ${Object.entries(classData.stats).map(([stat, value]) => 
+                                `<div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
+                                    <span>${stat.toUpperCase()}:</span>
+                                    <span style="color: ${classData.color};">${value}</span>
+                                </div>`
+                            ).join('')}
+                        </div>
+                        <div>
+                            <h4 style="color: hsl(120, 100%, 50%); margin-bottom: 8px;">Abilities:</h4>
+                            ${classData.abilities.map(ability => 
+                                `<div style="font-size: 11px; margin-bottom: 4px; color: hsl(120, 20%, 75%);">
+                                    • ${ability}
+                                </div>`
+                            ).join('')}
+                        </div>
+                    `;
+                    
+                    // Animate in
+                    setTimeout(() => {
+                        preview.style.right = '-300px';
+                    }, 100);
+                },
+                
+                // Enhanced class button setup
+                setupClassButtons() {
+                    const classButtons = document.querySelectorAll('.class-button');
+                    console.log('Setting up enhanced class buttons:', classButtons.length);
+                    
+                    classButtons.forEach((button) => {
+                        const classType = button.dataset.class;
+                        const classData = this.classes[classType];
+                        
+                        if (!classData) return;
+                        
+                        // Enhanced hover effects
+                        button.addEventListener('mouseenter', () => {
+                            if (!button.classList.contains('selected')) {
+                                button.style.transform = 'scale(1.02)';
+                                button.style.boxShadow = `0 0 15px ${classData.color}60`;
+                            }
+                        });
+                        
+                        button.addEventListener('mouseleave', () => {
+                            if (!button.classList.contains('selected')) {
+                                button.style.transform = 'scale(1)';
+                                button.style.boxShadow = '';
+                            }
+                        });
+                        
+                        // Click handler with enhanced feedback
+                        button.addEventListener('click', () => {
+                            // Click animation
+                            button.style.transform = 'scale(0.95)';
+                            setTimeout(() => {
+                                this.selectClass(classType);
+                            }, 100);
+                            
+                            // Play selection sound effect (visual feedback)
+                            this.playSelectionEffect(button);
+                        });
+                    });
+                },
+                
+                // Visual selection effect
+                playSelectionEffect(button) {
+                    const effect = document.createElement('div');
+                    effect.style.cssText = `
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        width: 4px;
+                        height: 4px;
+                        background: hsl(120, 100%, 50%);
+                        border-radius: 50%;
+                        animation: selectionRipple 0.6s ease-out;
+                        pointer-events: none;
+                        z-index: 10;
+                    `;
+                    
+                    button.style.position = 'relative';
+                    button.appendChild(effect);
+                    
+                    setTimeout(() => effect.remove(), 600);
+                },
+                
+                // Enhanced start button setup
+                setupStartButton() {
+                    const startButton = document.getElementById('startGame');
+                    if (!startButton) {
+                        console.error('Start button not found!');
+                        return;
+                    }
+                    
+                    console.log('Setting up enhanced start button...');
+                    
+                    // Enhanced styling
+                    startButton.style.cssText += `
+                        font-size: 16px;
+                        font-weight: bold;
+                        text-transform: uppercase;
+                        letter-spacing: 2px;
+                        position: relative;
+                        overflow: hidden;
+                        transition: all 0.3s ease;
+                    `;
+                    
+                    // Hover effects
+                    startButton.addEventListener('mouseenter', () => {
+                        startButton.style.transform = 'translateY(-2px)';
+                        startButton.style.boxShadow = '0 10px 25px hsl(120, 100%, 50%, 0.4)';
+                    });
+                    
+                    startButton.addEventListener('mouseleave', () => {
+                        startButton.style.transform = 'translateY(0)';
+                        startButton.style.boxShadow = '0 0 10px hsl(120, 100%, 50%, 0.3)';
+                    });
+                    
+                    // Enhanced click handler
+                    startButton.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.handleStartGame();
+                    });
+                },
+                
+                // Enhanced start game handler with validation
+                handleStartGame() {
+                    console.log('=== ENHANCED START ADVENTURE ===');
+                    
+                    const nameInput = document.getElementById('playerName');
+                    const playerName = nameInput ? nameInput.value.trim() : '';
+                    
+                    // Enhanced validation
+                    const validation = this.validateGameStart(playerName);
+                    if (!validation.valid) {
+                        this.showValidationError(validation.message);
+                        return;
+                    }
+                    
+                    // Success animation
+                    this.playStartAnimation(() => {
+                        console.log('Initializing player:', { name: playerName, class: this.selectedClass });
+                        initializePlayer(playerName, this.selectedClass);
+                    });
+                },
+                
+                // Enhanced validation
+                validateGameStart(playerName) {
+                    if (!playerName || playerName.length < 2) {
+                        return { valid: false, message: 'Please enter a name with at least 2 characters!' };
+                    }
+                    
+                    if (playerName.length > 20) {
+                        return { valid: false, message: 'Name must be 20 characters or less!' };
+                    }
+                    
+                    if (!/^[a-zA-Z0-9_\s]+$/.test(playerName)) {
+                        return { valid: false, message: 'Name can only contain letters, numbers, spaces, and underscores!' };
+                    }
+                    
+                    if (!this.selectedClass) {
+                        return { valid: false, message: 'Please select a class!' };
+                    }
+                    
+                    return { valid: true };
+                },
+                
+                // Enhanced error display
+                showValidationError(message) {
+                    const nameInput = document.getElementById('playerName');
+                    
+                    // Create error message
+                    let errorDiv = document.getElementById('validationError');
+                    if (!errorDiv) {
+                        errorDiv = document.createElement('div');
+                        errorDiv.id = 'validationError';
+                        errorDiv.style.cssText = `
+                            color: hsl(0, 100%, 70%);
+                            font-size: 12px;
+                            margin-top: 8px;
+                            text-align: center;
+                            opacity: 0;
+                            transition: opacity 0.3s ease;
+                        `;
+                        nameInput.parentNode.insertBefore(errorDiv, nameInput.nextSibling);
+                    }
+                    
+                    errorDiv.textContent = message;
+                    errorDiv.style.opacity = '1';
+                    
+                    // Shake animation for input
+                    nameInput.style.animation = 'inputShake 0.5s ease';
+                    nameInput.style.borderColor = 'hsl(0, 100%, 60%)';
+                    
+                    // Clear error after 3 seconds
+                    setTimeout(() => {
+                        errorDiv.style.opacity = '0';
+                        nameInput.style.animation = '';
+                        nameInput.style.borderColor = '';
+                    }, 3000);
+                },
+                
+                // Start game animation
+                playStartAnimation(callback) {
+                    const startButton = document.getElementById('startGame');
+                    const characterSelect = document.getElementById('characterSelect');
+                    
+                    // Button animation
+                    startButton.textContent = 'STARTING...';
+                    startButton.style.background = 'hsl(120, 100%, 30%)';
+                    startButton.disabled = true;
+                    
+                    // Fade out animation
+                    characterSelect.style.transition = 'all 1s ease';
+                    characterSelect.style.transform = 'translate(-50%, -50%) scale(0.8)';
+                    characterSelect.style.opacity = '0';
+                    
+                    setTimeout(callback, 1000);
+                },
+                
+                // Menu entrance animations
+                animateIntro() {
+                    const title = document.querySelector('#characterSelect h1');
+                    const subtitle = document.querySelector('#characterSelect p');
+                    const nameInput = document.getElementById('playerName');
+                    const classButtons = document.querySelectorAll('.class-button');
+                    const startButton = document.getElementById('startGame');
+                    
+                    // Animate title
+                    if (title) {
+                        title.style.opacity = '0';
+                        title.style.transform = 'translateY(-20px)';
+                        setTimeout(() => {
+                            title.style.transition = 'all 0.8s ease';
+                            title.style.opacity = '1';
+                            title.style.transform = 'translateY(0)';
+                        }, 200);
+                    }
+                    
+                    // Animate subtitle and input
+                    [subtitle, nameInput].forEach((el, i) => {
+                        if (el) {
+                            el.style.opacity = '0';
+                            el.style.transform = 'translateY(20px)';
+                            setTimeout(() => {
+                                el.style.transition = 'all 0.6s ease';
+                                el.style.opacity = '1';
+                                el.style.transform = 'translateY(0)';
+                            }, 400 + i * 200);
+                        }
+                    });
+                    
+                    // Animate class buttons
+                    classButtons.forEach((btn, i) => {
+                        btn.style.opacity = '0';
+                        btn.style.transform = 'translateY(30px) scale(0.8)';
+                        setTimeout(() => {
+                            btn.style.transition = 'all 0.6s ease';
+                            btn.style.opacity = '1';
+                            btn.style.transform = 'translateY(0) scale(1)';
+                        }, 800 + i * 150);
+                    });
+                    
+                    // Animate start button
+                    if (startButton) {
+                        startButton.style.opacity = '0';
+                        startButton.style.transform = 'translateY(20px)';
+                        setTimeout(() => {
+                            startButton.style.transition = 'all 0.8s ease';
+                            startButton.style.opacity = '1';
+                            startButton.style.transform = 'translateY(0)';
+                        }, 1200);
+                    }
+                },
+                
+                // Setup animations and effects
+                setupAnimations() {
+                    // Add CSS animations
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        @keyframes classPulse {
+                            0%, 100% { box-shadow: 0 0 25px ${this.selectedClass ? this.classes[this.selectedClass].color : 'hsl(120, 100%, 50%)'}; }
+                            50% { box-shadow: 0 0 35px ${this.selectedClass ? this.classes[this.selectedClass].color : 'hsl(120, 100%, 50%)'}; }
+                        }
+                        @keyframes selectionRipple {
+                            0% { width: 4px; height: 4px; opacity: 1; }
+                            100% { width: 100px; height: 100px; opacity: 0; }
+                        }
+                        @keyframes inputShake {
+                            0%, 100% { transform: translateX(0); }
+                            25% { transform: translateX(-5px); }
+                            75% { transform: translateX(5px); }
+                        }
+                    `;
+                    document.head.appendChild(style);
                 }
-            }
+            };
             
-            // Add click listeners to class buttons
-            const classButtons = document.querySelectorAll('.class-button');
-            console.log('Found class buttons:', classButtons.length);
-            
-            classButtons.forEach((button, index) => {
-                console.log('Setting up button', index, 'with class:', button.dataset.class);
-                button.addEventListener('click', function() {
-                    console.log('Class button clicked:', this.dataset.class);
-                    selectClass(this.dataset.class);
-                });
-            });
-            
-            // Default selection
-            selectClass('warrior');
-            
-            // Start game button
-            const startButton = document.getElementById('startGame');
-            console.log('Start button found:', !!startButton);
-            
-            if (startButton) {
-                startButton.addEventListener('click', function() {
-                    console.log('=== START GAME BUTTON CLICKED ===');
-                    const playerNameInput = document.getElementById('playerName');
-                    const playerName = playerNameInput ? playerNameInput.value.trim() : '';
-                    
-                    console.log('Player name:', playerName);
-                    console.log('Selected class:', selectedClass);
-                    
-                    if (playerName.length < 2) {
-                        alert('Please enter a name with at least 2 characters!');
-                        return;
-                    }
-                    
-                    if (!selectedClass) {
-                        alert('Please select a class!');
-                        return;
-                    }
-                    
-                    console.log('Starting game initialization...');
-                    initializePlayer(playerName, selectedClass);
-                });
-            } else {
-                console.error('Start game button not found!');
-            }
+            // Initialize the new menu system
+            MenuSystem.init();
 
             // Keyboard controls
             document.addEventListener('keydown', function(e) {
