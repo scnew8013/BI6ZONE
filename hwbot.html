@@ -84,6 +84,133 @@
             gap: 2rem;
         }
 
+        .top-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .back-button {
+            background: hsla(var(--surface-elevated), 0.8);
+            border: 1px solid hsla(var(--border), 0.4);
+            color: hsl(var(--text-secondary));
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 0.8rem 1.5rem;
+            font-weight: 500;
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-button:hover {
+            background: hsla(var(--surface-elevated), 0.9);
+            border-color: hsla(var(--primary), 0.4);
+            color: hsl(var(--text-primary));
+            transform: translateY(-1px);
+            box-shadow: 
+                0 4px 15px hsla(var(--primary), 0.15),
+                0 1px 0 hsla(var(--primary), 0.1) inset;
+        }
+
+        .dropdown-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-button {
+            background: hsla(var(--surface-elevated), 0.8);
+            border: 1px solid hsla(var(--border), 0.4);
+            color: hsl(var(--text-secondary));
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 0.8rem 1.5rem;
+            font-weight: 500;
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            outline: none;
+        }
+
+        .dropdown-button:hover {
+            background: hsla(var(--surface-elevated), 0.9);
+            border-color: hsla(var(--primary), 0.4);
+            color: hsl(var(--text-primary));
+            transform: translateY(-1px);
+            box-shadow: 
+                0 4px 15px hsla(var(--primary), 0.15),
+                0 1px 0 hsla(var(--primary), 0.1) inset;
+        }
+
+        .dropdown-arrow {
+            transition: transform 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        .dropdown-button.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: hsla(var(--surface-elevated), 0.95);
+            border: 1px solid hsla(var(--border), 0.6);
+            border-radius: 1.5rem;
+            padding: 1rem;
+            backdrop-filter: blur(20px);
+            box-shadow: 
+                0 12px 40px hsla(var(--shadow), 0.3),
+                0 1px 0 hsla(var(--primary), 0.1) inset;
+            z-index: 1000;
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: hsl(var(--text-secondary));
+            text-decoration: none;
+            border-radius: 0.8rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .dropdown-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .dropdown-item:hover {
+            background: hsla(var(--primary), 0.1);
+            color: hsl(var(--text-primary));
+            transform: translateX(4px);
+        }
+
         .header {
             text-align: center;
             animation: slideInFromTop 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -400,6 +527,43 @@
             animation: welcomeFadeIn 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s both;
         }
 
+        .navigation-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+            padding: 0 1rem;
+        }
+
+        .nav-button {
+            background: hsla(var(--surface-elevated), 0.8);
+            border: 1px solid hsla(var(--border), 0.4);
+            color: hsl(var(--text-secondary));
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 0.8rem 1.5rem;
+            font-weight: 500;
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-button:hover {
+            background: hsla(var(--surface-elevated), 0.9);
+            border-color: hsla(var(--primary), 0.4);
+            color: hsl(var(--text-primary));
+            transform: translateY(-1px);
+            box-shadow: 
+                0 4px 15px hsla(var(--primary), 0.15),
+                0 1px 0 hsla(var(--primary), 0.1) inset;
+        }
+
         .welcome-message h2 {
             font-size: 2rem;
             margin-bottom: 1.5rem;
@@ -443,28 +607,47 @@
         }
 
         @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-                gap: 1.5rem;
-            }
-            
-            .logo {
-                font-size: 2.5rem;
-            }
-            
-            .subtitle {
-                font-size: 1.1rem;
-            }
-            
-            .input-container {
-                flex-direction: column;
-                gap: 0.75rem;
-            }
-            
-            .button, .file-button {
-                width: 100%;
-                justify-content: center;
-            }
+        .container {
+            padding: 1rem;
+            gap: 1.5rem;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+        }
+        
+        .input-container {
+            flex-direction: column;
+            gap: 0.75rem;
+            align-items: center;
+        }
+        
+        .button, .file-button {
+            width: 100%;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .top-navigation {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: stretch;
+        }
+
+        .back-button, .dropdown-button {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .dropdown-menu {
+            right: 0;
+            left: 0;
+            min-width: auto;
+        }
             
             .message-bubble {
                 max-width: 92%;
@@ -514,6 +697,23 @@
 </head>
 <body>
     <div class="container">
+        <div class="top-navigation">
+            <a href="main.html" class="back-button">
+                ← Back to BI6ZONE
+            </a>
+            <div class="dropdown-container">
+                <button class="dropdown-button" id="moreButton" onclick="toggleDropdown()">
+                    More
+                    <span class="dropdown-arrow">▼</span>
+                </button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="ai-humanizer.html" class="dropdown-item">🤖 AI Humanizer</a>
+                    <a href="pdf-chat.html" class="dropdown-item">📄 PDF Chat</a>
+                    <a href="youtube-summarizer.html" class="dropdown-item">🎥 YouTube Summarizer</a>
+                </div>
+            </div>
+        </div>
+        
         <div class="header">
             <h1 class="logo">BI6ZONE</h1>
             <p class="subtitle">Your AI-Powered Homework Assistant</p>
@@ -535,6 +735,12 @@
                             📷 Upload Image
                         </button>
                     </div>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="pdfInput" class="file-input" accept=".pdf">
+                        <button class="button file-button" onclick="document.getElementById('pdfInput').click()">
+                            📄 Upload PDF
+                        </button>
+                    </div>
                     <textarea 
                         id="messageInput" 
                         class="text-input" 
@@ -554,6 +760,7 @@
         const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
         
         let currentImage = null;
+        let currentPDF = null;
         let conversationHistory = [];
 
         // Auto-resize textarea
@@ -586,6 +793,20 @@
                     addMessage('user', 'Image uploaded successfully! Ask me anything about it.', e.target.result);
                 };
                 reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle PDF upload
+        document.getElementById('pdfInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('File size too large. Please upload a PDF smaller than 10MB.');
+                    return;
+                }
+                
+                currentPDF = file;
+                addMessage('user', `📄 PDF "${file.name}" uploaded successfully! Ask me anything about its content.`);
             }
         });
 
@@ -653,7 +874,7 @@
             const messageInput = document.getElementById('messageInput');
             const message = messageInput.value.trim();
             
-            if (!message && !currentImage) {
+            if (!message && !currentImage && !currentPDF) {
                 return;
             }
 
@@ -696,6 +917,17 @@
                         role: 'user',
                         parts: parts
                     });
+                } else if (currentPDF) {
+                    // Handle PDF content
+                    const pdfPrompt = message || "What can you tell me about this PDF document? Please provide a summary of its content.";
+                    requestBody.contents.push({
+                        role: 'user',
+                        parts: [{
+                            text: `I have uploaded a PDF document named "${currentPDF.name}". ${pdfPrompt}
+
+Note: This is a demo version. In a production environment, the PDF content would be extracted and analyzed. For now, please provide guidance on how to work with PDF documents and what kind of questions I can ask about them.`
+                        }]
+                    });
                 } else {
                     // Include conversation history for context
                     requestBody.contents = [...conversationHistory];
@@ -704,7 +936,7 @@
                 // Add system instruction for homework assistance
                 requestBody.systemInstruction = {
                     parts: [{
-                        text: "You are a helpful homework assistant. Provide clear, educational explanations. When helping with homework, guide the student to understand the concepts rather than just giving answers. Be encouraging and patient. For image-based questions, analyze the content thoroughly and provide detailed, educational responses."
+                        text: "You are a helpful homework assistant. Provide clear, educational explanations. When helping with homework, guide the student to understand the concepts rather than just giving answers. Be encouraging and patient. For image-based questions, analyze the content thoroughly and provide detailed, educational responses. For PDF documents, help with document analysis, summarization, and content-based questions."
                     }]
                 };
 
@@ -732,9 +964,11 @@
                     parts: [{ text: aiResponse }]
                 });
 
-                // Clear current image after processing
+                // Clear current files after processing
                 currentImage = null;
+                currentPDF = null;
                 document.getElementById('imageInput').value = '';
+                document.getElementById('pdfInput').value = '';
 
             } catch (error) {
                 console.error('Error:', error);
@@ -743,6 +977,27 @@
                 hideLoading();
             }
         }
+
+        // Dropdown functionality
+        function toggleDropdown() {
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            const moreButton = document.getElementById('moreButton');
+            
+            dropdownMenu.classList.toggle('show');
+            moreButton.classList.toggle('active');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdownContainer = document.querySelector('.dropdown-container');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            const moreButton = document.getElementById('moreButton');
+            
+            if (!dropdownContainer.contains(event.target)) {
+                dropdownMenu.classList.remove('show');
+                moreButton.classList.remove('active');
+            }
+        });
     </script>
 </body>
 </html>
