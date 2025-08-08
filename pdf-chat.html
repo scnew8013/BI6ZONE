@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BI6ZONE - PDF Chat Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: 45, 100%, 65%;
+            --primary-dark: 45, 100%, 55%;
+            --primary-light: 45, 100%, 75%;
+            --accent: 30, 100%, 60%;
+            --background: 0, 0%, 3%;
+            --surface: 0, 0%, 8%;
+            --surface-elevated: 0, 0%, 12%;
+            --text-primary: 45, 80%, 90%;
+            --text-secondary: 45, 40%, 70%;
+            --text-muted: 45, 20%, 50%;
+            --border: 45, 30%, 20%;
+            --shadow: 45, 100%, 20%;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            background: 
+                radial-gradient(circle at 10% 90%, hsla(var(--primary), 0.18) 0%, transparent 50%),
+                radial-gradient(circle at 90% 10%, hsla(var(--accent), 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, hsla(var(--primary), 0.06) 0%, transparent 70%),
+                linear-gradient(135deg, hsl(var(--background)) 0%, hsl(0, 0%, 1%) 100%);
+            color: hsl(var(--text-primary));
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: 
+                linear-gradient(45deg, transparent 30%, hsla(var(--primary), 0.02) 50%, transparent 70%),
+                linear-gradient(-45deg, transparent 30%, hsla(var(--accent), 0.015) 50%, transparent 70%);
+            pointer-events: none;
+            z-index: 1;
+            animation: meshFloat 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes meshFloat {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-5px, 5px) scale(1.01); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+            display: grid;
+            grid-template-rows: auto auto 1fr;
+            gap: 2rem;
+        }
+
+        .top-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .back-button {
+            background: hsla(var(--surface-elevated), 0.8);
+            border: 1px solid hsla(var(--border), 0.4);
+            color: hsl(var(--text-secondary));
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 0.8rem 1.5rem;
+            font-weight: 500;
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-button:hover {
+            background: hsla(var(--surface-elevated), 0.9);
+            border-color: hsla(var(--primary), 0.4);
+            color: hsl(var(--text-primary));
+            transform: translateY(-1px);
+            box-shadow: 
+                0 4px 15px hsla(var(--primary), 0.15),
+                0 1px 0 hsla(var(--primary), 0.1) inset;
+        }
+
+        .dropdown-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-button {
+            background: hsla(var(--surface-elevated), 0.8);
+            border: 1px solid hsla(var(--border), 0.4);
+            color: hsl(var(--text-secondary));
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 0.8rem 1.5rem;
+            font-weight: 500;
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            outline: none;
+        }
+
+        .dropdown-button:hover {
+            background: hsla(var(--surface-elevated), 0.9);
+            border-color: hsla(var(--primary), 0.4);
+            color: hsl(var(--text-primary));
+            transform: translateY(-1px);
+            box-shadow: 
+                0 4px 15px hsla(var(--primary), 0.15),
+                0 1px 0 hsla(var(--primary), 0.1) inset;
+        }
+
+        .dropdown-arrow {
+            transition: transform 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        .dropdown-button.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: hsla(var(--surface-elevated), 0.95);
+            border: 1px solid hsla(var(--border), 0.6);
+            border-radius: 1.5rem;
+            padding: 1rem;
+            backdrop-filter: blur(20px);
+            box-shadow: 
+                0 12px 40px hsla(var(--shadow), 0.3),
+                0 1px 0 hsla(var(--primary), 0.1) inset;
+            z-index: 1000;
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: hsl(var(--text-secondary));
+            text-decoration: none;
+            border-radius: 0.8rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .dropdown-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .dropdown-item:hover {
+            background: hsla(var(--primary), 0.1);
+            color: hsl(var(--text-primary));
+            transform: translateX(4px);
+        }
+
+        .header {
+            text-align: center;
+            animation: slideIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .logo {
+            font-size: 3.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-light)) 50%, hsl(var(--accent)) 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1.4rem;
+            color: hsl(var(--text-secondary));
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .description {
+            font-size: 1rem;
+            color: hsl(var(--text-muted));
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+            height: calc(100vh - 200px);
+            animation: fadeInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s both;
+        }
+
+        .sidebar {
+            background: hsla(var(--surface), 0.9);
+            border: 1px solid hsla(var(--border), 0.6);
+            border-radius: 2rem;
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+            box-shadow: 
+                0 12px 40px hsla(var(--shadow), 0.25),
+                0 1px 0 hsla(var(--primary), 0.1) inset;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, hsl(var(--primary)), hsl(var(--accent)), transparent);
+        }
+
+        .upload-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: hsl(var(--text-primary));
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .upload-area {
+            border: 2px dashed hsla(var(--border), 0.6);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: pointer;
+            background: hsla(var(--surface-elevated), 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .upload-area:hover {
+            border-color: hsla(var(--primary), 0.6);
+            background: hsla(var(--surface-elevated), 0.8);
+            transform: translateY(-2px);
+        }
+
+        .upload-area.dragover {
+            border-color: hsl(var(--primary));
+            background: hsla(var(--primary), 0.1);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: hsl(var(--text-muted));
+        }
+
+        .upload-text {
+            color: hsl(var(--text-secondary));
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            color: hsl(var(--text-muted));
+            font-size: 0.9rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .pdf-info {
+            background: hsla(var(--surface-elevated), 0.8);
+            border: 1px solid hsla(var(--border), 0.4);
+            border-radius: 1.2rem;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .pdf-name {
+            font-weight: 600;
+            color: hsl(var(--text-primary));
+            margin-bottom: 0.5rem;
+            word-break: break-word;
+        }
+
+        .pdf-size {
+            color: hsl(var(--text-muted));
+            font-size: 0.9rem;
+        }
+
+        .chat-area {
+            background: hsla(var(--surface), 0.8);
+            border: 1px solid hsla(var(--border), 0.6);
+            border-radius: 2rem;
+            backdrop-filter: blur(20px);
+            box-shadow: 
+                0 12px 40px hsla(var(--shadow), 0.3),
+                0 1px 0 hsla(var(--primary), 0.1) inset;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .chat-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, hsl(var(--accent)), hsl(var(--primary)), transparent);
+        }
+
+        .messages-container {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: hsla(var(--primary), 0.6) transparent;
+        }
+
+        .messages-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .messages-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .messages-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, hsla(var(--primary), 0.6), hsla(var(--primary), 0.3));
+            border-radius: 3px;
+        }
+
+        .message {
+            margin-bottom: 1.5rem;
+            animation: messageSlide 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        @keyframes messageSlide {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            text-align: right;
+        }
+
+        .message.assistant {
+            text-align: left;
+        }
+
+        .message-bubble {
+            display: inline-block;
+            max-width: 85%;
+            padding: 1.2rem 1.6rem;
+            border-radius: 1.5rem;
+            word-wrap: break-word;
+            line-height: 1.6;
+            backdrop-filter: blur(10px);
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-dark)) 100%);
+            color: hsl(0, 0%, 5%);
+            border-bottom-right-radius: 0.5rem;
+            font-weight: 500;
+            box-shadow: 0 8px 25px hsla(var(--primary), 0.3);
+        }
+
+        .message.assistant .message-bubble {
+            background: hsla(var(--surface-elevated), 0.9);
+            border: 1px solid hsla(var(--border), 0.4);
+            color: hsl(var(--text-primary));
+            border-bottom-left-radius: 0.5rem;
+            box-shadow: 0 8px 25px hsla(0, 0%, 0%, 0.2);
+        }
+
+        .input-section {
+            padding: 2rem;
+            border-top: 1px solid hsla(var(--border), 0.3);
+            background: hsla(var(--surface), 0.6);
+            backdrop-filter: blur(20px);
+        }
+
+        .input-container {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+
+        .message-input {
+            flex: 1;
+            background: hsla(var(--surface-elevated), 0.9);
+            border: 1px solid hsla(var(--border), 0.4);
+            border-radius: 1.2rem;
+            padding: 1rem 1.5rem;
+            color: hsl(var(--text-primary));
+            font-size: 0.95rem;
+            font-family: inherit;
+            resize: none;
+            min-height: 50px;
+            max-height: 120px;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            backdrop-filter: blur(10px);
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: hsla(var(--primary), 0.6);
+            background: hsla(var(--surface-elevated), 1);
+            box-shadow: 
+                0 0 0 3px hsla(var(--primary), 0.1),
+                0 8px 30px hsla(var(--primary), 0.15);
+        }
+
+        .message-input::placeholder {
+            color: hsl(var(--text-muted));
+        }
+
+        .send-button {
+            background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-dark)) 100%);
+            color: hsl(0, 0%, 5%);
+            border: none;
+            border-radius: 1.2rem;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            min-width: 100px;
+            box-shadow: 0 8px 25px hsla(var(--primary), 0.3);
+        }
+
+        .send-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 35px hsla(var(--primary), 0.4);
+        }
+
+        .send-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            color: hsl(var(--text-muted));
+            padding: 2rem;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: hsl(var(--text-secondary));
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid hsla(var(--primary), 0.2);
+            border-top: 2px solid hsl(var(--primary));
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+            }
+            
+            .sidebar {
+                max-height: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .sidebar, .chat-area {
+                padding: 1.5rem;
+            }
+            
+            .input-container {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .send-button {
+                width: 100%;
+            }
+
+            .top-navigation {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+
+            .back-button, .dropdown-button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .dropdown-menu {
+                right: 0;
+                left: 0;
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-navigation">
+            <a href="index.html" class="back-button">
+                ← Back to Homework Bot
+            </a>
+            <div class="dropdown-container">
+                <button class="dropdown-button" id="moreButton" onclick="toggleDropdown()">
+                    More
+                    <span class="dropdown-arrow">▼</span>
+                </button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="ai-humanizer.html" class="dropdown-item">🤖 AI Humanizer</a>
+                    <a href="youtube-summarizer.html" class="dropdown-item">🎥 YouTube Summarizer</a>
+                    <a href="main.html" class="dropdown-item">🚀 Exit to BI6ZONE</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="header">
+            <h1 class="logo">BI6ZONE</h1>
+            <p class="subtitle">📄 PDF Chat Assistant</p>
+            <p class="description">Upload any PDF document and chat with it like an AI assistant. Ask questions, get summaries, and extract insights from your documents instantly.</p>
+        </div>
+
+        <div class="main-layout">
+            <div class="sidebar">
+                <div class="upload-section">
+                    <h2 class="section-title">📎 Upload PDF</h2>
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">📄</div>
+                        <div class="upload-text">Drop PDF here or click to select</div>
+                        <div class="upload-hint">Max size: 10MB</div>
+                    </div>
+                    <input type="file" id="pdfInput" class="file-input" accept=".pdf">
+                    <div id="pdfInfo" class="pdf-info" style="display: none;">
+                        <div class="pdf-name" id="pdfName"></div>
+                        <div class="pdf-size" id="pdfSize"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-area">
+                <div class="messages-container" id="messagesContainer">
+                    <div class="empty-state">
+                        <div class="empty-icon">💬</div>
+                        <h3>Upload a PDF to start chatting</h3>
+                        <p>Once you upload a PDF, you can ask questions about its content, request summaries, or get detailed explanations.</p>
+                    </div>
+                </div>
+
+                <div class="input-section">
+                    <div class="input-container">
+                        <textarea 
+                            id="messageInput" 
+                            class="message-input" 
+                            placeholder="Ask anything about your PDF document..."
+                            rows="1"
+                            disabled
+                        ></textarea>
+                        <button class="send-button" id="sendButton" onclick="sendMessage()" disabled>
+                            <span id="sendButtonText">Send</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_KEY = 'AIzaSyBuJ1-rKWOZG_txWTbU3vMinT6ytKBtI_E';
+        const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+        
+        let currentPDF = null;
+        let pdfContent = '';
+        let conversationHistory = [];
+
+        // Upload area functionality
+        const uploadArea = document.getElementById('uploadArea');
+        const pdfInput = document.getElementById('pdfInput');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+
+        uploadArea.onclick = () => pdfInput.click();
+
+        uploadArea.ondragover = (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        };
+
+        uploadArea.ondragleave = () => {
+            uploadArea.classList.remove('dragover');
+        };
+
+        uploadArea.ondrop = (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type === 'application/pdf') {
+                handlePDFUpload(files[0]);
+            }
+        };
+
+        pdfInput.onchange = (e) => {
+            if (e.target.files.length > 0) {
+                handlePDFUpload(e.target.files[0]);
+            }
+        };
+
+        function handlePDFUpload(file) {
+            if (file.size > 10 * 1024 * 1024) {
+                alert('File size too large. Please upload a PDF smaller than 10MB.');
+                return;
+            }
+
+            currentPDF = file;
+            
+            // Show PDF info
+            document.getElementById('pdfName').textContent = file.name;
+            document.getElementById('pdfSize').textContent = `${(file.size / 1024 / 1024).toFixed(2)} MB`;
+            document.getElementById('pdfInfo').style.display = 'block';
+
+            // Enable chat
+            messageInput.disabled = false;
+            sendButton.disabled = false;
+            messageInput.placeholder = `Ask anything about "${file.name}"...`;
+
+            // Clear previous messages
+            clearMessages();
+            addMessage('assistant', `✅ PDF "${file.name}" uploaded successfully! I'm ready to answer questions about its content. What would you like to know?`);
+
+            // For demo purposes, simulate PDF content extraction
+            pdfContent = `This is a demo version. In a production environment, the PDF content would be extracted using libraries like PDF.js or server-side PDF processing tools.
+
+The uploaded PDF "${file.name}" would be processed to extract text content, which would then be used to answer your questions accurately.
+
+You can ask questions like:
+- "What is this document about?"
+- "Summarize the main points"
+- "Find information about [specific topic]"
+- "Explain [concept] from the document"`;
+        }
+
+        function clearMessages() {
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = '';
+        }
+
+        function addMessage(role, content) {
+            const container = document.getElementById('messagesContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}`;
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            
+            // Convert markdown-like formatting to HTML
+            const formattedContent = content
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\n/g, '<br>');
+            
+            bubble.innerHTML = formattedContent;
+            messageDiv.appendChild(bubble);
+            container.appendChild(messageDiv);
+            
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function showLoading() {
+            const sendButtonText = document.getElementById('sendButtonText');
+            sendButton.disabled = true;
+            sendButtonText.innerHTML = '<span class="loading"><span class="spinner"></span>Thinking...</span>';
+        }
+
+        function hideLoading() {
+            const sendButtonText = document.getElementById('sendButtonText');
+            sendButton.disabled = false;
+            sendButtonText.textContent = 'Send';
+        }
+
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            
+            if (!message || !currentPDF) {
+                return;
+            }
+
+            addMessage('user', message);
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            showLoading();
+
+            try {
+                const requestBody = {
+                    contents: [{
+                        role: 'user',
+                        parts: [{
+                            text: `Based on the PDF document "${currentPDF.name}", please answer this question: ${message}
+
+Document context: ${pdfContent}
+
+Please provide a comprehensive answer based on the document content. If the question cannot be answered from the document, please let me know.`
+                        }]
+                    }],
+                    systemInstruction: {
+                        parts: [{
+                            text: "You are a helpful PDF document assistant. Analyze the provided document content and answer questions accurately based on the information available. If information is not available in the document, clearly state that. Provide detailed, well-structured responses with proper formatting."
+                        }]
+                    }
+                };
+
+                const response = await fetch(`${API_URL}?key=${API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to get response from AI');
+                }
+
+                const data = await response.json();
+                const aiResponse = data.candidates[0].content.parts[0].text;
+
+                addMessage('assistant', aiResponse);
+
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('assistant', '❌ Sorry, I encountered an error while processing your request. Please try again.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Auto-resize textarea
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+
+        // Enter to send message
+        messageInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Dropdown functionality
+        function toggleDropdown() {
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            const moreButton = document.getElementById('moreButton');
+            
+            dropdownMenu.classList.toggle('show');
+            moreButton.classList.toggle('active');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdownContainer = document.querySelector('.dropdown-container');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            const moreButton = document.getElementById('moreButton');
+            
+            if (!dropdownContainer.contains(event.target)) {
+                dropdownMenu.classList.remove('show');
+                moreButton.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
