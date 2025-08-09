@@ -50,19 +50,26 @@
             min-width: 280px;
         }
 
-        .online-players {
+        .minimap-panel {
             top: 16px;
             right: 16px;
-            max-width: 250px;
+            max-width: 200px;
+            text-align: center;
         }
 
         .chat-panel {
             bottom: 16px;
             left: 16px;
-            width: 384px;
-            height: 320px;
+            width: 280px;
+            height: 160px;
             display: flex;
             flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        .chat-panel.expanded {
+            height: 350px;
+            width: 400px;
         }
 
         .controls-panel {
@@ -154,11 +161,62 @@
         .chat-messages {
             flex: 1;
             overflow-y: auto;
-            padding: 12px;
+            padding: 8px;
             background: hsl(220, 13%, 8%);
             border-radius: 4px;
-            margin-bottom: 12px;
-            max-height: 200px;
+            margin-bottom: 8px;
+            max-height: 80px;
+        }
+
+        .chat-panel.expanded .chat-messages {
+            max-height: 250px;
+        }
+
+        .circular-minimap {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 2px solid hsl(120, 100%, 30%);
+            background: hsl(220, 13%, 8%);
+            position: relative;
+            margin: 0 auto 12px auto;
+            box-shadow: 0 0 20px hsl(120, 100%, 50%, 0.3);
+        }
+
+        .minimap-player {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        .minimap-terrain {
+            position: absolute;
+            border-radius: 1px;
+        }
+
+        .chat-expand-btn, .close-controls-btn {
+            background: none;
+            border: none;
+            color: hsl(120, 100%, 50%);
+            font-size: 14px;
+            cursor: pointer;
+            margin-left: auto;
+            padding: 0;
+        }
+
+        .chat-expand-btn:hover, .close-controls-btn:hover {
+            color: hsl(120, 100%, 70%);
+        }
+
+        .xp-bar {
+            height: 8px;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            background: hsl(280, 100%, 60%);
+            box-shadow: 0 0 10px hsl(280, 100%, 60%, 0.7);
         }
 
         .message {
@@ -340,21 +398,32 @@
             </div>
 
             <div class="stat-row">
+                <span>XP</span>
+                <span id="xpDisplay">0/100</span>
+            </div>
+            <div class="bar-background" style="margin-bottom: 12px;">
+                <div id="xpBar" class="xp-bar" style="width: 0%;"></div>
+            </div>
+
+            <div class="stat-row">
                 <span>Gold:</span>
                 <span id="goldDisplay" class="gold-amount"></span>
             </div>
         </div>
     </div>
 
-    <!-- Online Players Panel -->
-    <div id="onlinePlayers" class="game-ui online-players hidden">
-        <h3 class="neon-text" style="margin-bottom: 12px;">Online Players (<span id="playerCount">0</span>)</h3>
-        <div id="playersList" style="max-height: 160px; overflow-y: auto;"></div>
+    <!-- Minimap Panel -->
+    <div id="minimapPanel" class="game-ui minimap-panel hidden">
+        <div id="minimap" class="circular-minimap"></div>
+        <p class="neon-text" style="font-size: 12px;">Online Players (<span id="playerCount">0</span>)</p>
     </div>
 
     <!-- Chat Panel -->
     <div id="chatPanel" class="game-ui chat-panel hidden">
-        <h3 class="neon-text" style="margin-bottom: 12px;">Chat</h3>
+        <div style="display: flex; align-items: center; margin-bottom: 12px;">
+            <h3 class="neon-text" style="margin: 0;">Chat</h3>
+            <button id="chatExpandBtn" class="chat-expand-btn">⇱</button>
+        </div>
         <div id="chatMessages" class="chat-messages"></div>
         <div class="chat-input-container">
             <input type="text" id="chatInput" class="chat-input" placeholder="Type a message...">
@@ -364,7 +433,10 @@
 
     <!-- Controls Panel -->
     <div id="controlsPanel" class="game-ui controls-panel hidden">
-        <h3 class="neon-text" style="margin-bottom: 12px;">Controls</h3>
+        <div style="display: flex; align-items: center; margin-bottom: 12px;">
+            <h3 class="neon-text" style="margin: 0;">Controls</h3>
+            <button id="closeControlsBtn" class="close-controls-btn">✕</button>
+        </div>
         <div class="controls-text">
             <div>🎮 <strong>WASD</strong> or <strong>Arrow Keys</strong> - Move</div>
             <div>⚡ <strong>E</strong> or <strong>Space</strong> - Interact with NPCs</div>
@@ -396,8 +468,8 @@
         const TILE_SIZE = 32;
         const MOVE_SPEED = 120;
         const UPDATE_INTERVAL = 50;
-        const WORLD_WIDTH = 60;
-        const WORLD_HEIGHT = 30;
+        const WORLD_WIDTH = 2000;  // MASSIVE OPEN WORLD - 20x bigger than before
+        const WORLD_HEIGHT = 1500;  // GIGANTIC MAP for endless exploration
 
         // Game State
         let gameState = {
@@ -425,138 +497,357 @@
         };
 
         const BUILDINGS = [
-            {
-                id: 'weapon-shop',
-                name: 'Iron & Steel Armory',
-                type: 'shop',
-                x: 10, y: 5, width: 10, height: 10,
-                entrance: { x: 15, y: 15 },
-                icon: '⚔️',
-                description: 'Finest weapons and armor in the realm'
-            },
-            {
-                id: 'potion-shop',
-                name: 'Mystic Potions',
-                type: 'shop',
-                x: 25, y: 5, width: 10, height: 10,
-                entrance: { x: 30, y: 15 },
-                icon: '🧪',
-                description: 'Magical potions and remedies'
-            },
-            {
-                id: 'hair-salon',
-                name: 'Glamour & Style',
-                type: 'salon',
-                x: 40, y: 5, width: 10, height: 10,
-                entrance: { x: 45, y: 15 },
-                icon: '✂️',
-                description: 'Transform your appearance'
-            },
-            {
-                id: 'arena',
-                name: 'Combat Arena',
-                type: 'arena',
-                x: 15, y: 20, width: 30, height: 5,
-                entrance: { x: 30, y: 25 },
-                icon: '🏟️',
-                description: 'Test your skills in combat'
-            }
+            // MAIN TOWN (CENTER) - Starting Area
+            { id: 'central-weapon-shop', name: 'Iron & Steel Armory', type: 'shop', x: 990, y: 735, width: 8, height: 8, entrance: { x: 994, y: 743 }, icon: '⚔️', description: 'Finest weapons and armor' },
+            { id: 'central-potion-shop', name: 'Mystic Potions', type: 'shop', x: 1002, y: 735, width: 8, height: 8, entrance: { x: 1006, y: 743 }, icon: '🧪', description: 'Magical potions and remedies' },
+            { id: 'central-bank', name: 'Royal Bank', type: 'bank', x: 988, y: 750, width: 10, height: 6, entrance: { x: 993, y: 756 }, icon: '🏦', description: 'Store your valuables safely' },
+            { id: 'central-inn', name: 'Golden Griffin Inn', type: 'inn', x: 1004, y: 750, width: 10, height: 6, entrance: { x: 1009, y: 756 }, icon: '🏨', description: 'Rest and set respawn point' },
+            { id: 'central-arena', name: 'Combat Arena', type: 'arena', x: 995, y: 760, width: 20, height: 8, entrance: { x: 1005, y: 768 }, icon: '🏟️', description: 'Test your skills in combat' },
+            
+            // NORTHERN TOWN - Frostpeak
+            { id: 'north-blacksmith', name: 'Frostforge Smithy', type: 'blacksmith', x: 950, y: 150, width: 12, height: 10, entrance: { x: 956, y: 160 }, icon: '🔨', description: 'Master crafters of the north' },
+            { id: 'north-auction', name: 'Northern Auction House', type: 'auction', x: 970, y: 150, width: 15, height: 12, entrance: { x: 977, y: 162 }, icon: '🏪', description: 'Player trading hub' },
+            { id: 'north-bank', name: 'Frozen Vault', type: 'bank', x: 990, y: 150, width: 8, height: 8, entrance: { x: 994, y: 158 }, icon: '🏦', description: 'Secure storage' },
+            { id: 'north-inn', name: 'Icewind Tavern', type: 'inn', x: 1000, y: 150, width: 12, height: 8, entrance: { x: 1006, y: 158 }, icon: '🏨', description: 'Warm beds in the cold north' },
+            { id: 'north-portal', name: 'Frostpeak Portal', type: 'portal', x: 1020, y: 150, width: 6, height: 6, entrance: { x: 1023, y: 156 }, icon: '🌀', description: 'Fast travel nexus' },
+            
+            // SOUTHERN TOWN - Sunhaven
+            { id: 'south-market', name: 'Sunhaven Market', type: 'shop', x: 1100, y: 1350, width: 20, height: 15, entrance: { x: 1110, y: 1365 }, icon: '🏬', description: 'Largest marketplace in the south' },
+            { id: 'south-stable', name: 'Desert Wind Stables', type: 'stable', x: 1130, y: 1350, width: 15, height: 10, entrance: { x: 1137, y: 1360 }, icon: '🐎', description: 'Finest mounts in the realm' },
+            { id: 'south-guild', name: 'Sunhaven Guild Hall', type: 'guild', x: 1080, y: 1350, width: 18, height: 12, entrance: { x: 1089, y: 1362 }, icon: '⚔️', description: 'Adventurer headquarters' },
+            
+            // EASTERN TOWN - Moonport
+            { id: 'east-dock', name: 'Moonport Docks', type: 'dock', x: 1750, y: 700, width: 25, height: 15, entrance: { x: 1762, y: 715 }, icon: '⚓', description: 'Maritime trading post' },
+            { id: 'east-auction', name: 'Eastern Auction Hall', type: 'auction', x: 1720, y: 720, width: 12, height: 10, entrance: { x: 1726, y: 730 }, icon: '🏪', description: 'Rare item auctions' },
+            { id: 'east-temple', name: 'Temple of the Moon', type: 'temple', x: 1730, y: 740, width: 14, height: 16, entrance: { x: 1737, y: 756 }, icon: '⛪', description: 'Sacred healing grounds' },
+            
+            // WESTERN TOWN - Ironhold
+            { id: 'west-foundry', name: 'Great Foundry', type: 'foundry', x: 200, y: 650, width: 20, height: 18, entrance: { x: 210, y: 668 }, icon: '🏭', description: 'Industrial crafting hub' },
+            { id: 'west-armory', name: 'Ironhold Armory', type: 'armory', x: 230, y: 650, width: 15, height: 12, entrance: { x: 237, y: 662 }, icon: '🛡️', description: 'Military equipment supplier' },
+            { id: 'west-bank', name: 'Dwarven Vault', type: 'bank', x: 180, y: 670, width: 10, height: 8, entrance: { x: 185, y: 678 }, icon: '🏦', description: 'Dwarven-secured storage' },
+            
+            // SCATTERED OUTPOSTS
+            { id: 'outpost1-shop', name: 'Frontier Trading Post', type: 'shop', x: 300, y: 300, width: 8, height: 6, entrance: { x: 304, y: 306 }, icon: '🏪', description: 'Remote trading outpost' },
+            { id: 'outpost2-inn', name: 'Wayfarer\'s Rest', type: 'inn', x: 1600, y: 400, width: 10, height: 8, entrance: { x: 1605, y: 408 }, icon: '🏨', description: 'Remote inn for travelers' },
+            { id: 'outpost3-stable', name: 'Wild Horse Corral', type: 'stable', x: 500, y: 1200, width: 12, height: 10, entrance: { x: 506, y: 1210 }, icon: '🐎', description: 'Wild mount taming' },
+            { id: 'outpost4-tower', name: 'Mage\'s Tower', type: 'tower', x: 1400, y: 200, width: 8, height: 12, entrance: { x: 1404, y: 212 }, icon: '🗼', description: 'Arcane research facility' },
+            { id: 'outpost5-dungeon', name: 'Ancient Crypt Entrance', type: 'dungeon', x: 100, y: 1100, width: 10, height: 8, entrance: { x: 105, y: 1108 }, icon: '🏛️', description: 'Dungeon entrance' }
         ];
 
         const NPCS = [
-            {
-                id: 'blacksmith',
-                name: 'Gareth the Blacksmith',
-                type: 'shopkeeper',
-                x: 15, y: 10,
-                sprite: '🔨',
-                color: '#dc2626',
-                dialogue: [
-                    "Welcome to my forge!",
-                    "I craft the finest weapons in the land.",
-                    "What can I make for you today?"
-                ],
-                shop: [
-                    { id: 'iron-sword', name: 'Iron Sword', type: 'weapon', price: 100, description: 'A sturdy iron blade', icon: '⚔️' },
-                    { id: 'steel-armor', name: 'Steel Armor', type: 'armor', price: 200, description: 'Protective steel plating', icon: '🛡️' },
-                    { id: 'iron-helmet', name: 'Iron Helmet', type: 'armor', price: 75, description: 'Basic head protection', icon: '⛑️' }
-                ]
+            // === CENTRAL TOWN NPCs ===
+            // Shopkeepers & Merchants
+            { id: 'central-blacksmith', name: 'Gareth the Blacksmith', type: 'blacksmith', x: 994, y: 739, sprite: '🔨', color: '#dc2626', 
+              dialogue: ["Welcome to my forge!", "I craft the finest weapons in the land.", "What can I make for you today?"],
+              shop: [
+                { id: 'iron-sword', name: 'Iron Sword', type: 'weapon', price: 100, description: 'A sturdy iron blade', icon: '⚔️' },
+                { id: 'steel-armor', name: 'Steel Armor', type: 'armor', price: 200, description: 'Protective steel plating', icon: '🛡️' },
+                { id: 'iron-helmet', name: 'Iron Helmet', type: 'armor', price: 75, description: 'Basic head protection', icon: '⛑️' }
+              ]
             },
-            {
-                id: 'alchemist',
-                name: 'Luna the Alchemist',
-                type: 'shopkeeper',
-                x: 30, y: 10,
-                sprite: '🧙‍♀️',
-                color: '#7c3aed',
-                dialogue: [
-                    "Greetings, traveler!",
-                    "My potions will aid you on your journey.",
-                    "Each brew is made with ancient recipes."
-                ],
-                shop: [
-                    { id: 'health-potion', name: 'Health Potion', type: 'potion', price: 25, description: 'Restores 50 HP', icon: '❤️' },
-                    { id: 'mana-potion', name: 'Mana Potion', type: 'potion', price: 30, description: 'Restores 50 MP', icon: '💙' },
-                    { id: 'strength-potion', name: 'Strength Elixir', type: 'potion', price: 50, description: 'Temporarily increases attack', icon: '💪' }
-                ]
+            { id: 'central-alchemist', name: 'Luna the Alchemist', type: 'shopkeeper', x: 1006, y: 739, sprite: '🧙‍♀️', color: '#7c3aed',
+              dialogue: ["Greetings, traveler!", "My potions will aid you on your journey.", "Each brew is made with ancient recipes."],
+              shop: [
+                { id: 'health-potion', name: 'Health Potion', type: 'potion', price: 25, description: 'Restores 50 HP', icon: '❤️' },
+                { id: 'mana-potion', name: 'Mana Potion', type: 'potion', price: 30, description: 'Restores 50 MP', icon: '💙' },
+                { id: 'strength-potion', name: 'Strength Elixir', type: 'potion', price: 50, description: 'Temporarily increases attack', icon: '💪' }
+              ]
             },
-            {
-                id: 'stylist',
-                name: 'Vera the Stylist',
-                type: 'shopkeeper',
-                x: 45, y: 10,
-                sprite: '💇‍♀️',
-                color: '#ec4899',
-                dialogue: [
-                    "Darling! You simply must try a new look!",
-                    "I can change your entire appearance!",
-                    "Beauty is power, don't you agree?"
-                ]
+            { id: 'central-banker', name: 'Banker Goldtooth', type: 'banker', x: 993, y: 753, sprite: '🏦', color: '#f59e0b',
+              dialogue: ["Welcome to the Royal Bank!", "Your valuables are safe with us.", "How may I assist you today?"]
             },
-            {
-                id: 'arena-master',
-                name: 'Commander Rex',
-                type: 'trainer',
-                x: 30, y: 22,
-                sprite: '🛡️',
-                color: '#f59e0b',
-                dialogue: [
-                    "Welcome to the Arena, warrior!",
-                    "Prove your worth in combat!",
-                    "Only the strongest survive here."
-                ]
+            { id: 'central-innkeeper', name: 'Miriam the Innkeeper', type: 'innkeeper', x: 1009, y: 753, sprite: '🏨', color: '#ec4899',
+              dialogue: ["Welcome to the Golden Griffin!", "Rest here and set your respawn point.", "We have the finest beds in the realm!"]
+            },
+            { id: 'central-arena-master', name: 'Commander Rex', type: 'trainer', x: 1005, y: 764, sprite: '🛡️', color: '#f59e0b',
+              dialogue: ["Welcome to the Arena, warrior!", "Prove your worth in combat!", "Only the strongest survive here."]
+            },
+
+            // Quest Givers & Trainers
+            { id: 'central-quest-giver1', name: 'Elder Thorne', type: 'quest-giver', x: 985, y: 745, sprite: '📜', color: '#6366f1',
+              dialogue: ["I have urgent tasks for brave adventurers!", "The realm needs heroes like you.", "Accept my quests and earn great rewards!"]
+            },
+            { id: 'central-quest-board', name: 'Quest Board', type: 'quest-board', x: 990, y: 745, sprite: '📋', color: '#8b5cf6',
+              dialogue: ["Check the board for available quests!", "New bounties posted daily!", "Choose your adventure!"]
+            },
+            { id: 'central-trainer', name: 'Master Aldric', type: 'trainer', x: 1015, y: 745, sprite: '⚡', color: '#10b981',
+              dialogue: ["I can teach you new skills!", "Train with me to become stronger.", "Mastery requires dedication!"]
+            },
+
+            // Repair & Services
+            { id: 'central-repair', name: 'Grimbold the Fixer', type: 'repair', x: 1000, y: 740, sprite: '🔧', color: '#6b7280',
+              dialogue: ["Bring me your broken gear!", "I can fix anything made of metal.", "Quality repairs at fair prices!"]
+            },
+            { id: 'central-mailbox', name: 'Postmaster Pine', type: 'mailbox', x: 1010, y: 740, sprite: '📬', color: '#3b82f6',
+              dialogue: ["I handle all mail and deliveries!", "Check for messages from friends.", "Sending letters across the realm!"]
+            },
+
+            // === NORTHERN TOWN (Frostpeak) NPCs ===
+            { id: 'north-blacksmith', name: 'Bjorn Ironforge', type: 'blacksmith', x: 956, y: 155, sprite: '🔨', color: '#1e40af',
+              dialogue: ["The cold makes the steel stronger!", "Northern weapons are unmatched!", "Feel the bite of frost-forged steel!"],
+              shop: [
+                { id: 'frost-blade', name: 'Frost Blade', type: 'weapon', price: 250, description: 'Ice-cold steel that never dulls', icon: '❄️⚔️' },
+                { id: 'winter-armor', name: 'Winter Guard Armor', type: 'armor', price: 350, description: 'Protects against cold and steel', icon: '🛡️❄️' }
+              ]
+            },
+            { id: 'north-auctioneer', name: 'Auctioneer Frost', type: 'auction', x: 977, y: 157, sprite: '🏪', color: '#7c3aed',
+              dialogue: ["Welcome to the finest auction house!", "Rare items from across the world!", "Place your bids wisely!"]
+            },
+            { id: 'north-banker', name: 'Vault-Keep Igrid', type: 'banker', x: 994, y: 154, sprite: '🏦', color: '#1e40af',
+              dialogue: ["Your treasures stay frozen in time here!", "The vault never thaws, never fails.", "Perfect preservation guaranteed!"]
+            },
+            { id: 'north-innkeeper', name: 'Helga Warmhearth', type: 'innkeeper', x: 1006, y: 154, sprite: '🏨', color: '#dc2626',
+              dialogue: ["Come warm yourself by our fire!", "Hot meals and warm beds await!", "The cold cannot reach you here!"]
+            },
+            { id: 'north-portal-keeper', name: 'Portal-Mage Crystus', type: 'portal', x: 1023, y: 153, sprite: '🌀', color: '#8b5cf6',
+              dialogue: ["The portals connect all realms!", "Travel instantly across the world!", "Magic makes distance meaningless!"]
+            },
+            { id: 'north-stable-master', name: 'Fenrir the Beast-Tamer', type: 'stable', x: 965, y: 165, sprite: '🐺', color: '#374151',
+              dialogue: ["Northern wolves make the best mounts!", "Fierce, loyal, and fast as the wind!", "Choose your companion wisely!"]
+            },
+            { id: 'north-quest-giver', name: 'Jarl Iceheart', type: 'quest-giver', x: 980, y: 165, sprite: '👑', color: '#1e40af',
+              dialogue: ["The north faces many dangers!", "Prove yourself worthy of northern steel!", "Glory awaits the brave!"]
+            },
+
+            // === SOUTHERN TOWN (Sunhaven) NPCs ===
+            { id: 'south-merchant', name: 'Merchant Prince Zahir', type: 'shopkeeper', x: 1110, y: 1360, sprite: '👳‍♂️', color: '#f59e0b',
+              dialogue: ["Welcome to the greatest market!", "Exotic goods from distant lands!", "Everything has a price, friend!"],
+              shop: [
+                { id: 'desert-blade', name: 'Scimitar of the Sands', type: 'weapon', price: 200, description: 'Curved blade of desert steel', icon: '🏜️⚔️' },
+                { id: 'silk-robes', name: 'Silk Robes', type: 'armor', price: 150, description: 'Light but surprisingly protective', icon: '👘' },
+                { id: 'spice-potion', name: 'Spiced Healing Draught', type: 'potion', price: 40, description: 'Exotic healing with a kick', icon: '🌶️❤️' }
+              ]
+            },
+            { id: 'south-stable-master', name: 'Malik the Horse-Whisperer', type: 'stable', x: 1137, y: 1355, sprite: '🐎', color: '#92400e',
+              dialogue: ["The finest steeds in all the land!", "Desert horses fear no terrain!", "They run like the wind itself!"]
+            },
+            { id: 'south-guild-master', name: 'Guild-Master Fatima', type: 'guild', x: 1089, y: 1357, sprite: '⚔️', color: '#dc2626',
+              dialogue: ["Join our guild for great adventures!", "Together we are stronger!", "The guild always supports its members!"]
+            },
+            { id: 'south-quest-giver', name: 'Desert Oracle Amara', type: 'quest-giver', x: 1095, y: 1365, sprite: '🔮', color: '#7c3aed',
+              dialogue: ["The sands whisper of great deeds!", "Your destiny awaits in the desert!", "Accept the challenges of the waste!"]
+            },
+            { id: 'south-repair', name: 'Tinker Brass-Hands', type: 'repair', x: 1120, y: 1365, sprite: '🔧', color: '#f59e0b',
+              dialogue: ["Desert sand ruins everything!", "But I can fix anything!", "No gear too damaged for these hands!"]
+            },
+            { id: 'south-faction-vendor', name: 'Faction Agent Xeris', type: 'faction', x: 1105, y: 1370, sprite: '🏴', color: '#6366f1',
+              dialogue: ["Serve the Desert Coalition!", "Earn reputation, earn rewards!", "Loyalty has its benefits!"]
+            },
+
+            // === EASTERN TOWN (Moonport) NPCs ===
+            { id: 'east-dock-master', name: 'Captain Saltheart', type: 'shopkeeper', x: 1762, y: 710, sprite: '⚓', color: '#3b82f6',
+              dialogue: ["Welcome to Moonport!", "Finest goods from overseas!", "The sea provides all treasures!"],
+              shop: [
+                { id: 'pearl-sword', name: 'Pearl-Hilted Blade', type: 'weapon', price: 300, description: 'Elegant weapon from the deep', icon: '🦪⚔️' },
+                { id: 'sea-armor', name: 'Tide-Walker Armor', type: 'armor', price: 280, description: 'Never rusts, never fails', icon: '🌊🛡️' },
+                { id: 'sea-potion', name: 'Brine of Healing', type: 'potion', price: 35, description: 'Healing power of the sea', icon: '🌊❤️' }
+              ]
+            },
+            { id: 'east-auctioneer', name: 'Trade-Master Coral', type: 'auction', x: 1726, y: 725, sprite: '🏪', color: '#ec4899',
+              dialogue: ["Rare treasures from the deep!", "Auction house of the seas!", "Bid on legendary maritime finds!"]
+            },
+            { id: 'east-priest', name: 'Moon-Priest Celestine', type: 'trainer', x: 1737, y: 748, sprite: '⛪', color: '#f3f4f6',
+              dialogue: ["The moon guides all travelers!", "Seek blessing for your journey!", "Healing light shines here!"]
+            },
+            { id: 'east-quest-giver', name: 'Harbor-Master Triton', type: 'quest-giver', x: 1750, y: 715, sprite: '🔱', color: '#3b82f6',
+              dialogue: ["The seas hold many mysteries!", "Brave the waves for great rewards!", "Chart new courses to fortune!"]
+            },
+            { id: 'east-mailbox', name: 'Gull-Post Delivery', type: 'mailbox', x: 1770, y: 715, sprite: '🕊️', color: '#6b7280',
+              dialogue: ["Messages by sea and air!", "Fast delivery to any port!", "Trust the gulls with your mail!"]
+            },
+
+            // === WESTERN TOWN (Ironhold) NPCs ===
+            { id: 'west-forgemaster', name: 'Forgemaster Thorek', type: 'blacksmith', x: 210, y: 660, sprite: '🏭', color: '#dc2626',
+              dialogue: ["The great foundry never sleeps!", "Industrial-grade weapons and armor!", "Mass production, maximum quality!"],
+              shop: [
+                { id: 'factory-sword', name: 'Factory-Forged Blade', type: 'weapon', price: 150, description: 'Reliable and mass-produced', icon: '🏭⚔️' },
+                { id: 'industrial-armor', name: 'Industrial Plate', type: 'armor', price: 220, description: 'Heavy-duty protection', icon: '🏭🛡️' }
+              ]
+            },
+            { id: 'west-armorer', name: 'Arsenal-Keep Magnus', type: 'shopkeeper', x: 237, y: 656, sprite: '🛡️', color: '#374151',
+              dialogue: ["Military-grade equipment only!", "Arm yourself for serious combat!", "No compromise on protection!"],
+              shop: [
+                { id: 'tactical-gear', name: 'Tactical Harness', type: 'armor', price: 180, description: 'Combat-tested protection', icon: '🎖️🛡️' },
+                { id: 'combat-blade', name: 'Combat Knife', type: 'weapon', price: 120, description: 'Military precision cutting', icon: '🎖️⚔️' }
+              ]
+            },
+            { id: 'west-banker', name: 'Vault-Guard Durin', type: 'banker', x: 185, y: 674, sprite: '🏦', color: '#6b7280',
+              dialogue: ["Dwarven vaults are unbreakable!", "Your gold is safer than in the mountains!", "Trust dwarven engineering!"]
+            },
+            { id: 'west-quest-giver', name: 'Engineer Clockwork', type: 'quest-giver', x: 220, y: 670, sprite: '⚙️', color: '#f59e0b',
+              dialogue: ["The machines need maintenance!", "Help keep the foundry running!", "Gears and glory await!"]
+            },
+
+            // === SCATTERED OUTPOST NPCs ===
+            // Northwest Outpost
+            { id: 'frontier-trader', name: 'Frontier Joe', type: 'shopkeeper', x: 304, y: 302, sprite: '🤠', color: '#92400e',
+              dialogue: ["Welcome to the frontier!", "Basic supplies for brave souls!", "Ain't much, but it's honest work!"],
+              shop: [
+                { id: 'frontier-supplies', name: 'Basic Supplies', type: 'misc', price: 10, description: 'Essential survival gear', icon: '🎒' },
+                { id: 'trail-rations', name: 'Trail Rations', type: 'food', price: 5, description: 'Keeps you fed on long journeys', icon: '🥩' }
+              ]
+            },
+            { id: 'frontier-repair', name: 'Fix-It Fred', type: 'repair', x: 308, y: 298, sprite: '🔧', color: '#6b7280',
+              dialogue: ["Broke something out here?", "I can patch up most anything!", "Frontier repairs, frontier prices!"]
+            },
+
+            // Northeast Outpost  
+            { id: 'wayfarer-host', name: 'Innkeeper Martha', type: 'innkeeper', x: 1605, y: 404, sprite: '🏨', color: '#ec4899',
+              dialogue: ["Rest your weary bones!", "Safe haven for travelers!", "Hot meals and warm beds!"]
+            },
+            { id: 'wayfarer-stable', name: 'Stable-Boy Tim', type: 'stable', x: 1610, y: 408, sprite: '🐎', color: '#92400e',
+              dialogue: ["Your mounts need rest too!", "Fresh hay and clean water!", "Best care for your companions!"]
+            },
+
+            // Southwest Outpost
+            { id: 'wild-tamer', name: 'Beast-Master Koda', type: 'stable', x: 506, y: 1205, sprite: '🦌', color: '#059669',
+              dialogue: ["Wild mounts, wild adventures!", "Tame the untameable!", "Freedom rides on four legs!"]
+            },
+            { id: 'wild-quest', name: 'Ranger Silva', type: 'quest-giver', x: 502, y: 1208, sprite: '🏹', color: '#059669',
+              dialogue: ["The wild lands need protection!", "Hunt the dangerous beasts!", "Nature's balance must be preserved!"]
+            },
+
+            // Northeast Tower
+            { id: 'arcane-scholar', name: 'Archmage Mystral', type: 'trainer', x: 1404, y: 206, sprite: '🧙‍♂️', color: '#7c3aed',
+              dialogue: ["Knowledge is the ultimate power!", "Learn the arcane arts!", "Magic has no limits for the dedicated!"]
+            },
+            { id: 'tower-vendor', name: 'Reagent-Keeper Flux', type: 'shopkeeper', x: 1408, y: 206, sprite: '⚗️', color: '#8b5cf6',
+              dialogue: ["Magical components for sale!", "Quality reagents, guaranteed potency!", "Fuel your magical research!"],
+              shop: [
+                { id: 'mana-crystal', name: 'Mana Crystal', type: 'reagent', price: 50, description: 'Pure magical energy', icon: '💎' },
+                { id: 'spell-scroll', name: 'Spell Scroll', type: 'scroll', price: 75, description: 'Contains a powerful spell', icon: '📜✨' }
+              ]
+            },
+
+            // Southwest Crypt
+            { id: 'crypt-keeper', name: 'Grave-Warden Morrigan', type: 'dungeon', x: 105, y: 1104, sprite: '💀', color: '#4b5563',
+              dialogue: ["The dead do not rest easy...", "Brave the depths for ancient treasures!", "Only the worthy may pass!"]
+            },
+            { id: 'crypt-vendor', name: 'Bone-Trader Grimm', type: 'shopkeeper', x: 108, y: 1107, sprite: '☠️', color: '#1f2937',
+              dialogue: ["Treasures from the departed!", "Death's bounty for the living!", "Dark wares for dark deeds!"],
+              shop: [
+                { id: 'bone-blade', name: 'Bone Reaper', type: 'weapon', price: 180, description: 'Sword carved from ancient bones', icon: '☠️⚔️' },
+                { id: 'shadow-cloak', name: 'Cloak of Shadows', type: 'armor', price: 160, description: 'Hides you from the living', icon: '🌑👘' }
+              ]
+            },
+
+            // === ADDITIONAL ROAMING NPCs ===
+            // Crafting Stations (Anvils, Forges, etc.)
+            { id: 'anvil-keeper1', name: 'Smith-Helper Bronson', type: 'crafting', x: 1200, y: 600, sprite: '⚒️', color: '#dc2626',
+              dialogue: ["Use the anvil to craft!", "Bring materials, make wonders!", "Crafting is an art form!"]
+            },
+            { id: 'alchemy-station1', name: 'Brew-Master Sage', type: 'crafting', x: 800, y: 900, sprite: '⚗️', color: '#7c3aed',
+              dialogue: ["Mix potions at my station!", "Combine ingredients for power!", "Alchemy transforms the mundane!"]
+            },
+            { id: 'cooking-station1', name: 'Chef Ramsden', type: 'crafting', x: 1500, y: 800, sprite: '🍳', color: '#f59e0b',
+              dialogue: ["Cook your ingredients here!", "Hot meals give powerful buffs!", "Culinary magic is real magic!"]
+            },
+
+            // Multiple instances of same NPCs in different locations
+            { id: 'mailbox-north', name: 'Northern Postal', type: 'mailbox', x: 1030, y: 160, sprite: '📬', color: '#3b82f6',
+              dialogue: ["Mail service to all corners!", "Send messages anywhere!", "The post always delivers!"]
+            },
+            { id: 'mailbox-south', name: 'Desert Postal', type: 'mailbox', x: 1125, y: 1375, sprite: '📬', color: '#3b82f6',
+              dialogue: ["Desert mail delivery!", "Even the sands can't stop us!", "Messages travel on desert winds!"]
+            },
+            { id: 'mailbox-west', name: 'Mountain Postal', type: 'mailbox', x: 195, y: 680, sprite: '📬', color: '#3b82f6',
+              dialogue: ["Mountain mail routes!", "High-altitude delivery service!", "Your mail reaches every peak!"]
+            },
+
+            // Additional Repair NPCs
+            { id: 'repair-east', name: 'Saltwater Sam', type: 'repair', x: 1745, y: 720, sprite: '🔧', color: '#6b7280',
+              dialogue: ["Salt corrodes everything!", "But I can fix sea-damaged gear!", "Rust is my specialty!"]
+            },
+
+            // More Quest Givers
+            { id: 'traveling-quest1', name: 'Wandering Scholar Thaddeus', type: 'quest-giver', x: 600, y: 500, sprite: '📚', color: '#6366f1',
+              dialogue: ["Knowledge quests await!", "Discover ancient secrets!", "Learning leads to power!"]
+            },
+            { id: 'traveling-quest2', name: 'Merchant Caravan Leader', type: 'quest-giver', x: 1300, y: 1000, sprite: '🚛', color: '#92400e',
+              dialogue: ["Escort our caravans!", "Trade routes need protection!", "Profitable partnerships await!"]
+            },
+
+            // More Faction Vendors
+            { id: 'faction-north', name: 'Northern Alliance Rep', type: 'faction', x: 975, y: 170, sprite: '🏴', color: '#1e40af',
+              dialogue: ["Serve the Northern Alliance!", "Cold steel, warm hearts!", "Loyalty to the frozen throne!"]
+            },
+            { id: 'faction-east', name: 'Maritime Guild Agent', type: 'faction', x: 1755, y: 725, sprite: '🏴', color: '#3b82f6',
+              dialogue: ["Join the Maritime Guild!", "Rule the waves!", "The sea rewards the bold!"]
             }
         ];
 
         const SPAWN_POINTS = [
-            { x: 30, y: 27 },
-            { x: 28, y: 27 },
-            { x: 32, y: 27 }
+            { x: 1000, y: 750 },  // Center of massive world
+            { x: 998, y: 750 },   // Spread around center
+            { x: 1002, y: 750 },
+            { x: 1000, y: 748 },
+            { x: 1000, y: 752 }
         ];
 
-        // Generate world map
+        // Generate MASSIVE world map - the biggest MMORPG map ever created
         function createWorldMap() {
             const map = [];
+            
+            // Create massive terrain diversity
             for (let y = 0; y < WORLD_HEIGHT; y++) {
                 const row = [];
                 for (let x = 0; x < WORLD_WIDTH; x++) {
-                    if (y < 2 || y >= WORLD_HEIGHT - 2 || x < 2 || x >= WORLD_WIDTH - 2) {
-                        row.push(TILES.grass);
-                    } else if ((x >= 10 && x <= 20 && y >= 5 && y <= 15) ||
-                               (x >= 25 && x <= 35 && y >= 5 && y <= 15) ||
-                               (x >= 40 && x <= 50 && y >= 5 && y <= 15)) {
-                        if (y === 5 || y === 15) row.push(TILES.wall);
-                        else if (x === 10 || x === 20 || x === 25 || x === 35 || x === 40 || x === 50) row.push(TILES.wall);
-                        else if ((x === 15 && y === 15) || (x === 30 && y === 15) || (x === 45 && y === 15)) {
-                            row.push(TILES.door);
-                        } else row.push(TILES.floor);
-                    } else if (x >= 15 && x <= 45 && y >= 20 && y <= 25) {
-                        if (y === 20 || y === 25 || x === 15 || x === 45) row.push(TILES.stone);
-                        else row.push(TILES.dirt);
-                    } else if ((x + y) % 4 === 0) {
-                        row.push(TILES.stone);
-                    } else {
-                        row.push(TILES.grass);
+                    // Create diverse biomes and regions across the massive world
+                    const centerX = WORLD_WIDTH / 2;
+                    const centerY = WORLD_HEIGHT / 2;
+                    const distanceFromCenter = Math.sqrt((x - centerX) * (x - centerX) + (y - centerY) * (y - centerY));
+                    const maxDistance = Math.sqrt(centerX * centerX + centerY * centerY);
+                    const normalizedDistance = distanceFromCenter / maxDistance;
+                    
+                    // Noise-based terrain generation for variety
+                    const noise1 = Math.sin(x * 0.01) * Math.cos(y * 0.01);
+                    const noise2 = Math.sin(x * 0.05) * Math.cos(y * 0.03);
+                    const noise3 = Math.sin(x * 0.02) * Math.cos(y * 0.04);
+                    const combinedNoise = (noise1 + noise2 * 0.5 + noise3 * 0.3) / 1.8;
+                    
+                    // World boundaries
+                    if (y < 3 || y >= WORLD_HEIGHT - 3 || x < 3 || x >= WORLD_WIDTH - 3) {
+                        row.push(TILES.water);  // Ocean boundaries
+                    }
+                    // Central starting town area (small compared to massive world)
+                    else if (x >= centerX - 50 && x <= centerX + 50 && y >= centerY - 30 && y <= centerY + 30) {
+                        if ((x >= centerX - 20 && x <= centerX - 10 && y >= centerY - 15 && y <= centerY - 5) ||
+                            (x >= centerX + 10 && x <= centerX + 20 && y >= centerY - 15 && y <= centerY - 5)) {
+                            // Town buildings
+                            if (y === centerY - 15 || y === centerY - 5) row.push(TILES.wall);
+                            else if (x === centerX - 20 || x === centerX - 10 || x === centerX + 10 || x === centerX + 20) row.push(TILES.wall);
+                            else if ((x === centerX - 15 && y === centerY - 5) || (x === centerX + 15 && y === centerY - 5)) {
+                                row.push(TILES.door);
+                            } else row.push(TILES.floor);
+                        }
+                        // Town square
+                        else if (x >= centerX - 5 && x <= centerX + 5 && y >= centerY - 5 && y <= centerY + 5) {
+                            row.push(TILES.stone);
+                        }
+                        else {
+                            row.push(TILES.grass);
+                        }
+                    }
+                    // Diverse biomes based on position and noise
+                    else if (normalizedDistance < 0.3) {
+                        // Inner regions - grasslands and forests
+                        if (combinedNoise > 0.2) row.push(TILES.stone);
+                        else if (combinedNoise < -0.3) row.push(TILES.dirt);
+                        else row.push(TILES.grass);
+                    }
+                    else if (normalizedDistance < 0.6) {
+                        // Middle regions - mixed terrain
+                        if (combinedNoise > 0.4) row.push(TILES.stone);
+                        else if (combinedNoise > 0.1) row.push(TILES.dirt);
+                        else if (combinedNoise < -0.2) row.push(TILES.water);
+                        else row.push(TILES.grass);
+                    }
+                    else {
+                        // Outer regions - wilderness and dangerous areas
+                        if (combinedNoise > 0.3) row.push(TILES.stone);
+                        else if (combinedNoise > -0.1) row.push(TILES.dirt);
+                        else if (combinedNoise < -0.4) row.push(TILES.water);
+                        else row.push(TILES.grass);
                     }
                 }
                 map.push(row);
@@ -644,6 +935,8 @@
                 maxHealth: stats.health,
                 mana: stats.mana,
                 maxMana: stats.mana,
+                xp: 0,
+                maxXp: 100,
                 level: 1,
                 class: playerClass,
                 color: getClassColor(playerClass),
@@ -710,7 +1003,7 @@
         function showGameUI() {
             document.getElementById('characterSelect').classList.add('hidden');
             document.getElementById('playerStats').classList.remove('hidden');
-            document.getElementById('onlinePlayers').classList.remove('hidden');
+            document.getElementById('minimapPanel').classList.remove('hidden');
             document.getElementById('chatPanel').classList.remove('hidden');
             document.getElementById('controlsPanel').classList.remove('hidden');
         }
@@ -732,34 +1025,85 @@
             document.getElementById('manaBar').style.width = `${manaPercent}%`;
         }
 
-        function updatePlayersList() {
-            const playersList = document.getElementById('playersList');
+        function updateMinimap() {
+            const minimap = document.getElementById('minimap');
             const playerCount = document.getElementById('playerCount');
             
-            playersList.innerHTML = '';
+            minimap.innerHTML = '';
             playerCount.textContent = Object.keys(gameState.players).length;
+            
+            const minimapRadius = 60; // Half of 120px
+            const worldScale = minimapRadius / Math.max(WORLD_WIDTH, WORLD_HEIGHT);
+            
+            // Draw terrain features
+            // Sample some buildings and terrain for the minimap
+            BUILDINGS.forEach(building => {
+                if (Math.random() < 0.3) { // Show only some buildings to avoid clutter
+                    const terrainDot = document.createElement('div');
+                    terrainDot.className = 'minimap-terrain';
+                    terrainDot.style.backgroundColor = getBuildingColor(building.type);
+                    terrainDot.style.width = '2px';
+                    terrainDot.style.height = '2px';
+                    terrainDot.style.opacity = '0.6';
+                    
+                    const x = building.x * worldScale;
+                    const y = building.y * worldScale;
+                    terrainDot.style.left = `${minimapRadius + x}px`;
+                    terrainDot.style.top = `${minimapRadius + y}px`;
+                    terrainDot.style.position = 'absolute';
+                    
+                    minimap.appendChild(terrainDot);
+                }
+            });
+            
+            // Add some terrain variety
+            for (let i = 0; i < 50; i++) {
+                const terrainDot = document.createElement('div');
+                terrainDot.className = 'minimap-terrain';
+                terrainDot.style.backgroundColor = Math.random() < 0.5 ? '#10b981' : '#64748b';
+                terrainDot.style.width = '1px';
+                terrainDot.style.height = '1px';
+                terrainDot.style.opacity = '0.3';
+                
+                const x = (Math.random() * WORLD_WIDTH) * worldScale;
+                const y = (Math.random() * WORLD_HEIGHT) * worldScale;
+                terrainDot.style.left = `${minimapRadius + x}px`;
+                terrainDot.style.top = `${minimapRadius + y}px`;
+                terrainDot.style.position = 'absolute';
+                
+                minimap.appendChild(terrainDot);
+            }
             
             // Current player first
             if (gameState.currentPlayer) {
-                const div = document.createElement('div');
-                div.className = 'player-item current-player';
-                div.innerHTML = `
-                    <div class="player-dot" style="background-color: ${gameState.currentPlayer.color}"></div>
-                    <span style="font-size: 12px; font-weight: bold;">${gameState.currentPlayer.name} (You)</span>
-                `;
-                playersList.appendChild(div);
+                const playerDot = document.createElement('div');
+                playerDot.className = 'minimap-player';
+                playerDot.style.backgroundColor = gameState.currentPlayer.color;
+                playerDot.style.border = '1px solid #10b981';
+                playerDot.style.width = '5px';
+                playerDot.style.height = '5px';
+                
+                const x = (gameState.currentPlayer.x / TILE_SIZE) * worldScale;
+                const y = (gameState.currentPlayer.y / TILE_SIZE) * worldScale;
+                playerDot.style.left = `${minimapRadius + x}px`;
+                playerDot.style.top = `${minimapRadius + y}px`;
+                
+                minimap.appendChild(playerDot);
             }
             
             // Other players
             Object.values(gameState.players).forEach(player => {
                 if (player.id !== gameState.currentPlayer?.id) {
-                    const div = document.createElement('div');
-                    div.className = 'player-item other-player';
-                    div.innerHTML = `
-                        <div class="player-dot" style="background-color: ${player.color}"></div>
-                        <span style="font-size: 12px;">${player.name}</span>
-                    `;
-                    playersList.appendChild(div);
+                    const playerDot = document.createElement('div');
+                    playerDot.className = 'minimap-player';
+                    playerDot.style.backgroundColor = player.color;
+                    
+                    const x = (player.x / TILE_SIZE) * worldScale;
+                    const y = (player.y / TILE_SIZE) * worldScale;
+                    playerDot.style.left = `${minimapRadius + x}px`;
+                    playerDot.style.top = `${minimapRadius + y}px`;
+                    
+                    minimap.appendChild(playerDot);
                 }
             });
         }
@@ -927,7 +1271,7 @@
                         inventory: []
                     };
                 });
-                updatePlayersList();
+                updateMinimap();
             }
 
             // Load recent messages
@@ -983,10 +1327,10 @@
                                 gold: dbPlayer.gold,
                                 inventory: []
                             };
-                            updatePlayersList();
+                            updateMinimap();
                         } else if (payload.eventType === 'DELETE') {
                             delete gameState.players[payload.old.id];
-                            updatePlayersList();
+                            updateMinimap();
                         }
                     }
                 )
@@ -1106,18 +1450,30 @@
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Calculate camera offset
+            // Calculate camera offset - PERFECT CENTERING
             let cameraX = 0;
             let cameraY = 0;
             
             if (gameState.currentPlayer) {
-                cameraX = canvas.width / 2 - gameState.currentPlayer.x;
-                cameraY = canvas.height / 2 - gameState.currentPlayer.y;
+                // Center the player EXACTLY in the middle of the screen
+                cameraX = canvas.width / 2 - gameState.currentPlayer.x - TILE_SIZE / 2;
+                cameraY = canvas.height / 2 - gameState.currentPlayer.y - TILE_SIZE / 2;
                 
-                const maxX = canvas.width - WORLD_WIDTH * TILE_SIZE;
-                const maxY = canvas.height - WORLD_HEIGHT * TILE_SIZE;
-                cameraX = Math.min(0, Math.max(maxX, cameraX));
-                cameraY = Math.min(0, Math.max(maxY, cameraY));
+                // For massive open world, allow free camera movement in all directions
+                // Only clamp when near world boundaries to prevent seeing beyond the map
+                const worldWidthPixels = WORLD_WIDTH * TILE_SIZE;
+                const worldHeightPixels = WORLD_HEIGHT * TILE_SIZE;
+                
+                const minCameraX = canvas.width - worldWidthPixels;
+                const minCameraY = canvas.height - worldHeightPixels;
+                
+                // Only clamp if we're near the edges of the massive world
+                if (worldWidthPixels > canvas.width) {
+                    cameraX = Math.min(0, Math.max(minCameraX, cameraX));
+                }
+                if (worldHeightPixels > canvas.height) {
+                    cameraY = Math.min(0, Math.max(minCameraY, cameraY));
+                }
             }
 
             ctx.save();
@@ -1142,8 +1498,25 @@
         }
 
         function drawTiles(ctx) {
-            for (let y = 0; y < WORLD_HEIGHT; y++) {
-                for (let x = 0; x < WORLD_WIDTH; x++) {
+            // OPTIMIZED RENDERING for massive world - only draw visible tiles
+            const canvas = document.getElementById('gameCanvas');
+            
+            // Calculate current camera transform
+            const transform = ctx.getTransform();
+            const viewX = -transform.e;
+            const viewY = -transform.f;
+            const viewWidth = canvas.width;
+            const viewHeight = canvas.height;
+            
+            // Calculate visible tile bounds with some padding
+            const startX = Math.max(0, Math.floor(viewX / TILE_SIZE) - 2);
+            const endX = Math.min(WORLD_WIDTH, Math.ceil((viewX + viewWidth) / TILE_SIZE) + 2);
+            const startY = Math.max(0, Math.floor(viewY / TILE_SIZE) - 2);
+            const endY = Math.min(WORLD_HEIGHT, Math.ceil((viewY + viewHeight) / TILE_SIZE) + 2);
+            
+            // Only render visible tiles for performance in massive world
+            for (let y = startY; y < endY; y++) {
+                for (let x = startX; x < endX; x++) {
                     const tile = worldMap[y][x];
                     const tileX = x * TILE_SIZE;
                     const tileY = y * TILE_SIZE;
@@ -1437,6 +1810,8 @@
 
             // Chat functionality
             document.getElementById('sendButton').addEventListener('click', handleSendMessage);
+            document.getElementById('chatExpandBtn').addEventListener('click', toggleChatExpansion);
+            document.getElementById('closeControlsBtn').addEventListener('click', closeControlsPanel);
             
             function handleSendMessage() {
                 const chatInput = document.getElementById('chatInput');
@@ -1445,6 +1820,18 @@
                     sendMessage(message);
                     chatInput.value = '';
                 }
+            }
+
+            function toggleChatExpansion() {
+                const chatPanel = document.getElementById('chatPanel');
+                const expandBtn = document.getElementById('chatExpandBtn');
+                
+                chatPanel.classList.toggle('expanded');
+                expandBtn.textContent = chatPanel.classList.contains('expanded') ? '⇲' : '⇱';
+            }
+
+            function closeControlsPanel() {
+                document.getElementById('controlsPanel').classList.add('hidden');
             }
 
             function handleInteraction() {
