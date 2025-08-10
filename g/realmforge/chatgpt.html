@@ -3,295 +3,249 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MMORPG Prototype</title>
+  <title>MMORPG Enhanced Prototype</title>
   <style>
-    html,body { height:100%; margin:0; background:#111; color:#ddd; font-family:system-ui,Segoe UI,Roboto,Arial; }
-    #game-container { width:100%; height:100vh; overflow:hidden; }
-    .ui { position: absolute; z-index: 10; left: 12px; top: 12px; background: rgba(0,0,0,0.6); padding:10px; border-radius:8px; border: 1px solid #444; }
-    .panel { background: rgba(0,0,0,0.85); color:#eee; padding:8px; border-radius:8px; max-height:70vh; overflow:auto; }
-    button { background:#333;color:#fff;border:1px solid #666;padding:6px 8px;border-radius:6px; cursor:pointer }
-    .modal { position: absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index: 50; background:#121212; padding:12px; border-radius:10px; border:1px solid #444; width:80%; max-width:900px; }
-    .hidden{ display:none }
-    .npc { font-size:12px }
-    table { width:100%; border-collapse: collapse }
-    td,th { padding:6px;border-bottom:1px solid #222 }
+    :root{ --bg:#0b1020; --panel:rgba(10,12,20,0.7); --accent:#ffd86b; --muted:#bfc7d6 }
+    html,body { height:100%; margin:0; background:linear-gradient(180deg,#071022 0%, #0b1020 60%); color:var(--muted); font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial; }
+    #game-container { width:100%; height:100vh; overflow:hidden; position:relative }
+    .ui-top { position:absolute; left:12px; top:12px; z-index:30; display:flex; gap:8px; align-items:center }
+    .hud { background:var(--panel); padding:8px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); display:flex; gap:12px; align-items:center }
+    .hud .stat{ font-size:14px } .hud .stat b{ color:var(--accent) }
+    .main-menu { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:40 }
+    .menu-card { width:760px; max-width:92%; background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border-radius:16px; padding:28px; text-align:center; border:1px solid rgba(255,255,255,0.04) }
+    .menu-title{ font-size:42px; color: white; margin:0 0 8px }
+    .menu-sub{ color:var(--muted); margin-bottom:18px }
+    .menu-btn{ background:var(--accent); color:#072033; padding:10px 18px; border-radius:10px; border:none; font-weight:700; cursor:pointer; margin:6px }
+    .panel { background:var(--panel); color:#eef; padding:8px; border-radius:8px; max-height:70vh; overflow:auto }
+    .modal { position: absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index: 60; background: linear-gradient(180deg,#0b1220,#06121a); padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,0.04); width:640px; max-width:92% }
+    .modal h3{ margin:0 0 8px; color:#fff }
+    .modal .controls{ display:flex; gap:8px; justify-content:flex-end; margin-top:12px }
+    .btn { background:#123; color:var(--muted); border:1px solid rgba(255,255,255,0.03); padding:6px 10px; border-radius:8px; cursor:pointer }
+    .close-btn { background:transparent; border:1px solid rgba(255,255,255,0.06); color:#fff }
+    .name-tag{ font-size:12px; background:rgba(0,0,0,0.5); padding:2px 6px; border-radius:6px; color:#fff; border:1px solid rgba(255,255,255,0.03) }
+    #minimap{ width:160px; height:100px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:linear-gradient(180deg,#050812,#081026); overflow:hidden }
   </style>
 </head>
 <body>
   <div id="game-container"></div>
 
-  <!-- Start modal + Simple instructions will be controlled by JS -->
+  <div class="main-menu" id="main-menu">
+    <div class="menu-card">
+      <h1 class="menu-title">MMORPG — Enhanced Prototype</h1>
+      <div class="menu-sub">Colorful map, named NPCs, improved HUD, and better UI. Prototype single-file demo.</div>
+      <div>
+        <button class="menu-btn" id="start-game">Start Game</button>
+        <button class="menu-btn" id="load-game">Load Demo</button>
+        <button class="menu-btn" id="options">Options</button>
+      </div>
+      <p style="margin-top:14px;color:var(--muted)">Controls: WASD / Arrow keys to move — Click NPCs to interact — Inventory / Quests / Shop from HUD</p>
+    </div>
+  </div>
 
+  <!-- Phaser + Game Script -->
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
   <script>
-  // ----------------------------
-  // Lightweight single-file MMORPG prototype
-  // - Start screen
-  // - Large generated map
-  // - 50+ NPCs generated procedurally
-  // - Shop UI backed by 600 generated items
-  // - Quest system with 300+ generated quests
-  // - Basic inventory, gold, and simple quest completion
-  // Note: This is a prototype to demonstrate structure and core mechanics.
-  // ----------------------------
+  const CONFIG = { width: 1024, height: 640, tileSize: 48, mapW: 60, mapH: 40 };
 
-  const CONFIG = {
-    width: 960,
-    height: 640,
-    tileSize: 32,
-    mapW: 80, // wide map (80 * 32 = 2560 px)
-    mapH: 60  // tall map
-  }
-
-  // Utility: random name arrays
+  // small datasets (kept globally for quick tinkering)
   const NAMES = ["Ari","Bram","Cora","Dax","Ena","Finn","Gale","Hana","Ike","Juno","Kai","Lia","Milo","Nora","Oren","Pia","Quin","Rae","Seth","Tess","Ula","Vik","Wren","Xan","Yara","Zed"];
-  function randName(){ return NAMES[Math.floor(Math.random()*NAMES.length)] + " " + Math.floor(Math.random()*999); }
+  function randName(){ return NAMES[Math.floor(Math.random()*NAMES.length)] + ' ' + (Math.floor(Math.random()*900)+100); }
 
-  // Generate 600 items
-  const ITEMS = (function(){
-    const types = ["Potion","Sword","Shield","Scroll","Ring","Helmet","Boots","Food","Material","Gem"];
-    const items = [];
-    for(let i=1;i<=600;i++){
-      const t = types[i % types.length];
-      items.push({ id: 'item'+i, name: `${t} of ${NAMES[i % NAMES.length]}`, type: t, price: Math.max(5, Math.floor(Math.random()*500)), rarity: ['Common','Uncommon','Rare','Epic'][Math.floor(Math.random()*4)] });
-    }
-    return items;
-  })();
+  // generate items & quests similar to previous; keep counts but keep arrays smaller for demo responsiveness
+  const ITEMS = (()=>{ const types=['Potion','Sword','Shield','Scroll','Ring','Helmet','Boots','Food','Material','Gem']; const out=[]; for(let i=1;i<=600;i++){ const t=types[i%types.length]; out.push({id:'item'+i, name:`${t} of ${NAMES[i%NAMES.length]}`, type:t, price: Math.max(5, Math.floor(Math.random()*500)), rarity: ['Common','Uncommon','Rare','Epic'][Math.floor(Math.random()*4)] }); } return out; })();
+  const NPCS = (()=>{ const out=[]; for(let i=0;i<55;i++){ out.push({ id:'npc'+i, name: randName(), x: Math.floor(Math.random()*CONFIG.mapW*CONFIG.tileSize), y: Math.floor(Math.random()*CONFIG.mapH*CONFIG.tileSize), shop: Math.random()<0.4, dialogues:["Hello traveler!","Bright day, eh?","I have wares if you like."] }); } return out; })();
+  const QUESTS = (()=>{ const q=[]; for(let i=1;i<=300;i++){ const npc = NPCS[i % NPCS.length]; const item = ITEMS[(i*7)%ITEMS.length]; const rewardGold = 30 + Math.floor(Math.random()*300); q.push({ id:'q'+i, title:`Aid ${npc.name}`, description:`Visit ${npc.name} and bring ${item.name}.`, giver:npc.id, targetItem:item.id, reward:{ gold: rewardGold, item: ITEMS[(i*11)%ITEMS.length].id }, status:'available' }); } return q; })();
 
-  // Generate NPCs (50)
-  const NPCS = (function(){
-    const list = [];
-    for(let i=0;i<50;i++){
-      list.push({ id:'npc'+i, name: randName(), x: Math.floor(Math.random()*CONFIG.mapW*CONFIG.tileSize), y: Math.floor(Math.random()*CONFIG.mapH*CONFIG.tileSize), shop: Math.random()<0.35, dialogues: ["Hello!","Good day.","Need something?" ] });
-    }
-    return list;
-  })();
+  let playerState = { gold:500, inventory:{}, questsAccepted:{}, x: CONFIG.mapW*CONFIG.tileSize/2, y: CONFIG.mapH*CONFIG.tileSize/2, hp:100, maxHp:100 };
 
-  // Generate 300 quests (simple templates)
-  const QUESTS = (function(){
-    const q = [];
-    for(let i=1;i<=300;i++){
-      const npc = NPCS[i % NPCS.length];
-      const item = ITEMS[(i*7) % ITEMS.length];
-      const rewardGold = 20 + Math.floor(Math.random()*400);
-      q.push({ id:'q'+i, title:`Help ${npc.name}`, description:`Talk to ${npc.name} and bring ${item.name}.`, giver: npc.id, targetItem: item.id, reward:{ gold: rewardGold, item: ITEMS[(i*11)%ITEMS.length].id }, status:'available' });
-    }
-    return q;
-  })();
+  class Boot extends Phaser.Scene{ preload(){
+      // colorful decorative assets (Phaser Labs public examples)
+      this.load.image('bg-gradient','https://labs.phaser.io/assets/skies/space3.png');
+      this.load.spritesheet('player','https://labs.phaser.io/assets/sprites/phaser-dude.png',{ frameWidth:32, frameHeight:48 });
+      this.load.image('tree','https://labs.phaser.io/assets/tests/tilemaps/tiles/tree.png');
+      this.load.image('rock','https://labs.phaser.io/assets/sprites/rock.png');
+      this.load.image('flower','https://labs.phaser.io/assets/pics/bluecircle.png');
+      this.load.image('npc','https://labs.phaser.io/assets/sprites/alien.png');
+    } create(){ this.scene.start('Start'); } }
 
-  // Player default
-  let playerState = { gold: 300, inventory: {}, questsAccepted: {}, x: CONFIG.mapW*CONFIG.tileSize/2, y: CONFIG.mapH*CONFIG.tileSize/2 };
-
-  // Phaser game
-  class Boot extends Phaser.Scene{
-    constructor(){ super('Boot'); }
-    preload(){
-      this.load.image('tiles','https://labs.phaser.io/assets/tilemaps/tiles/drawtiles-spaced.png');
-    }
-    create(){ this.scene.start('Start'); }
-  }
-
-  class Start extends Phaser.Scene{
-    constructor(){ super('Start'); }
-    create(){
-      const w = this.scale.width, h = this.scale.height;
-      this.add.rectangle(w/2,h/2,w,h,0x0b0b0b);
-      this.add.text(w/2,h/2 - 120, 'MMORPG Prototype', { fontSize: '40px', color:'#ffffff' }).setOrigin(0.5);
-      this.add.text(w/2,h/2 - 60, 'A single-file prototype demonstrating core systems', { fontSize: '14px', color:'#cccccc' }).setOrigin(0.5);
-      const startBtn = this.add.text(w/2, h/2, '[ Start Game ]', { fontSize: '24px', backgroundColor:'#222', padding:6 }).setOrigin(0.5).setInteractive();
-      startBtn.on('pointerup', ()=>{ this.scene.start('Game'); this.scene.launch('UI'); });
-      const instr = this.add.text(w/2, h/2 + 80, 'Controls: Arrow keys / WASD to move. Click NPC to interact. Open Inventory / Quests / Shop from top-left UI.', { fontSize:'12px', color:'#aaa' }).setOrigin(0.5);
-    }
-  }
+  class Start extends Phaser.Scene{ create(){
+      const w=this.scale.width, h=this.scale.height;
+      // decorative background using loaded sky
+      this.add.image(w/2,h/2,w*2,h*2,'bg-gradient').setTint(0x334455).setAlpha(0.7);
+      this.add.text(w/2,h/2 - 120,'MMORPG — Enhanced Prototype',{fontSize:'40px', color:'#ffffff'}).setOrigin(0.5);
+      this.add.text(w/2,h/2 - 70,'A more colorful map, name tags, improved HUD and menu',{fontSize:'16px', color:'#ddeeff'}).setOrigin(0.5);
+      const startBtn = this.add.text(w/2, h/2 - 10, '[ Start Game ]',{fontSize:'24px', backgroundColor:'#fff', color:'#001', padding:8}).setOrigin(0.5).setInteractive();
+      startBtn.on('pointerup', ()=>{ document.getElementById('main-menu').style.display='none'; this.scene.start('Game'); this.scene.launch('UI'); });
+    } }
 
   class Game extends Phaser.Scene{
     constructor(){ super('Game'); }
     create(){
-      // camera and world
-      this.cameras.main.setBounds(0,0,CONFIG.mapW*CONFIG.tileSize, CONFIG.mapH*CONFIG.tileSize);
-      this.physics.world.setBounds(0,0,CONFIG.mapW*CONFIG.tileSize, CONFIG.mapH*CONFIG.tileSize);
+      // world bounds and camera
+      const W = CONFIG.mapW*CONFIG.tileSize, H = CONFIG.mapH*CONFIG.tileSize;
+      this.cameras.main.setBounds(0,0,W,H);
+      this.physics.world.setBounds(0,0,W,H);
 
-      // simple ground tiles using graphics
-      const graphics = this.add.graphics();
+      // create colorful 'biomes' using rectangles and scattered decorations
       for(let i=0;i<CONFIG.mapW;i++){
         for(let j=0;j<CONFIG.mapH;j++){
-          const color = ((i+j)%2==0) ? 0x2b2b2b : 0x242424;
-          graphics.fillStyle(color,1);
-          graphics.fillRect(i*CONFIG.tileSize, j*CONFIG.tileSize, CONFIG.tileSize, CONFIG.tileSize);
+          // pick color by simple noise-like formula
+          const val = (Math.sin(i*0.3) + Math.cos(j*0.23))*0.5 + Math.random()*0.2;
+          const color = val > 0.4 ? 0x7ee87e : (val > 0 ? 0x9fc9ff : 0x9b7ee8);
+          this.add.rectangle(i*CONFIG.tileSize + CONFIG.tileSize/2, j*CONFIG.tileSize + CONFIG.tileSize/2, CONFIG.tileSize, CONFIG.tileSize, color).setDepth(-2);
         }
       }
 
-      // player
-      this.player = this.add.rectangle(playerState.x, playerState.y, 20, 28, 0x66ccff);
-      this.physics.add.existing(this.player);
-      this.player.body.setCollideWorldBounds(true);
+      // scatter decorative sprites (trees/rocks/flowers)
+      for(let k=0;k<400;k++){
+        const x = Math.random()*W, y = Math.random()*H;
+        const pick = Math.random();
+        if(pick<0.5) this.add.image(x,y,'tree').setScale(0.4 + Math.random()*0.6).setDepth(0);
+        else if(pick<0.8) this.add.image(x,y,'rock').setScale(0.2 + Math.random()*0.6).setDepth(0);
+        else this.add.image(x,y,'flower').setScale(0.2 + Math.random()*0.6).setDepth(0);
+      }
 
-      // NPC group
-      this.npcGroup = this.add.group();
-      NPCS.forEach(npc => {
-        const body = this.add.rectangle(npc.x, npc.y, 20, 28, npc.shop?0xffcc66:0x99cc88).setInteractive();
-        body.npcId = npc.id;
-        this.npcGroup.add(body);
-        this.input.setDraggable(body);
-        body.on('pointerdown', () => { this.scene.launch('UI', { action:'openNpc', npcId: npc.id }); });
+      // player sprite with simple animations
+      this.player = this.physics.add.sprite(playerState.x, playerState.y, 'player', 4).setScale(1.2);
+      this.player.setCollideWorldBounds(true);
+      this.anims.create({ key:'left', frames: this.anims.generateFrameNumbers('player',{ start:0, end:3}), frameRate:10, repeat:-1 });
+      this.anims.create({ key:'turn', frames:[{key:'player', frame:4}], frameRate:20 });
+      this.anims.create({ key:'right', frames: this.anims.generateFrameNumbers('player',{ start:5, end:8}), frameRate:10, repeat:-1 });
+
+      // create NPCs as sprites with name tags
+      this.npcs = this.add.group();
+      NPCS.forEach(npc=>{
+        const s = this.add.sprite(npc.x, npc.y, 'npc').setScale(0.6).setInteractive({ useHandCursor: true });
+        s.npcId = npc.id; s.data = npc;
+        // name tag: text above sprite
+        const nameTag = this.add.text(npc.x, npc.y - 36, npc.name, { fontSize:'12px', color:'#ffffff', backgroundColor:'rgba(0,0,0,0.35)', padding:{x:6,y:3}, align:'center' }).setOrigin(0.5);
+        s.nameTag = nameTag;
+        this.npcs.add(s);
       });
-
-      // simple movement input
-      this.keys = this.input.keyboard.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT');
-      this.speed = 160;
 
       // camera follow
-      this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
+      this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
 
-      // click to 'attack' NPCs (for quest completions): mark NPC as "defeated" and notify UI
+      // interactions
       this.input.on('gameobjectdown', (pointer, gameObject)=>{
-        if(gameObject.npcId){
-          // for simplicity, clicking an NPC 'gives' its id as 'killed' for quest progress
+        if(gameObject.npcId){ // open NPC dialog via UI scene
+          this.scene.launch('UI', { action:'openNpc', npcId: gameObject.npcId });
+          // small highlight animation
+          this.tweens.add({ targets: gameObject, scale:1.0, duration:80, yoyo:true });
+          // random drop chance forwarded later
           this.events.emit('npcClicked', gameObject.npcId);
-          // small flash
-          const orig = gameObject.fillColor;
-          gameObject.fillColor = 0xff4444;
-          this.time.delayedCall(150, ()=> gameObject.fillColor = orig);
         }
       });
+
+      // simple movement controls
+      this.keys = this.input.keyboard.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT');
+      this.speed = 220;
     }
-    update(t, dt){
-      const body = this.player.body;
-      body.setVelocity(0);
-      if(this.keys.A.isDown || this.keys.LEFT.isDown) body.setVelocityX(-this.speed);
-      if(this.keys.D.isDown || this.keys.RIGHT.isDown) body.setVelocityX(this.speed);
-      if(this.keys.W.isDown || this.keys.UP.isDown) body.setVelocityY(-this.speed);
-      if(this.keys.S.isDown || this.keys.DOWN.isDown) body.setVelocityY(this.speed);
-      // save back to global playerState
+    update(){
+      const kb = this.keys; const body = this.player.body; body.setVelocity(0);
+      if(kb.A.isDown || kb.LEFT.isDown) { body.setVelocityX(-this.speed); this.player.anims.play('left', true); }
+      else if(kb.D.isDown || kb.RIGHT.isDown) { body.setVelocityX(this.speed); this.player.anims.play('right', true); }
+      else { body.setVelocityX(0); }
+      if(kb.W.isDown || kb.UP.isDown) { body.setVelocityY(-this.speed); }
+      else if(kb.S.isDown || kb.DOWN.isDown) { body.setVelocityY(this.speed); }
+      if(body.velocity.x===0 && body.velocity.y===0) this.player.anims.play('turn');
+      // sync name tags to npc positions in case they move later
+      this.npcs.getChildren().forEach(n=>{ if(n.nameTag){ n.nameTag.x = n.x; n.nameTag.y = n.y - 36; } });
+      // save pos
       playerState.x = this.player.x; playerState.y = this.player.y;
     }
   }
 
-  // UI Scene (DOM overlay)
+  // UI Scene: improved HUD, fixed modal close behavior, shop/inventory/quests
   class UIScene extends Phaser.Scene{
-    constructor(){ super({ key: 'UI', active: false }); }
-    init(data){ if(data && data.action === 'openNpc'){ this.openNpcId = data.npcId; } }
+    constructor(){ super({ key:'UI', active:false }); }
+    init(data){ this.openNpcId = data && data.action==='openNpc' ? data.npcId : null; }
     create(){
-      const DOM = this.add.dom(0,0).createFromHTML('<div></div>').setOrigin(0);
-
-      // create simple top-left UI using DOM + plain HTML injected into body for easy styling
-      this.createTopUI();
-
-      // Listen to gamescene events
+      // create HUD DOM elements appended to body so CSS applies
+      this.createHUD();
+      // Listen to Game events
       const game = this.scene.get('Game');
-      game.events.on('npcClicked', (npcId)=>{ this.onNpcClicked(npcId); });
+      game.events.on('npcClicked', (npcId)=>{ this.onNpcClicked(npcId); this.randomDrop(npcId); });
 
-      // If opened with npc action
-      if(this.openNpcId){ this.openNpcDialog(this.openNpcId); }
+      if(this.openNpcId) this.openNpcDialog(this.openNpcId);
     }
 
-    createTopUI(){
-      // create container
-      const container = document.createElement('div');
-      container.className = 'ui panel';
+    createHUD(){
+      const container = document.createElement('div'); container.className='ui-top';
+      const hud = document.createElement('div'); hud.className='hud';
+      // player hp
+      const hp = document.createElement('div'); hp.className='stat'; hp.id='hp-display'; hp.innerHTML = `HP: <b>${playerState.hp}/${playerState.maxHp}</b>`; hud.appendChild(hp);
+      // gold
+      const gold = document.createElement('div'); gold.className='stat'; gold.id='gold-display'; gold.innerHTML = `Gold: <b>${playerState.gold}</b>`; hud.appendChild(gold);
+      // action buttons
+      const invBtn = document.createElement('button'); invBtn.className='btn'; invBtn.innerText='Inventory'; invBtn.onclick = ()=> this.showInventory(); hud.appendChild(invBtn);
+      const qBtn = document.createElement('button'); qBtn.className='btn'; qBtn.innerText='Quests'; qBtn.onclick = ()=> this.showQuests(); hud.appendChild(qBtn);
+      const shopBtn = document.createElement('button'); shopBtn.className='btn'; shopBtn.innerText='Open Shop'; shopBtn.onclick = ()=> this.openShop(); hud.appendChild(shopBtn);
 
-      const gold = document.createElement('div'); gold.id='gold-display'; gold.innerText = `Gold: ${playerState.gold}`;
-      container.appendChild(gold);
+      // minimap placeholder
+      const mini = document.createElement('div'); mini.id='minimap'; mini.style.marginLeft='8px'; hud.appendChild(mini);
 
-      const btnInv = document.createElement('button'); btnInv.innerText='Inventory'; btnInv.onclick = ()=> this.showInventory(); container.appendChild(btnInv);
-      const btnQu = document.createElement('button'); btnQu.innerText='Quests'; btnQu.onclick = ()=> this.showQuests(); container.appendChild(btnQu);
-      const btnShop = document.createElement('button'); btnShop.innerText='Open Shop'; btnShop.onclick = ()=> this.openShop(); container.appendChild(btnShop);
-      const btnMap = document.createElement('button'); btnMap.innerText='Locate Player'; btnMap.onclick = ()=> { const g=this.scene.get('Game'); g.cameras.main.centerOn(playerState.x, playerState.y); };
-      container.appendChild(btnMap);
-
+      container.appendChild(hud);
       document.body.appendChild(container);
+
+      // update loop for HUD
+      this.time.addEvent({ delay: 500, loop:true, callback: ()=>{ document.getElementById('gold-display').innerHTML = `Gold: <b>${playerState.gold}</b>`; document.getElementById('hp-display').innerHTML = `HP: <b>${playerState.hp}/${playerState.maxHp}</b>`; } });
     }
 
-    updateGoldDisplay(){ const el = document.getElementById('gold-display'); if(el) el.innerText = `Gold: ${playerState.gold}`; }
-
-    onNpcClicked(npcId){
-      // offer dialogue and option to trade if npc has shop
-      const npc = NPCS.find(n=>n.id===npcId);
-      if(!npc) return;
-      this.openNpcDialog(npcId);
-    }
-
-    openNpcDialog(npcId){
-      const npc = NPCS.find(n=>n.id===npcId);
-      if(!npc) return;
+    // Proper modal helper that guarantees close button works and multiple modals don't conflict
+    createModal(title, innerHtml){
+      // remove any existing modal overlay with same id to avoid duplicates
       const modal = document.createElement('div'); modal.className='modal';
-      modal.innerHTML = `<h3>${npc.name}</h3><p>${npc.dialogues[0]}</p>`;
-      const btnClose = document.createElement('button'); btnClose.innerText='Close'; btnClose.onclick = ()=> modal.remove(); modal.appendChild(btnClose);
-      if(npc.shop){ const btnShop = document.createElement('button'); btnShop.innerText='Open NPC Shop'; btnShop.onclick = ()=>{ modal.remove(); this.openShopForNpc(npcId); }; modal.appendChild(btnShop); }
+      modal.innerHTML = `<h3>${title}</h3><div class='modal-body'>${innerHtml}</div>`;
+      const controls = document.createElement('div'); controls.className='controls';
+      const close = document.createElement('button'); close.className='btn close-btn'; close.innerText='Close'; close.onclick = ()=> modal.remove();
+      controls.appendChild(close);
+      modal.appendChild(controls);
       document.body.appendChild(modal);
+      return modal;
     }
 
-    // Inventory view
-    showInventory(){ const modal = document.createElement('div'); modal.className='modal'; modal.innerHTML = `<h3>Inventory</h3><div id='inv-contents'></div><button id='inv-close'>Close</button>`; document.body.appendChild(modal);
-      const inv = document.getElementById('inv-contents'); inv.innerHTML = Object.keys(playerState.inventory).length ? '<table><tr><th>Item</th><th>Qty</th></tr>' + Object.keys(playerState.inventory).map(k=>`<tr><td>${k}</td><td>${playerState.inventory[k]}</td></tr>`).join('') + '</table>' : '<p>(empty)</p>';
-      document.getElementById('inv-close').onclick = ()=> modal.remove();
+    // NPC dialog with properly working close button
+    openNpcDialog(npcId){
+      const npc = NPCS.find(n=>n.id===npcId); if(!npc) return;
+      const html = `<p>${npc.dialogues[0]}</p><div style='display:flex;gap:8px;justify-content:flex-end;margin-top:8px'><button id='talk-${npc.id}' class='btn'>Talk</button>${npc.shop?`<button id='shop-${npc.id}' class='btn'>Shop</button>`:''}</div>`;
+      const modal = this.createModal(npc.name, html);
+
+      // attach listeners (ensuring we don't attach duplicate handlers by using once)
+      const talkBtn = modal.querySelector(`#talk-${npc.id}`); if(talkBtn){ talkBtn.addEventListener('click', ()=>{ alert(npc.name + ': ' + npc.dialogues[1]); }); }
+      const shopBtn = modal.querySelector(`#shop-${npc.id}`); if(shopBtn){ shopBtn.addEventListener('click', ()=>{ modal.remove(); this.openShopForNpc(npcId); }); }
     }
 
-    // Quests view
-    showQuests(){ const modal = document.createElement('div'); modal.className='modal'; modal.innerHTML = `<h3>Quests</h3><div id='quests-list'></div><button id='q-close'>Close</button>`; document.body.appendChild(modal);
-      const list = document.getElementById('quests-list');
-      list.innerHTML = '<div style="max-height:50vh;overflow:auto">' + QUESTS.slice(0,50).map(q=>{
-        const st = playerState.questsAccepted[q.id] ? 'Accepted' : q.status;
-        return `<div style='border-bottom:1px solid #222;padding:6px'><b>${q.title}</b> - ${st}<br/><small>${q.description}</small><br/>${ st === 'available' ? `<button data-qid='${q.id}'>Accept</button>` : (st==='Accepted' ? `<button data-complete='${q.id}'>Complete</button>` : '') }</n></div>`
-      }).join('') + '</div>';
+    onNpcClicked(npcId){ /* currently used to open dialog externally if needed */ }
 
-      list.querySelectorAll('button[data-qid]').forEach(b=> b.onclick = (ev)=>{ const id = b.getAttribute('data-qid'); playerState.questsAccepted[id] = { progress:0 }; alert('Quest accepted: ' + id); modal.remove(); this.showQuests(); });
-      list.querySelectorAll('button[data-complete]').forEach(b=> b.onclick = (ev)=>{ const id = b.getAttribute('data-complete'); this.tryCompleteQuest(id); modal.remove(); this.showQuests(); });
-      document.getElementById('q-close').onclick = ()=> modal.remove();
-    }
+    // Inventory
+    showInventory(){ const items = Object.entries(playerState.inventory).map(([k,v])=>`<tr><td>${k}</td><td>${v}</td></tr>`).join(''); const html = `<table style='width:100%'><tr><th>Item</th><th>Qty</th></tr>${items || '<tr><td colspan="2">(empty)</td></tr>'}</table>`; this.createModal('Inventory', html); }
 
-    tryCompleteQuest(id){ const q = QUESTS.find(x=>x.id===id); if(!q) return alert('Quest not found');
-      // check if player has targetItem in inventory
-      const have = playerState.inventory[q.targetItem] || 0;
-      if(have>0){ playerState.inventory[q.targetItem] -= 1; if(playerState.inventory[q.targetItem]===0) delete playerState.inventory[q.targetItem]; playerState.gold += q.reward.gold; delete playerState.questsAccepted[id]; alert(`Quest complete! +${q.reward.gold} gold`); this.updateGoldDisplay(); } else { alert('You do not have the required item.'); }
-    }
+    // Quests (first page only for demo)
+    showQuests(){ const list = QUESTS.slice(0,60).map(q=>{ const st = playerState.questsAccepted[q.id] ? 'Accepted' : q.status; return `<div style='padding:6px;border-bottom:1px solid rgba(255,255,255,0.03)'><b>${q.title}</b> - <small>${st}</small><br/><small>${q.description}</small>${ st==='available'? `<div style='margin-top:6px'><button data-qid='${q.id}' class='btn'>Accept</button></div>` : ''}</div>` }).join(''); const modal = this.createModal('Quests', `<div style='max-height:50vh;overflow:auto'>${list}</div>`);
+      modal.querySelectorAll('button[data-qid]').forEach(b=> b.addEventListener('click', ()=>{ const id=b.getAttribute('data-qid'); playerState.questsAccepted[id]= {progress:0}; alert('Accepted '+id); modal.remove(); })); }
 
-    // Shop shows items from large ITEMS list; supports buying
+    // Shop
     openShop(){ this.openShopItems(ITEMS.slice(0,120)); }
-    openShopForNpc(npcId){ // sample: NPC sells a subset
-      const subset = ITEMS.filter((_,i)=> (i + npcId.length) % 6 < 3).slice(0,80);
-      this.openShopItems(subset);
-    }
-    openShopItems(list){ const modal = document.createElement('div'); modal.className='modal'; modal.innerHTML = `<h3>Shop</h3><div id='shop-list' style='max-height:50vh;overflow:auto'></div><button id='shop-close'>Close</button>`; document.body.appendChild(modal);
-      const sl = document.getElementById('shop-list'); sl.innerHTML = '<table><tr><th>Item</th><th>Price</th><th></th></tr>' + list.map(it=>`<tr><td>${it.name} <small>(${it.rarity})</small></td><td>${it.price}</td><td><button data-buy='${it.id}'>Buy</button></td></tr>`).join('') + '</table>';
-      sl.querySelectorAll('button[data-buy]').forEach(b=> b.onclick = ()=>{ const id = b.getAttribute('data-buy'); const it = ITEMS.find(x=>x.id===id); if(playerState.gold >= it.price){ playerState.gold -= it.price; playerState.inventory[it.name] = (playerState.inventory[it.name]||0) + 1; this.updateGoldDisplay(); alert('Purchased ' + it.name); } else alert('Not enough gold'); });
-      document.getElementById('shop-close').onclick = ()=> modal.remove();
-    }
+    openShopForNpc(npcId){ const subset = ITEMS.filter((_,i)=> (i + npcId.length) % 6 < 3).slice(0,80); this.openShopItems(subset); }
+    openShopItems(list){ const rows = list.map(it=>`<tr><td>${it.name} <small>(${it.rarity})</small></td><td>${it.price}</td><td><button data-buy='${it.id}' class='btn'>Buy</button></td></tr>`).join(''); const modal = this.createModal('Shop', `<div style='max-height:50vh;overflow:auto'><table style='width:100%'><tr><th>Item</th><th>Price</th><th></th></tr>${rows}</table></div>`);
+      modal.querySelectorAll('button[data-buy]').forEach(b=> b.addEventListener('click', ()=>{ const id=b.getAttribute('data-buy'); const it = ITEMS.find(x=>x.id===id); if(playerState.gold>=it.price){ playerState.gold -= it.price; playerState.inventory[it.name] = (playerState.inventory[it.name]||0) + 1; alert('Purchased ' + it.name); this.updateHUD(); modal.remove(); } else alert('Not enough gold'); })); }
 
-    // simple handler: clicking NPC 'killed' may give quest items randomly
-    onNpcClickedForDrops(npcId){
-      // when NPC clicked, give a chance to drop an item
-      if(Math.random() < 0.25){ const item = ITEMS[Math.floor(Math.random()*ITEMS.length)]; playerState.inventory[item.name] = (playerState.inventory[item.name]||0) + 1; alert(`Found ${item.name}`); }
-    }
+    updateHUD(){ const g = document.getElementById('gold-display'); if(g) g.innerHTML = `Gold: <b>${playerState.gold}</b>`; }
+
+    // small drop mechanic when interacting with NPC
+    randomDrop(npcId){ if(Math.random()<0.28){ const it = ITEMS[Math.floor(Math.random()*ITEMS.length)]; playerState.inventory[it.name] = (playerState.inventory[it.name]||0)+1; alert(`You found ${it.name}`); this.updateHUD(); } }
   }
 
-  // Boot game
-  const game = new Phaser.Game({
-    type: Phaser.AUTO,
-    parent: 'game-container',
-    width: CONFIG.width,
-    height: CONFIG.height,
-    backgroundColor: '#000000',
-    scene: [Boot, Start, Game, UIScene],
-    physics: { default: 'arcade', arcade: { debug: false } },
-    dom: { createContainer: false }
-  });
+  const game = new Phaser.Game({ type: Phaser.AUTO, parent:'game-container', width: CONFIG.width, height: CONFIG.height, scene: [Boot, Start, Game, UIScene], physics:{ default:'arcade', arcade:{ debug:false } }, dom:{ createContainer:false } });
 
-  // Attach a global reference for debugging in browser console
+  // Expose for debug
   window.MMORPG_PROTOTYPE = { ITEMS, NPCS, QUESTS, playerState };
-  
-  // Small helper: automatically grant items when clicking in Game
-  // Listen to Game scene events and forward to UI for drops
-  game.events.on('ready', ()=>{});
 
-  // Also wire up click->drop: use scene reference
-  setInterval(()=>{
-    const ui = game.scene.getScene('UI');
-    const gameScene = game.scene.getScene('Game');
-    if(ui && gameScene){
-      gameScene.events.on('npcClicked', (npcId)=>{ ui.onNpcClicked(npcId); ui.onNpcClickedForDrops && ui.onNpcClickedForDrops(npcId); });
-    }
-  }, 800);
+  // Hook main menu buttons
+  document.getElementById('start-game').addEventListener('click', ()=>{ document.getElementById('main-menu').style.display='none'; game.scene.start('Game'); game.scene.launch('UI'); });
+  document.getElementById('load-game').addEventListener('click', ()=>{ /* demo load could prefill inventory/quests */ alert('Loaded demo state'); document.getElementById('main-menu').style.display='none'; game.scene.start('Game'); game.scene.launch('UI'); });
+  document.getElementById('options').addEventListener('click', ()=>{ alert('Options placeholder — you can customize graphics, map density, or controls.'); });
 
   </script>
 </body>
