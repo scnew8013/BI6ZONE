@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MMORPG Prototype</title>
+  <style>
+    html,body { height:100%; margin:0; background:#111; color:#ddd; font-family:system-ui,Segoe UI,Roboto,Arial; }
+    #game-container { width:100%; height:100vh; overflow:hidden; }
+    .ui { position: absolute; z-index: 10; left: 12px; top: 12px; background: rgba(0,0,0,0.6); padding:10px; border-radius:8px; border: 1px solid #444; }
+    .panel { background: rgba(0,0,0,0.85); color:#eee; padding:8px; border-radius:8px; max-height:70vh; overflow:auto; }
+    button { background:#333;color:#fff;border:1px solid #666;padding:6px 8px;border-radius:6px; cursor:pointer }
+    .modal { position: absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index: 50; background:#121212; padding:12px; border-radius:10px; border:1px solid #444; width:80%; max-width:900px; }
+    .hidden{ display:none }
+    .npc { font-size:12px }
+    table { width:100%; border-collapse: collapse }
+    td,th { padding:6px;border-bottom:1px solid #222 }
+  </style>
+</head>
+<body>
+  <div id="game-container"></div>
+
+  <!-- Start modal + Simple instructions will be controlled by JS -->
+
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+  <script>
+  // ----------------------------
+  // Lightweight single-file MMORPG prototype
+  // - Start screen
+  // - Large generated map
+  // - 50+ NPCs generated procedurally
+  // - Shop UI backed by 600 generated items
+  // - Quest system with 300+ generated quests
+  // - Basic inventory, gold, and simple quest completion
+  // Note: This is a prototype to demonstrate structure and core mechanics.
+  // ----------------------------
+
+  const CONFIG = {
+    width: 960,
+    height: 640,
+    tileSize: 32,
+    mapW: 80, // wide map (80 * 32 = 2560 px)
+    mapH: 60  // tall map
+  }
+
+  // Utility: random name arrays
+  const NAMES = ["Ari","Bram","Cora","Dax","Ena","Finn","Gale","Hana","Ike","Juno","Kai","Lia","Milo","Nora","Oren","Pia","Quin","Rae","Seth","Tess","Ula","Vik","Wren","Xan","Yara","Zed"];
+  function randName(){ return NAMES[Math.floor(Math.random()*NAMES.length)] + " " + Math.floor(Math.random()*999); }
+
+  // Generate 600 items
+  const ITEMS = (function(){
+    const types = ["Potion","Sword","Shield","Scroll","Ring","Helmet","Boots","Food","Material","Gem"];
+    const items = [];
+    for(let i=1;i<=600;i++){
+      const t = types[i % types.length];
+      items.push({ id: 'item'+i, name: `${t} of ${NAMES[i % NAMES.length]}`, type: t, price: Math.max(5, Math.floor(Math.random()*500)), rarity: ['Common','Uncommon','Rare','Epic'][Math.floor(Math.random()*4)] });
+    }
+    return items;
+  })();
+
+  // Generate NPCs (50)
+  const NPCS = (function(){
+    const list = [];
+    for(let i=0;i<50;i++){
+      list.push({ id:'npc'+i, name: randName(), x: Math.floor(Math.random()*CONFIG.mapW*CONFIG.tileSize), y: Math.floor(Math.random()*CONFIG.mapH*CONFIG.tileSize), shop: Math.random()<0.35, dialogues: ["Hello!","Good day.","Need something?" ] });
+    }
+    return list;
+  })();
+
+  // Generate 300 quests (simple templates)
+  const QUESTS = (function(){
+    const q = [];
+    for(let i=1;i<=300;i++){
+      const npc = NPCS[i % NPCS.length];
+      const item = ITEMS[(i*7) % ITEMS.length];
+      const rewardGold = 20 + Math.floor(Math.random()*400);
+      q.push({ id:'q'+i, title:`Help ${npc.name}`, description:`Talk to ${npc.name} and bring ${item.name}.`, giver: npc.id, targetItem: item.id, reward:{ gold: rewardGold, item: ITEMS[(i*11)%ITEMS.length].id }, status:'available' });
+    }
+    return q;
+  })();
+
+  // Player default
+  let playerState = { gold: 300, inventory: {}, questsAccepted: {}, x: CONFIG.mapW*CONFIG.tileSize/2, y: CONFIG.mapH*CONFIG.tileSize/2 };
+
+  // Phaser game
+  class Boot extends Phaser.Scene{
+    constructor(){ super('Boot'); }
+    preload(){
+      this.load.image('tiles','https://labs.phaser.io/assets/tilemaps/tiles/drawtiles-spaced.png');
+    }
+    create(){ this.scene.start('Start'); }
+  }
+
+  class Start extends Phaser.Scene{
+    constructor(){ super('Start'); }
+    create(){
+      const w = this.scale.width, h = this.scale.height;
+      this.add.rectangle(w/2,h/2,w,h,0x0b0b0b);
+      this.add.text(w/2,h/2 - 120, 'MMORPG Prototype', { fontSize: '40px', color:'#ffffff' }).setOrigin(0.5);
+      this.add.text(w/2,h/2 - 60, 'A single-file prototype demonstrating core systems', { fontSize: '14px', color:'#cccccc' }).setOrigin(0.5);
+      const startBtn = this.add.text(w/2, h/2, '[ Start Game ]', { fontSize: '24px', backgroundColor:'#222', padding:6 }).setOrigin(0.5).setInteractive();
+      startBtn.on('pointerup', ()=>{ this.scene.start('Game'); this.scene.launch('UI'); });
+      const instr = this.add.text(w/2, h/2 + 80, 'Controls: Arrow keys / WASD to move. Click NPC to interact. Open Inventory / Quests / Shop from top-left UI.', { fontSize:'12px', color:'#aaa' }).setOrigin(0.5);
+    }
+  }
+
+  class Game extends Phaser.Scene{
+    constructor(){ super('Game'); }
+    create(){
+      // camera and world
+      this.cameras.main.setBounds(0,0,CONFIG.mapW*CONFIG.tileSize, CONFIG.mapH*CONFIG.tileSize);
+      this.physics.world.setBounds(0,0,CONFIG.mapW*CONFIG.tileSize, CONFIG.mapH*CONFIG.tileSize);
+
+      // simple ground tiles using graphics
+      const graphics = this.add.graphics();
+      for(let i=0;i<CONFIG.mapW;i++){
+        for(let j=0;j<CONFIG.mapH;j++){
+          const color = ((i+j)%2==0) ? 0x2b2b2b : 0x242424;
+          graphics.fillStyle(color,1);
+          graphics.fillRect(i*CONFIG.tileSize, j*CONFIG.tileSize, CONFIG.tileSize, CONFIG.tileSize);
+        }
+      }
+
+      // player
+      this.player = this.add.rectangle(playerState.x, playerState.y, 20, 28, 0x66ccff);
+      this.physics.add.existing(this.player);
+      this.player.body.setCollideWorldBounds(true);
+
+      // NPC group
+      this.npcGroup = this.add.group();
+      NPCS.forEach(npc => {
+        const body = this.add.rectangle(npc.x, npc.y, 20, 28, npc.shop?0xffcc66:0x99cc88).setInteractive();
+        body.npcId = npc.id;
+        this.npcGroup.add(body);
+        this.input.setDraggable(body);
+        body.on('pointerdown', () => { this.scene.launch('UI', { action:'openNpc', npcId: npc.id }); });
+      });
+
+      // simple movement input
+      this.keys = this.input.keyboard.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT');
+      this.speed = 160;
+
+      // camera follow
+      this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
+
+      // click to 'attack' NPCs (for quest completions): mark NPC as "defeated" and notify UI
+      this.input.on('gameobjectdown', (pointer, gameObject)=>{
+        if(gameObject.npcId){
+          // for simplicity, clicking an NPC 'gives' its id as 'killed' for quest progress
+          this.events.emit('npcClicked', gameObject.npcId);
+          // small flash
+          const orig = gameObject.fillColor;
+          gameObject.fillColor = 0xff4444;
+          this.time.delayedCall(150, ()=> gameObject.fillColor = orig);
+        }
+      });
+    }
+    update(t, dt){
+      const body = this.player.body;
+      body.setVelocity(0);
+      if(this.keys.A.isDown || this.keys.LEFT.isDown) body.setVelocityX(-this.speed);
+      if(this.keys.D.isDown || this.keys.RIGHT.isDown) body.setVelocityX(this.speed);
+      if(this.keys.W.isDown || this.keys.UP.isDown) body.setVelocityY(-this.speed);
+      if(this.keys.S.isDown || this.keys.DOWN.isDown) body.setVelocityY(this.speed);
+      // save back to global playerState
+      playerState.x = this.player.x; playerState.y = this.player.y;
+    }
+  }
+
+  // UI Scene (DOM overlay)
+  class UIScene extends Phaser.Scene{
+    constructor(){ super({ key: 'UI', active: false }); }
+    init(data){ if(data && data.action === 'openNpc'){ this.openNpcId = data.npcId; } }
+    create(){
+      const DOM = this.add.dom(0,0).createFromHTML('<div></div>').setOrigin(0);
+
+      // create simple top-left UI using DOM + plain HTML injected into body for easy styling
+      this.createTopUI();
+
+      // Listen to gamescene events
+      const game = this.scene.get('Game');
+      game.events.on('npcClicked', (npcId)=>{ this.onNpcClicked(npcId); });
+
+      // If opened with npc action
+      if(this.openNpcId){ this.openNpcDialog(this.openNpcId); }
+    }
+
+    createTopUI(){
+      // create container
+      const container = document.createElement('div');
+      container.className = 'ui panel';
+
+      const gold = document.createElement('div'); gold.id='gold-display'; gold.innerText = `Gold: ${playerState.gold}`;
+      container.appendChild(gold);
+
+      const btnInv = document.createElement('button'); btnInv.innerText='Inventory'; btnInv.onclick = ()=> this.showInventory(); container.appendChild(btnInv);
+      const btnQu = document.createElement('button'); btnQu.innerText='Quests'; btnQu.onclick = ()=> this.showQuests(); container.appendChild(btnQu);
+      const btnShop = document.createElement('button'); btnShop.innerText='Open Shop'; btnShop.onclick = ()=> this.openShop(); container.appendChild(btnShop);
+      const btnMap = document.createElement('button'); btnMap.innerText='Locate Player'; btnMap.onclick = ()=> { const g=this.scene.get('Game'); g.cameras.main.centerOn(playerState.x, playerState.y); };
+      container.appendChild(btnMap);
+
+      document.body.appendChild(container);
+    }
+
+    updateGoldDisplay(){ const el = document.getElementById('gold-display'); if(el) el.innerText = `Gold: ${playerState.gold}`; }
+
+    onNpcClicked(npcId){
+      // offer dialogue and option to trade if npc has shop
+      const npc = NPCS.find(n=>n.id===npcId);
+      if(!npc) return;
+      this.openNpcDialog(npcId);
+    }
+
+    openNpcDialog(npcId){
+      const npc = NPCS.find(n=>n.id===npcId);
+      if(!npc) return;
+      const modal = document.createElement('div'); modal.className='modal';
+      modal.innerHTML = `<h3>${npc.name}</h3><p>${npc.dialogues[0]}</p>`;
+      const btnClose = document.createElement('button'); btnClose.innerText='Close'; btnClose.onclick = ()=> modal.remove(); modal.appendChild(btnClose);
+      if(npc.shop){ const btnShop = document.createElement('button'); btnShop.innerText='Open NPC Shop'; btnShop.onclick = ()=>{ modal.remove(); this.openShopForNpc(npcId); }; modal.appendChild(btnShop); }
+      document.body.appendChild(modal);
+    }
+
+    // Inventory view
+    showInventory(){ const modal = document.createElement('div'); modal.className='modal'; modal.innerHTML = `<h3>Inventory</h3><div id='inv-contents'></div><button id='inv-close'>Close</button>`; document.body.appendChild(modal);
+      const inv = document.getElementById('inv-contents'); inv.innerHTML = Object.keys(playerState.inventory).length ? '<table><tr><th>Item</th><th>Qty</th></tr>' + Object.keys(playerState.inventory).map(k=>`<tr><td>${k}</td><td>${playerState.inventory[k]}</td></tr>`).join('') + '</table>' : '<p>(empty)</p>';
+      document.getElementById('inv-close').onclick = ()=> modal.remove();
+    }
+
+    // Quests view
+    showQuests(){ const modal = document.createElement('div'); modal.className='modal'; modal.innerHTML = `<h3>Quests</h3><div id='quests-list'></div><button id='q-close'>Close</button>`; document.body.appendChild(modal);
+      const list = document.getElementById('quests-list');
+      list.innerHTML = '<div style="max-height:50vh;overflow:auto">' + QUESTS.slice(0,50).map(q=>{
+        const st = playerState.questsAccepted[q.id] ? 'Accepted' : q.status;
+        return `<div style='border-bottom:1px solid #222;padding:6px'><b>${q.title}</b> - ${st}<br/><small>${q.description}</small><br/>${ st === 'available' ? `<button data-qid='${q.id}'>Accept</button>` : (st==='Accepted' ? `<button data-complete='${q.id}'>Complete</button>` : '') }</n></div>`
+      }).join('') + '</div>';
+
+      list.querySelectorAll('button[data-qid]').forEach(b=> b.onclick = (ev)=>{ const id = b.getAttribute('data-qid'); playerState.questsAccepted[id] = { progress:0 }; alert('Quest accepted: ' + id); modal.remove(); this.showQuests(); });
+      list.querySelectorAll('button[data-complete]').forEach(b=> b.onclick = (ev)=>{ const id = b.getAttribute('data-complete'); this.tryCompleteQuest(id); modal.remove(); this.showQuests(); });
+      document.getElementById('q-close').onclick = ()=> modal.remove();
+    }
+
+    tryCompleteQuest(id){ const q = QUESTS.find(x=>x.id===id); if(!q) return alert('Quest not found');
+      // check if player has targetItem in inventory
+      const have = playerState.inventory[q.targetItem] || 0;
+      if(have>0){ playerState.inventory[q.targetItem] -= 1; if(playerState.inventory[q.targetItem]===0) delete playerState.inventory[q.targetItem]; playerState.gold += q.reward.gold; delete playerState.questsAccepted[id]; alert(`Quest complete! +${q.reward.gold} gold`); this.updateGoldDisplay(); } else { alert('You do not have the required item.'); }
+    }
+
+    // Shop shows items from large ITEMS list; supports buying
+    openShop(){ this.openShopItems(ITEMS.slice(0,120)); }
+    openShopForNpc(npcId){ // sample: NPC sells a subset
+      const subset = ITEMS.filter((_,i)=> (i + npcId.length) % 6 < 3).slice(0,80);
+      this.openShopItems(subset);
+    }
+    openShopItems(list){ const modal = document.createElement('div'); modal.className='modal'; modal.innerHTML = `<h3>Shop</h3><div id='shop-list' style='max-height:50vh;overflow:auto'></div><button id='shop-close'>Close</button>`; document.body.appendChild(modal);
+      const sl = document.getElementById('shop-list'); sl.innerHTML = '<table><tr><th>Item</th><th>Price</th><th></th></tr>' + list.map(it=>`<tr><td>${it.name} <small>(${it.rarity})</small></td><td>${it.price}</td><td><button data-buy='${it.id}'>Buy</button></td></tr>`).join('') + '</table>';
+      sl.querySelectorAll('button[data-buy]').forEach(b=> b.onclick = ()=>{ const id = b.getAttribute('data-buy'); const it = ITEMS.find(x=>x.id===id); if(playerState.gold >= it.price){ playerState.gold -= it.price; playerState.inventory[it.name] = (playerState.inventory[it.name]||0) + 1; this.updateGoldDisplay(); alert('Purchased ' + it.name); } else alert('Not enough gold'); });
+      document.getElementById('shop-close').onclick = ()=> modal.remove();
+    }
+
+    // simple handler: clicking NPC 'killed' may give quest items randomly
+    onNpcClickedForDrops(npcId){
+      // when NPC clicked, give a chance to drop an item
+      if(Math.random() < 0.25){ const item = ITEMS[Math.floor(Math.random()*ITEMS.length)]; playerState.inventory[item.name] = (playerState.inventory[item.name]||0) + 1; alert(`Found ${item.name}`); }
+    }
+  }
+
+  // Boot game
+  const game = new Phaser.Game({
+    type: Phaser.AUTO,
+    parent: 'game-container',
+    width: CONFIG.width,
+    height: CONFIG.height,
+    backgroundColor: '#000000',
+    scene: [Boot, Start, Game, UIScene],
+    physics: { default: 'arcade', arcade: { debug: false } },
+    dom: { createContainer: false }
+  });
+
+  // Attach a global reference for debugging in browser console
+  window.MMORPG_PROTOTYPE = { ITEMS, NPCS, QUESTS, playerState };
+  
+  // Small helper: automatically grant items when clicking in Game
+  // Listen to Game scene events and forward to UI for drops
+  game.events.on('ready', ()=>{});
+
+  // Also wire up click->drop: use scene reference
+  setInterval(()=>{
+    const ui = game.scene.getScene('UI');
+    const gameScene = game.scene.getScene('Game');
+    if(ui && gameScene){
+      gameScene.events.on('npcClicked', (npcId)=>{ ui.onNpcClicked(npcId); ui.onNpcClickedForDrops && ui.onNpcClickedForDrops(npcId); });
+    }
+  }, 800);
+
+  </script>
+</body>
+</html>
