@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Ultimate Plinko Experience</title>
+<title>Ultimate Plinko Multiplayer</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
 
@@ -165,11 +165,57 @@
       transform: translateX(-50%) translateY(-40px);
     }
   }
+
+  /* Leaderboard */
+  #leaderboardContainer {
+    max-width: 360px;
+    margin: 20px auto 40px auto;
+    background: #222a3a;
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: #f5c518;
+    font-family: monospace;
+    user-select: none;
+  }
+  #leaderboardContainer h2 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-weight: 700;
+    font-size: 20px;
+  }
+  #leaderboard {
+    max-height: 180px;
+    overflow-y: auto;
+  }
+  #leaderboard div {
+    padding: 6px 4px;
+    border-bottom: 1px solid #444d5c;
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+  }
+  #leaderboard div:nth-child(odd) {
+    background: #1a1e26;
+  }
+  #resetLeaderboardBtn {
+    margin-top: 8px;
+    background: #cc3333;
+    color: #fff;
+    font-weight: 700;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: none;
+    transition: background 0.25s;
+  }
+  #resetLeaderboardBtn:hover {
+    background: #aa2222;
+  }
 </style>
 </head>
 <body>
 
-<h1>Ultimate Plinko Experience</h1>
+<h1>Ultimate Plinko Multiplayer</h1>
 <canvas id="board" width="360" height="520" aria-label="Plinko game board"></canvas>
 
 <div id="ui">
@@ -198,6 +244,7 @@
       <option value="classic" selected>Classic Stakes</option>
       <option value="high">High Stakes</option>
       <option value="low">Low Stakes</option>
+      <option value="mixed">Mixed Stakes (with losses)</option>
       <option value="random">Random Stakes</option>
     </select>
   </div>
@@ -219,6 +266,13 @@
 
 <div id="graphContainer" aria-label="Winnings graph">
   <canvas id="graph" width="360" height="100" role="img"></canvas>
+</div>
+
+<!-- Leaderboard container -->
+<div id="leaderboardContainer" aria-label="Leaderboard">
+  <h2>Leaderboard</h2>
+  <div id="leaderboard" role="list"></div>
+  <button id="resetLeaderboardBtn" aria-label="Reset leaderboard">Reset Leaderboard</button>
 </div>
 
 <script>
@@ -295,6 +349,9 @@ const historyLog = document.getElementById('historyLog');
 const soundToggle = document.getElementById('soundToggle');
 const musicToggle = document.getElementById('musicToggle');
 
+const leaderboardEl = document.getElementById('leaderboard');
+const resetLeaderboardBtn = document.getElementById('resetLeaderboardBtn');
+
 const width = canvas.width;
 const height = canvas.height;
 
@@ -312,7 +369,7 @@ const slotHeight = 80;
 const slotWidth = pegSpacingX;
 const slotsY = height - slotHeight;
 
-let stakes = [2, 5, 10, 20, 50, 100, 50, 20, 10, 5, 2]; // classic default
+let stakes = []; // updated by set
 
 const pegs = [];
 const balls = [];
@@ -327,6 +384,65 @@ let autoDropIntervalId = null;
 let soundOn = true;
 let musicOn = true;
 
+// Multiplayer & Leaderboard
+let username = '';
+const leaderboardKey = 'plinko_leaderboard';
+let leaderboard = {};
+
+// Prompt for username at start
+function askUsername() {
+  let name = '';
+  while (!name || name.trim().length === 0) {
+    name = prompt('Enter your username:', '');
+    if (name === null) {
+      name = `Guest${Math.floor(Math.random() * 9999)}`;
+      break;
+    }
+  }
+  return name.trim().substring(0, 15); // max 15 chars
+}
+username = askUsername();
+
+// Load leaderboard from localStorage
+function loadLeaderboard() {
+  const data = localStorage.getItem(leaderboardKey);
+  if (data) {
+    try {
+      leaderboard = JSON.parse(data);
+    } catch {
+      leaderboard = {};
+    }
+  }
+}
+function saveLeaderboard() {
+  localStorage.setItem(leaderboardKey, JSON.stringify(leaderboard));
+}
+function resetLeaderboard() {
+  leaderboard = {};
+  saveLeaderboard();
+  updateLeaderboardUI();
+}
+
+// Update leaderboard UI sorted descending by winnings
+function updateLeaderboardUI() {
+  // Convert object to array and sort descending
+  const entries = Object.entries(leaderboard);
+  entries.sort((a, b) => b[1] - a[1]);
+
+  leaderboardEl.innerHTML = '';
+  for (const [name, score] of entries) {
+    const div = document.createElement('div');
+    div.setAttribute('role', 'listitem');
+    div.textContent = `${name}`;
+    const scoreSpan = document.createElement('span');
+    scoreSpan.textContent = `$${score.toFixed(2)}`;
+    scoreSpan.style.color = score < 0 ? '#cc3333' : '#f5c518';
+    div.appendChild(scoreSpan);
+    leaderboardEl.appendChild(div);
+  }
+}
+
+// Update stakes set (including negative values for mixed)
 function updateStakesSet(setName) {
   switch (setName) {
     case 'classic':
@@ -338,8 +454,11 @@ function updateStakesSet(setName) {
     case 'low':
       stakes = [1, 1, 2, 3, 5, 10, 5, 3, 2, 1, 1];
       break;
+    case 'mixed':
+      stakes = [-20, -10, 5, 10, 20, 100, 20, 10, 5, -10, -20];
+      break;
     case 'random':
-      stakes = Array.from({length: cols}, () => Math.floor(Math.random()*100)+1);
+      stakes = Array.from({length: cols}, () => Math.floor(Math.random()*200) - 50);
       break;
   }
 }
@@ -371,39 +490,37 @@ function drawPegs() {
 }
 
 function drawSlots() {
-  ctx.fillStyle = '#222a3a';
-  ctx.strokeStyle = '#444d5c';
-  ctx.lineWidth = 2;
-  ctx.font = 'bold 14px Montserrat, Arial, sans-serif';
+  ctx.font = 'bold 14px monospace';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
   for (let i = 0; i < cols; i++) {
-    let x = i * slotWidth;
-    // Draw slot base rectangle
-    ctx.fillRect(x, slotsY, slotWidth, slotHeight);
-    ctx.strokeRect(x, slotsY, slotWidth, slotHeight);
+    const x = i * slotWidth + slotWidth / 2;
+    const y = slotsY + slotHeight / 2;
+    const stake = stakes[i];
 
-    // Highlight jackpot slot (middle one) if stake >= 100
-    if (stakes[i] >= 100) {
-      ctx.strokeStyle = '#ffcc00';
-      ctx.lineWidth = 4;
-      ctx.strokeRect(x+4, slotsY+4, slotWidth-8, slotHeight-8);
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = '#444d5c';
+    // Draw slot rectangle
+    ctx.fillStyle = '#222a3a';
+    ctx.fillRect(i * slotWidth + 1, slotsY, slotWidth - 2, slotHeight);
+
+    // Highlight jackpot (≥ 100)
+    if (stake >= 100) {
+      ctx.strokeStyle = '#f5c518';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(i * slotWidth + 1, slotsY, slotWidth - 2, slotHeight);
     }
 
-    ctx.fillStyle = '#f5c518';
-    ctx.fillText(`$${stakes[i]}`, x + slotWidth / 2, slotsY + slotHeight / 2);
-    ctx.fillStyle = '#222a3a';
+    // Show stake (positive or negative)
+    ctx.fillStyle = stake < 0 ? '#cc3333' : '#f5c518';
+    ctx.fillText(stake < 0 ? `-$${Math.abs(stake)}` : `$${stake}`, x, y);
   }
 }
 
 function drawBall(ball) {
   ctx.beginPath();
   ctx.fillStyle = ball.color;
-  ctx.shadowColor = ball.color;
-  ctx.shadowBlur = 6;
+  ctx.shadowColor = '#f5c518cc';
+  ctx.shadowBlur = 4;
   ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
   ctx.fill();
   ctx.shadowBlur = 0;
@@ -416,65 +533,45 @@ function drawParticle(p) {
   ctx.fill();
 }
 
-// -- Physics & collision --
+// -- Collision detection --
 function collideBallPeg(ball, peg) {
   const dx = ball.x - peg.x;
   const dy = ball.y - peg.y;
-  const dist = Math.sqrt(dx * dx + dy * dy);
-  if (dist < ball.radius + pegRadius) {
-    const nx = dx / dist;
-    const ny = dy / dist;
-    const dot = ball.vx * nx + ball.vy * ny;
-    ball.vx = ball.vx - 2 * dot * nx;
-    ball.vy = ball.vy - 2 * dot * ny;
-    const overlap = ball.radius + pegRadius - dist;
-    ball.x += nx * overlap;
-    ball.y += ny * overlap;
-    ball.vx *= 0.85;
-    ball.vy *= 0.85;
+  const dist = Math.sqrt(dx*dx + dy*dy);
+  const minDist = ball.radius + pegRadius;
+  if (dist < minDist) {
+    // Reflect ball horizontally with a bit of randomness
+    const overlap = minDist - dist;
+    const angle = Math.atan2(dy, dx);
+    ball.x += Math.cos(angle) * overlap;
+    ball.y += Math.sin(angle) * overlap;
+    ball.vx = -ball.vx * (0.6 + Math.random() * 0.3);
+    ball.vy *= 0.8;
 
-    // Particle effect on peg hit
-    createParticles(ball.x, ball.y, 8, ball.color);
-
-    // Play bounce sound with pitch depending on peg row
-    playSound(440 + peg.y * 1.5, 0.08, 'triangle', 0.2);
+    playSound(320 + Math.random() * 100, 0.1, 'square', 0.1);
+    createParticles(ball.x, ball.y, 8, '#f5c518');
   }
 }
 
 function collideWalls(ball) {
-  let bounced = false;
+  // Left wall
   if (ball.x - ball.radius < 0) {
     ball.x = ball.radius;
     ball.vx = -ball.vx * 0.8;
-    bounced = true;
   }
+  // Right wall
   if (ball.x + ball.radius > width) {
     ball.x = width - ball.radius;
     ball.vx = -ball.vx * 0.8;
-    bounced = true;
   }
-  if (ball.y - ball.radius < 0) {
-    ball.y = ball.radius;
-    ball.vy = -ball.vy * 0.8;
-    bounced = true;
-  }
-  if (bounced) playSound(320, 0.07, 'square', 0.15);
-}
-
-function collideSlotsBase(ball) {
-  if (ball.y + ball.radius >= slotsY) {
+  // Floor (stop at slots)
+  if (ball.y + ball.radius > slotsY) {
     ball.y = slotsY - ball.radius;
+    ball.vx = 0;
     ball.vy = 0;
-    ball.vx *= 0.92; // friction on floor
-
-    if (Math.abs(ball.vx) < 0.15) {
-      ball.vx = 0;
-      if (!ball.stopped) {
-        ball.stopped = true;
-        settleBallInSlot(ball);
-        return true;
-      }
-    }
+    ball.stopped = true;
+    settleBallInSlot(ball);
+    return true;
   }
   return false;
 }
@@ -497,13 +594,8 @@ function createParticles(x, y, count, color) {
 
 // Helper to convert hex color string to rgb object
 function hexToRgb(hex) {
-  // Simple hex to rgb converter
-  if (hex.startsWith('#')) {
-    hex = hex.slice(1);
-  }
-  if (hex.length === 3) {
-    hex = hex.split('').map(c => c+c).join('');
-  }
+  if (hex.startsWith('#')) hex = hex.slice(1);
+  if (hex.length === 3) hex = hex.split('').map(c => c+c).join('');
   const bigint = parseInt(hex, 16);
   return {
     r: (bigint >> 16) & 255,
@@ -512,7 +604,7 @@ function hexToRgb(hex) {
   };
 }
 
-// -- Settle ball in slot and update winnings --
+// -- Settle ball in slot and update winnings + leaderboard --
 function settleBallInSlot(ball) {
   const slotIndex = Math.min(cols - 1, Math.max(0, Math.floor(ball.x / slotWidth)));
   const winAmount = stakes[slotIndex] || 0;
@@ -522,22 +614,23 @@ function settleBallInSlot(ball) {
   winningsHistory.push(winAmount);
   if (winningsHistory.length > 20) winningsHistory.shift();
 
-  totalWinningsEl.textContent = `Total Winnings: $${totalWinnings}`;
+  totalWinningsEl.textContent = `Total Winnings: $${totalWinnings.toFixed(2)}`;
   ballsDroppedEl.textContent = ballsDropped;
   avgWinningsEl.textContent = (totalWinnings / ballsDropped).toFixed(2);
 
   updateHistoryLog();
   updateGraph();
 
-  showPopup(`+ $${winAmount}`);
+  showPopup(`${winAmount >= 0 ? '+' : ''} $${winAmount}`);
 
-  // Play win sound based on prize amount
-  playSound(220 + winAmount * 3, 0.3, 'square', 0.3);
-
-  // Particle burst of gold
+  playSound(220 + Math.abs(winAmount) * 3, 0.3, 'square', 0.3);
   createParticles(ball.x, ball.y, 25, '#f5c518');
 
-  // Remove ball from balls array handled by caller
+  // Update leaderboard
+  if (!leaderboard[username]) leaderboard[username] = 0;
+  leaderboard[username] += winAmount;
+  saveLeaderboard();
+  updateLeaderboardUI();
 }
 
 // -- History Log UI --
@@ -547,7 +640,7 @@ function updateHistoryLog() {
     .reverse()
     .map((win, i) => {
       const time = new Date().toLocaleTimeString();
-      return `<div>Ball ${ballsDropped - i}: $${win} at ${time}</div>`;
+      return `<div>Ball ${ballsDropped - i}: ${win >= 0 ? '+' : ''}$${win} at ${time}</div>`;
     })
     .join('');
 }
@@ -555,36 +648,31 @@ function updateHistoryLog() {
 // -- Winnings graph --
 function updateGraph() {
   graphCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
-  const maxWin = Math.max(...winningsHistory, 100);
+  const maxWin = Math.max(...winningsHistory.map(v => Math.abs(v)), 100);
   const barWidth = graphCanvas.width / winningsHistory.length;
 
   winningsHistory.forEach((win, i) => {
-    const barHeight = (win / maxWin) * graphCanvas.height;
-    graphCtx.fillStyle = '#f5c518';
+    const barHeight = (Math.abs(win) / maxWin) * graphCanvas.height;
+    graphCtx.fillStyle = win < 0 ? '#cc3333' : '#f5c518';
     graphCtx.fillRect(i * barWidth, graphCanvas.height - barHeight, barWidth * 0.8, barHeight);
   });
 }
 
-// -- Ball factory with varied size and random color --
+// -- Ball factory with varied size and random color & random drop side --
 function createNewBall() {
-  // Decide drop side left or right (random)
-  const leftDropX = width * 0.25;
-  const rightDropX = width * 0.75;
+  // Drop near center top with a bit of horizontal randomness
+  const centerX = width / 2;
+  const rangeX = pegSpacingX * 1.2;
+  const startX = centerX + (Math.random() - 0.5) * rangeX;
 
-  const side = Math.random() < 0.5 ? 'left' : 'right';
-  const startX = side === 'left'
-    ? leftDropX + (Math.random() - 0.5) * pegSpacingX * 0.8
-    : rightDropX + (Math.random() - 0.5) * pegSpacingX * 0.8;
-
-  // Vary ball size (between 4 and 8) and color based on side
   const radius = 4 + Math.random() * 4;
-  const color = side === 'left' ? '#f54242' : '#42aaf5'; // red or blue
+  const color = '#f5c518';
 
   return {
     x: startX,
     y: 50,
-    vx: (Math.random() * 0.6) - 0.3,
-    vy: 2,
+    vx: (Math.random() - 0.5) * 0.5,
+    vy: 1,
     radius,
     color,
     stopped: false,
@@ -594,7 +682,7 @@ function createNewBall() {
 // -- Drop ball button --
 dropBtn.addEventListener('click', () => {
   balls.push(createNewBall());
-  if (audioCtx.state === 'suspended') audioCtx.resume(); // Resume audio on user interaction
+  if (audioCtx.state === 'suspended') audioCtx.resume();
 });
 
 // -- Clear balls button --
@@ -666,6 +754,13 @@ stakeSelect.addEventListener('change', () => {
   updateStakesSet(stakeSelect.value);
 });
 
+// -- Reset leaderboard button --
+resetLeaderboardBtn.addEventListener('click', () => {
+  if (confirm('Are you sure you want to reset the leaderboard?')) {
+    resetLeaderboard();
+  }
+});
+
 // -- Show winnings popup animation --
 function showPopup(text) {
   const popup = document.createElement('div');
@@ -698,7 +793,8 @@ function animate() {
         collideBallPeg(ball, peg);
       }
 
-      if (collideSlotsBase(ball)) {
+      if (collideWalls(ball)) {
+        // Ball reached bottom and stopped
         balls.splice(i, 1);
         continue;
       }
@@ -725,6 +821,8 @@ function animate() {
 // -- Initialize game --
 updateStakesSet('classic');
 buildPegs();
+loadLeaderboard();
+updateLeaderboardUI();
 animate();
 startMusic();
 
