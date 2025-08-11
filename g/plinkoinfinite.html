@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Dense Pegs Physics Plinko</title>
+<title>Multi-Ball Dense Plinko</title>
 <style>
   body {
     background: #222;
@@ -21,7 +21,10 @@
   #message {
     margin-top: 15px;
     font-size: 18px;
-    height: 28px;
+    min-height: 28px;
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
   }
   button {
     margin-top: 15px;
@@ -40,7 +43,7 @@
 </head>
 <body>
 
-<h1>Dense Pegs Plinko</h1>
+<h1>Multi-Ball Dense Plinko</h1>
 <canvas id="board" width="320" height="480"></canvas>
 <div id="message"></div>
 <button id="dropBtn">Drop Ball</button>
@@ -52,48 +55,38 @@
   const message = document.getElementById('message');
   const dropBtn = document.getElementById('dropBtn');
 
-  // Canvas size
   const width = canvas.width;
   const height = canvas.height;
 
-  // Physics settings
+  // Physics
   const gravity = 0.45;
   const friction = 0.98;
-  const pegRadius = 4;   // Smaller pegs
-  const ballRadius = 10;
+  const pegRadius = 4;
+  const ballRadius = 6;
 
-  // Peg grid
-  const rows = 14;       // More rows
-  const cols = 11;       // More columns
+  const rows = 14;
+  const cols = 11;
 
-  // Peg spacing tighter
   const pegSpacingX = width / cols;
   const pegSpacingY = 30;
-
-  // Shift peg grid right by quarter peg spacing
   const pegGridShiftX = pegSpacingX * 0.25;
 
-  // Slots
   const slotHeight = 70;
   const slotWidth = pegSpacingX;
   const slotsY = height - slotHeight;
 
-  // Stakes (keep 11 slots to match columns)
   const stakes = [2, 5, 10, 20, 50, 100, 50, 20, 10, 5, 2];
 
   const pegs = [];
-  let ball = null;
+  const balls = []; // array of all active balls
 
-  // Build a denser peg grid with shift
   function buildPegs() {
     pegs.length = 0;
     for (let row = 0; row < rows; row++) {
       const y = 70 + row * pegSpacingY;
       for (let col = 0; col < cols; col++) {
-        // Offset every other row by half peg spacing + shift
         let xBase = col * pegSpacingX + (row % 2 === 0 ? pegSpacingX / 2 : 0);
         let x = xBase + pegGridShiftX;
-        // Keep pegs inside canvas boundaries
         if (x < pegRadius) continue;
         if (x > width - pegRadius) continue;
         pegs.push({ x, y });
@@ -127,15 +120,14 @@
     }
   }
 
-  function drawBall() {
-    if (!ball) return;
+  function drawBall(ball) {
     ctx.beginPath();
     ctx.fillStyle = '#f54242';
     ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
     ctx.fill();
   }
 
-  function collideBallPeg(peg) {
+  function collideBallPeg(ball, peg) {
     const dx = ball.x - peg.x;
     const dy = ball.y - peg.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
@@ -153,7 +145,7 @@
     }
   }
 
-  function collideWalls() {
+  function collideWalls(ball) {
     if (ball.x - ball.radius < 0) {
       ball.x = ball.radius;
       ball.vx = -ball.vx * 0.8;
@@ -168,28 +160,36 @@
     }
   }
 
-  function collideSlotsBase() {
+  function collideSlotsBase(ball) {
     if (ball.y + ball.radius >= slotsY) {
       ball.y = slotsY - ball.radius;
       ball.vy = 0;
       ball.vx *= friction;
       if (Math.abs(ball.vx) < 0.2) {
         ball.vx = 0;
-        ball.stopped = true;
-        settleBallInSlot();
+        if (!ball.stopped) {
+          ball.stopped = true;
+          settleBallInSlot(ball);
+        }
       }
     }
   }
 
-  function settleBallInSlot() {
+  function settleBallInSlot(ball) {
     const slotIndex = Math.floor(ball.x / slotWidth);
     const winAmount = stakes[slotIndex] || 0;
-    message.textContent = `You landed in slot ${slotIndex + 1} and won $${winAmount}!`;
-    dropBtn.disabled = false;
+    // Show message briefly for this ball, queue messages with timeout to avoid overlap
+    message.textContent = `Ball landed in slot ${slotIndex + 1} and won $${winAmount}!`;
+    setTimeout(() => {
+      // Clear message only if it hasn't changed meanwhile
+      if (message.textContent === `Ball landed in slot ${slotIndex + 1} and won $${winAmount}!`) {
+        message.textContent = '';
+      }
+    }, 3500);
   }
 
   function resetBall() {
-    ball = {
+    return {
       x: width / 2,
       y: 50,
       vx: 0,
@@ -197,14 +197,13 @@
       radius: ballRadius,
       stopped: false,
     };
-    message.textContent = '';
   }
 
   function animate() {
     ctx.clearRect(0, 0, width, height);
     drawPegs();
     drawSlots();
-    if (ball) {
+    for (const ball of balls) {
       if (!ball.stopped) {
         ball.vy += gravity;
         ball.vx *= friction;
@@ -213,27 +212,25 @@
         ball.x += ball.vx;
         ball.y += ball.vy;
 
-        collideWalls();
+        collideWalls(ball);
 
         for (const peg of pegs) {
-          collideBallPeg(peg);
+          collideBallPeg(ball, peg);
         }
 
-        collideSlotsBase();
+        collideSlotsBase(ball);
       }
-      drawBall();
+      drawBall(ball);
     }
     requestAnimationFrame(animate);
   }
 
   dropBtn.addEventListener('click', () => {
-    if (ball && !ball.stopped) return;
-    resetBall();
-    dropBtn.disabled = true;
+    const newBall = resetBall();
+    balls.push(newBall);
   });
 
   buildPegs();
-  resetBall();
   animate();
 
 })();
