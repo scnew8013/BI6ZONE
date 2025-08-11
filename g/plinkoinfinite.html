@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Multi-Ball Dense Plinko with Removal</title>
+<title>Plinko with Winnings & Clear</title>
 <style>
   body {
     background: #222;
@@ -26,8 +26,14 @@
     margin-left: auto;
     margin-right: auto;
   }
+  #totalWinnings {
+    margin-top: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #f5c518;
+  }
   button {
-    margin-top: 15px;
+    margin-top: 15px 10px 0 10px;
     font-size: 16px;
     padding: 10px 20px;
     background: #f5c518;
@@ -39,26 +45,34 @@
   button:hover {
     background: #ddb610;
   }
+  #buttonsContainer {
+    margin-top: 10px;
+  }
 </style>
 </head>
 <body>
 
-<h1>Multi-Ball Dense Plinko</h1>
+<h1>Plinko with Winnings & Clear</h1>
 <canvas id="board" width="320" height="480"></canvas>
 <div id="message"></div>
-<button id="dropBtn">Drop Ball</button>
+<div id="totalWinnings">Total Winnings: $0</div>
+<div id="buttonsContainer">
+  <button id="dropBtn">Drop Ball</button>
+  <button id="clearBtn">Clear Balls</button>
+</div>
 
 <script>
 (() => {
   const canvas = document.getElementById('board');
   const ctx = canvas.getContext('2d');
   const message = document.getElementById('message');
+  const totalWinningsDisplay = document.getElementById('totalWinnings');
   const dropBtn = document.getElementById('dropBtn');
+  const clearBtn = document.getElementById('clearBtn');
 
   const width = canvas.width;
   const height = canvas.height;
 
-  // Physics
   const gravity = 0.45;
   const friction = 0.98;
   const pegRadius = 4;
@@ -79,6 +93,7 @@
 
   const pegs = [];
   const balls = [];
+  let totalWinnings = 0;
 
   function buildPegs() {
     pegs.length = 0;
@@ -160,7 +175,6 @@
     }
   }
 
-  // Returns true if ball landed and should be removed
   function collideSlotsBase(ball) {
     if (ball.y + ball.radius >= slotsY) {
       ball.y = slotsY - ball.radius;
@@ -181,6 +195,8 @@
   function settleBallInSlot(ball) {
     const slotIndex = Math.floor(ball.x / slotWidth);
     const winAmount = stakes[slotIndex] || 0;
+    totalWinnings += winAmount;
+    totalWinningsDisplay.textContent = `Total Winnings: $${totalWinnings}`;
     message.textContent = `Ball landed in slot ${slotIndex + 1} and won $${winAmount}!`;
     setTimeout(() => {
       if (message.textContent === `Ball landed in slot ${slotIndex + 1} and won $${winAmount}!`) {
@@ -189,12 +205,11 @@
     }, 3500);
   }
 
-  // Add a tiny random horizontal velocity so balls don't follow the same path
   function createNewBall() {
     return {
       x: width / 2,
       y: 50,
-      vx: (Math.random() * 0.6) - 0.3, // random horizontal velocity between -0.3 and +0.3
+      vx: (Math.random() * 0.6) - 0.3,
       vy: 2,
       radius: ballRadius,
       stopped: false,
@@ -206,7 +221,6 @@
     drawPegs();
     drawSlots();
 
-    // Update all balls
     for (let i = balls.length - 1; i >= 0; i--) {
       const ball = balls[i];
       if (!ball.stopped) {
@@ -224,18 +238,22 @@
         }
 
         if (collideSlotsBase(ball)) {
-          // Remove ball once landed
           balls.splice(i, 1);
           continue;
         }
       }
       drawBall(ball);
     }
+
     requestAnimationFrame(animate);
   }
 
   dropBtn.addEventListener('click', () => {
     balls.push(createNewBall());
+  });
+
+  clearBtn.addEventListener('click', () => {
+    balls.length = 0;
   });
 
   buildPegs();
