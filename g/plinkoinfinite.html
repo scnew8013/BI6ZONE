@@ -3,11 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Ultimate Plinko Multiplayer - Sidebars Layout</title>
+<title>Ultimate Plinko Multiplayer - Fixed Collisions & Persistent Leaderboard</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
 
-  /* Reset & base */
   * {
     box-sizing: border-box;
   }
@@ -67,8 +66,7 @@
     text-shadow: 0 0 8px #f5c518bb;
   }
 
-  /* Buttons and controls */
-  button, select {
+  button, select, input[type=text] {
     font-family: inherit;
     font-weight: 700;
     border: none;
@@ -80,21 +78,19 @@
     transition: background 0.3s;
     width: 100%;
   }
-  button:hover, select:hover {
+  button:hover, select:hover, input[type=text]:hover {
     background: #ddb610;
   }
   button:disabled {
     background: #888;
     cursor: default;
   }
-
   label {
     font-weight: 700;
     margin-bottom: 6px;
     color: #f5c518dd;
     display: block;
   }
-
   input[type=range] {
     -webkit-appearance: none;
     height: 8px;
@@ -117,8 +113,6 @@
   input[type=range]:hover::-webkit-slider-thumb {
     background: #ddb610;
   }
-
-  /* Checkbox style */
   .checkbox-group {
     display: flex;
     align-items: center;
@@ -131,8 +125,6 @@
     width: 18px;
     height: 18px;
   }
-
-  /* Stats */
   #stats {
     color: #f5c518cc;
     font-family: monospace;
@@ -140,19 +132,6 @@
     line-height: 1.4;
     user-select: text;
   }
-
-  #historyLog {
-    background: #222a3a;
-    border-radius: 8px;
-    padding: 8px;
-    max-height: 120px;
-    overflow-y: auto;
-    font-size: 12px;
-    color: #ccc;
-    margin-top: 6px;
-    font-family: monospace;
-  }
-
   #totalWinnings {
     font-size: 20px;
     font-weight: 700;
@@ -161,8 +140,6 @@
     text-align: center;
     user-select: text;
   }
-
-  /* Leaderboard */
   #leaderboardContainer {
     background: #222a3a;
     border-radius: 8px;
@@ -176,7 +153,7 @@
     text-align: center;
   }
   #leaderboard {
-    max-height: 240px;
+    max-height: 300px;
     overflow-y: auto;
   }
   #leaderboard div {
@@ -190,23 +167,14 @@
   #leaderboard div:nth-child(odd) {
     background: #1a1e26;
   }
-  #resetLeaderboardBtn {
-    background: #cc3333;
-    color: #fff;
-    font-weight: 700;
-    padding: 10px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    margin-top: 10px;
-    width: 100%;
-    transition: background 0.25s;
+  /* Scrollbar */
+  #rightSidebar::-webkit-scrollbar {
+    width: 8px;
   }
-  #resetLeaderboardBtn:hover {
-    background: #aa2222;
+  #rightSidebar::-webkit-scrollbar-thumb {
+    background-color: #f5c518aa;
+    border-radius: 6px;
   }
-
-  /* Popup animation */
   .popup {
     position: fixed;
     bottom: 80px;
@@ -232,15 +200,6 @@
       opacity: 0;
       transform: translateX(-50%) translateY(-40px);
     }
-  }
-
-  /* Scrollbar styling for sidebars */
-  #rightSidebar::-webkit-scrollbar {
-    width: 8px;
-  }
-  #rightSidebar::-webkit-scrollbar-thumb {
-    background-color: #f5c518aa;
-    border-radius: 6px;
   }
 </style>
 </head>
@@ -268,11 +227,6 @@
       <div>Balls Dropped: <span id="ballsDropped">0</span></div>
       <div>Average Winnings per Ball: $<span id="avgWinnings">0.00</span></div>
     </div>
-
-    <div>
-      <label>History (latest 20):</label>
-      <div id="historyLog" aria-live="polite"></div>
-    </div>
   </nav>
 
   <section id="gameArea" aria-label="Plinko game area">
@@ -281,7 +235,14 @@
   </section>
 
   <aside id="rightSidebar" aria-label="Game settings and leaderboard">
-    <h2>Settings</h2>
+    <h2>Settings & Profile</h2>
+
+    <label for="usernameInput">Username</label>
+    <input type="text" id="usernameInput" maxlength="15" aria-describedby="usernameHelp" />
+    <small id="usernameHelp" style="color:#f5c518aa; font-size: 12px; margin-bottom: 10px; display: block;">
+      You can change your username anytime. Changes reflect in leaderboard.
+    </small>
+
     <label for="gravityRange">Gravity</label>
     <input id="gravityRange" type="range" min="0.1" max="1" step="0.05" value="0.45" />
 
@@ -303,7 +264,6 @@
     <div id="leaderboardContainer" aria-label="Leaderboard">
       <h2>Leaderboard</h2>
       <div id="leaderboard" role="list"></div>
-      <button id="resetLeaderboardBtn" aria-label="Reset leaderboard">Reset Leaderboard</button>
     </div>
   </aside>
 </div>
@@ -311,53 +271,6 @@
 <div id="message" role="alert" aria-live="polite" style="min-height:28px; margin-top:12px; font-weight:700; font-size:18px; color:#f5c518; text-align:center;"></div>
 
 <script>
-// -- Audio setup and game logic (same as before) --
-
-const AudioContext = window.AudioContext || window.webkitAudioContext;
-const audioCtx = new AudioContext();
-
-function playSound(freq, duration = 0.12, type = 'sine', volume = 0.3) {
-  if (!soundOn) return;
-  const oscillator = audioCtx.createOscillator();
-  const gainNode = audioCtx.createGain();
-
-  oscillator.type = type;
-  oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
-  gainNode.gain.setValueAtTime(volume, audioCtx.currentTime);
-
-  oscillator.connect(gainNode);
-  gainNode.connect(audioCtx.destination);
-
-  oscillator.start();
-  oscillator.stop(audioCtx.currentTime + duration);
-
-  gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-}
-
-let musicOscillator;
-let musicGainNode;
-function startMusic() {
-  if (!musicOn) return;
-  if (musicOscillator) return;
-  musicOscillator = audioCtx.createOscillator();
-  musicGainNode = audioCtx.createGain();
-  musicOscillator.type = 'triangle';
-  musicOscillator.frequency.setValueAtTime(110, audioCtx.currentTime);
-  musicGainNode.gain.setValueAtTime(0.04, audioCtx.currentTime);
-  musicOscillator.connect(musicGainNode);
-  musicGainNode.connect(audioCtx.destination);
-  musicOscillator.start();
-}
-function stopMusic() {
-  if (musicOscillator) {
-    musicOscillator.stop();
-    musicOscillator.disconnect();
-    musicGainNode.disconnect();
-    musicOscillator = null;
-    musicGainNode = null;
-  }
-}
-
 const canvas = document.getElementById('board');
 const ctx = canvas.getContext('2d');
 
@@ -371,17 +284,16 @@ const pegSizeRange = document.getElementById('pegSizeRange');
 const autoDropSpeedRange = document.getElementById('autoDropSpeedRange');
 const stakeSelect = document.getElementById('stakeSelect');
 
-const messageEl = document.getElementById('message');
+const usernameInput = document.getElementById('usernameInput');
 const totalWinningsEl = document.getElementById('totalWinnings');
 const ballsDroppedEl = document.getElementById('ballsDropped');
 const avgWinningsEl = document.getElementById('avgWinnings');
-const historyLog = document.getElementById('historyLog');
 
 const soundToggle = document.getElementById('soundToggle');
 const musicToggle = document.getElementById('musicToggle');
 
 const leaderboardEl = document.getElementById('leaderboard');
-const resetLeaderboardBtn = document.getElementById('resetLeaderboardBtn');
+const messageEl = document.getElementById('message');
 
 const width = canvas.width;
 const height = canvas.height;
@@ -405,7 +317,6 @@ let stakes = [];
 const pegs = [];
 const balls = [];
 const particles = [];
-const winningsHistory = [];
 
 let totalWinnings = 0;
 let ballsDropped = 0;
@@ -416,58 +327,122 @@ let soundOn = true;
 let musicOn = true;
 
 let username = '';
-const leaderboardKey = 'plinko_leaderboard';
+
+// Leaderboard keys and data structure:
+// We'll store leaderboard data in localStorage with a daily key format, e.g. 'plinko_leaderboard_YYYYMMDD'
+// and a persistent user mapping: 'plinko_usernames' (mapping old usernames to new to handle username changes)
+
+// Helper: format date as YYYYMMDD
+function getTodayKey() {
+  const d = new Date();
+  return d.getFullYear().toString() +
+         String(d.getMonth() + 1).padStart(2,'0') +
+         String(d.getDate()).padStart(2,'0');
+}
+
+const leaderboardKeyPrefix = 'plinko_leaderboard_';
+const usernamesKey = 'plinko_usernames';
+
 let leaderboard = {};
+let usernameMap = {}; // oldUsername -> newUsername
 
-function askUsername() {
-  let name = '';
-  while (!name || name.trim().length === 0) {
-    name = prompt('Enter your username:', '');
-    if (name === null) {
-      name = `Guest${Math.floor(Math.random() * 9999)}`;
-      break;
-    }
-  }
-  return name.trim().substring(0, 15);
-}
-username = askUsername();
-
+// Load leaderboard for today, or create empty
 function loadLeaderboard() {
-  const data = localStorage.getItem(leaderboardKey);
-  if (data) {
-    try {
-      leaderboard = JSON.parse(data);
-    } catch {
-      leaderboard = {};
-    }
-  }
-}
-function saveLeaderboard() {
-  localStorage.setItem(leaderboardKey, JSON.stringify(leaderboard));
-}
-function resetLeaderboard() {
-  leaderboard = {};
-  saveLeaderboard();
-  updateLeaderboardUI();
+  const key = leaderboardKeyPrefix + getTodayKey();
+  const data = localStorage.getItem(key);
+  leaderboard = data ? JSON.parse(data) : {};
 }
 
+// Save leaderboard for today
+function saveLeaderboard() {
+  const key = leaderboardKeyPrefix + getTodayKey();
+  localStorage.setItem(key, JSON.stringify(leaderboard));
+}
+
+// Load username map for username changes
+function loadUsernameMap() {
+  const data = localStorage.getItem(usernamesKey);
+  usernameMap = data ? JSON.parse(data) : {};
+}
+
+// Save username map
+function saveUsernameMap() {
+  localStorage.setItem(usernamesKey, JSON.stringify(usernameMap));
+}
+
+// Update leaderboard UI
 function updateLeaderboardUI() {
-  const entries = Object.entries(leaderboard);
-  entries.sort((a, b) => b[1] - a[1]);
+  // Build reverse map to display latest username per score
+  // For scores keyed by username (original), we map to current username if changed
+  const entries = Object.entries(leaderboard)
+    .map(([oldName, score]) => {
+      // Map old username to current username if changed
+      let currentName = usernameMap[oldName] || oldName;
+      return { name: currentName, score, original: oldName };
+    });
+
+  // Sum scores for duplicated names (when multiple oldNames map to same currentName)
+  const combined = {};
+  entries.forEach(({name, score}) => {
+    combined[name] = (combined[name] || 0) + score;
+  });
+
+  // Sort descending by score
+  const sorted = Object.entries(combined).sort((a,b) => b[1] - a[1]);
 
   leaderboardEl.innerHTML = '';
-  for (const [name, score] of entries) {
+  sorted.forEach(([name, score]) => {
     const div = document.createElement('div');
     div.setAttribute('role', 'listitem');
-    div.textContent = `${name}`;
+    div.textContent = name;
     const scoreSpan = document.createElement('span');
     scoreSpan.textContent = `$${score.toFixed(2)}`;
     scoreSpan.style.color = score < 0 ? '#cc3333' : '#f5c518';
     div.appendChild(scoreSpan);
     leaderboardEl.appendChild(div);
+  });
+}
+
+// Prompt username at first visit or load from localStorage
+function initUsername() {
+  let storedName = localStorage.getItem('plinko_username');
+  if (storedName && storedName.trim().length > 0) {
+    username = storedName;
+    usernameInput.value = username;
+    usernameInput.disabled = false; // Allow editing at any time via input
+  } else {
+    // Prompt for username
+    username = prompt("Enter your username:", "") || `Guest${Math.floor(Math.random()*9999)}`;
+    username = username.trim().substring(0, 15);
+    usernameInput.value = username;
+    usernameInput.disabled = false;
+    localStorage.setItem('plinko_username', username);
   }
 }
 
+// When username input changes, update leaderboard keys and mapping
+usernameInput.addEventListener('change', () => {
+  const newName = usernameInput.value.trim().substring(0,15) || username;
+  if (newName === username) return;
+
+  // Update username mapping: map old to new
+  usernameMap[username] = newName;
+  saveUsernameMap();
+
+  // If old username exists in leaderboard, transfer score to new username
+  if (leaderboard[username] !== undefined) {
+    leaderboard[newName] = (leaderboard[newName] || 0) + leaderboard[username];
+    delete leaderboard[username];
+    saveLeaderboard();
+  }
+
+  username = newName;
+  localStorage.setItem('plinko_username', username);
+  updateLeaderboardUI();
+  showMessage(`Username changed to "${username}"`);
+});
+
+// Stakes sets
 function updateStakesSet(setName) {
   switch (setName) {
     case 'classic':
@@ -512,7 +487,7 @@ function drawPegs() {
 }
 
 function drawSlots() {
-  ctx.font = 'bold 14px monospace';
+  ctx.font = 'bold 16px Montserrat';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
@@ -521,18 +496,15 @@ function drawSlots() {
     const y = slotsY + slotHeight / 2;
     const stake = stakes[i];
 
-    // Draw slot rectangle
     ctx.fillStyle = '#222a3a';
     ctx.fillRect(i * slotWidth + 1, slotsY, slotWidth - 2, slotHeight);
 
-    // Highlight jackpot (≥ 100)
     if (stake >= 100) {
       ctx.strokeStyle = '#f5c518';
       ctx.lineWidth = 3;
       ctx.strokeRect(i * slotWidth + 1, slotsY, slotWidth - 2, slotHeight);
     }
 
-    // Show stake (positive or negative)
     ctx.fillStyle = stake < 0 ? '#cc3333' : '#f5c518';
     ctx.fillText(stake < 0 ? `-$${Math.abs(stake)}` : `$${stake}`, x, y);
   }
@@ -548,30 +520,32 @@ function drawBall(ball) {
   ctx.shadowBlur = 0;
 }
 
-function drawParticle(p) {
-  ctx.beginPath();
-  ctx.fillStyle = `rgba(${p.color.r},${p.color.g},${p.color.b},${p.alpha})`;
-  ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-  ctx.fill();
-}
+// Improved collision detection with pegs (circle vs circle)
+function collideBallPegs(ball) {
+  for (const peg of pegs) {
+    const dx = ball.x - peg.x;
+    const dy = ball.y - peg.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const minDist = ball.radius + pegRadius;
 
-function collideBallPeg(ball, peg) {
-  const dx = ball.x - peg.x;
-  const dy = ball.y - peg.y;
-  const dist = Math.sqrt(dx*dx + dy*dy);
-  const minDist = ball.radius + pegRadius;
-  if (dist < minDist) {
-    // Push ball off peg and randomize bounce left or right
-    const overlap = minDist - dist;
-    const angle = Math.atan2(dy, dx);
-    ball.x += Math.cos(angle) * overlap;
-    ball.y += Math.sin(angle) * overlap;
-    const direction = Math.random() < 0.5 ? -1 : 1;
-    ball.vx = direction * (0.6 + Math.random() * 0.5);
-    ball.vy *= 0.8;
+    if (dist < minDist) {
+      // Basic collision response
+      const overlap = minDist - dist;
+      const nx = dx / dist;
+      const ny = dy / dist;
 
-    playSound(320 + Math.random() * 100, 0.1, 'square', 0.1);
-    createParticles(ball.x, ball.y, 8, '#f5c518');
+      // Push ball out of peg
+      ball.x += nx * overlap;
+      ball.y += ny * overlap;
+
+      // Bounce velocity - randomized direction left/right
+      const bounceStrength = 0.5 + Math.random() * 0.5;
+      ball.vx = bounceStrength * (Math.random() < 0.5 ? -1 : 1);
+      ball.vy *= 0.85;
+
+      if (soundOn) playSound(320 + Math.random() * 100, 0.1, 'square', 0.1);
+      createParticles(ball.x, ball.y, 8, '#f5c518');
+    }
   }
 }
 
@@ -612,7 +586,7 @@ function createParticles(x, y, count, color) {
 
 function hexToRgb(hex) {
   if (hex.startsWith('#')) hex = hex.slice(1);
-  if (hex.length === 3) hex = hex.split('').map(c => c+c).join('');
+  if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
   const bigint = parseInt(hex, 16);
   return {
     r: (bigint >> 16) & 255,
@@ -627,20 +601,17 @@ function settleBallInSlot(ball) {
 
   totalWinnings += winAmount;
   ballsDropped++;
-  winningsHistory.push(winAmount);
-  if (winningsHistory.length > 20) winningsHistory.shift();
-
+  
   totalWinningsEl.textContent = `Total Winnings: $${totalWinnings.toFixed(2)}`;
   ballsDroppedEl.textContent = ballsDropped;
   avgWinningsEl.textContent = (totalWinnings / ballsDropped).toFixed(2);
 
-  updateHistoryLog();
-  updateGraph();
-
   showPopup(`${winAmount >= 0 ? '+' : ''} $${winAmount}`);
 
-  playSound(220 + Math.abs(winAmount) * 3, 0.3, 'square', 0.3);
+  if (soundOn) playSound(220 + Math.abs(winAmount) * 3, 0.3, 'square', 0.3);
   createParticles(ball.x, ball.y, 25, '#f5c518');
+
+  if (!username) return;
 
   if (!leaderboard[username]) leaderboard[username] = 0;
   leaderboard[username] += winAmount;
@@ -648,68 +619,109 @@ function settleBallInSlot(ball) {
   updateLeaderboardUI();
 }
 
-function updateHistoryLog() {
-  historyLog.innerHTML = winningsHistory
-    .slice()
-    .reverse()
-    .map((win, i) => {
-      const time = new Date().toLocaleTimeString();
-      return `<div>Ball ${ballsDropped - i}: ${win >= 0 ? '+' : ''}$${win} at ${time}</div>`;
-    })
-    .join('');
-}
-
-function updateGraph() {
-  // Optional graph code (not shown here for brevity)
+function showPopup(text) {
+  const popup = document.createElement('div');
+  popup.className = 'popup';
+  popup.textContent = text;
+  document.body.appendChild(popup);
+  setTimeout(() => popup.remove(), 3000);
 }
 
 function createNewBall() {
-  // Drop near center top with some horizontal randomness
+  // Drop near center top with horizontal randomness biased left or right for path variety
   const centerX = width / 2;
-  const rangeX = pegSpacingX * 1.2;
-  const startX = centerX + (Math.random() - 0.5) * rangeX;
-
-  const radius = ballRadiusBase * (0.6 + Math.random() * 0.8);
-  const color = '#f5c518';
+  const bias = Math.random() < 0.5 ? -1 : 1;
+  const startX = centerX + bias * (Math.random() * pegSpacingX);
 
   return {
     x: startX,
     y: 50,
     vx: 0,
     vy: 1,
-    radius,
-    color,
+    radius: ballRadiusBase * (0.6 + Math.random() * 0.8),
+    color: '#f5c518',
     stopped: false,
   };
 }
 
-// Drop ball button
+// Sound generation (simple beep)
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playSound(freq = 440, duration = 0.3, type = 'square', volume = 0.1) {
+  if (!soundOn) return;
+  const osc = audioCtx.createOscillator();
+  const gainNode = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  gainNode.gain.value = volume;
+  osc.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + duration);
+  osc.onended = () => {
+    gainNode.disconnect();
+    osc.disconnect();
+  };
+}
+
+// Simple background music loop
+let musicOsc1, musicOsc2, musicPlaying = false;
+function startMusic() {
+  if (musicPlaying || !musicOn) return;
+  musicPlaying = true;
+
+  musicOsc1 = audioCtx.createOscillator();
+  musicOsc2 = audioCtx.createOscillator();
+
+  const gainNode = audioCtx.createGain();
+  gainNode.gain.value = 0.05;
+  musicOsc1.type = 'triangle';
+  musicOsc2.type = 'sine';
+
+  musicOsc1.frequency.value = 110;
+  musicOsc2.frequency.value = 220;
+
+  musicOsc1.connect(gainNode);
+  musicOsc2.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+
+  musicOsc1.start();
+  musicOsc2.start();
+
+  musicOsc1.stop(audioCtx.currentTime + 10);
+  musicOsc2.stop(audioCtx.currentTime + 10);
+
+  // Loop every 10 seconds
+  setTimeout(() => {
+    musicPlaying = false;
+    if (musicOn) startMusic();
+  }, 10000);
+}
+function stopMusic() {
+  musicOsc1?.stop();
+  musicOsc2?.stop();
+  musicPlaying = false;
+}
+
 dropBtn.addEventListener('click', () => {
   balls.push(createNewBall());
   if (audioCtx.state === 'suspended') audioCtx.resume();
 });
 
-// Clear balls button
 clearBtn.addEventListener('click', () => {
   balls.length = 0;
   messageEl.textContent = '';
 });
 
-// Reset game button
 resetBtn.addEventListener('click', () => {
   balls.length = 0;
   totalWinnings = 0;
   ballsDropped = 0;
-  winningsHistory.length = 0;
   messageEl.textContent = '';
   totalWinningsEl.textContent = `Total Winnings: $0`;
   ballsDroppedEl.textContent = `0`;
   avgWinningsEl.textContent = `0.00`;
-  updateHistoryLog();
-  updateLeaderboardUI();
 });
 
-// Auto drop toggle button
 autoDropBtn.addEventListener('click', () => {
   autoDrop = !autoDrop;
   autoDropBtn.textContent = autoDrop ? 'Auto Drop: ON' : 'Auto Drop: OFF';
@@ -724,26 +736,25 @@ autoDropBtn.addEventListener('click', () => {
   }
 });
 
-// Sound toggle
 soundToggle.addEventListener('change', () => {
   soundOn = soundToggle.checked;
 });
 
-// Music toggle
 musicToggle.addEventListener('change', () => {
   musicOn = musicToggle.checked;
   if (musicOn) startMusic();
   else stopMusic();
 });
 
-// Difficulty controls
 gravityRange.addEventListener('input', () => {
   gravity = parseFloat(gravityRange.value);
 });
+
 pegSizeRange.addEventListener('input', () => {
   pegRadius = parseFloat(pegSizeRange.value);
   buildPegs();
 });
+
 autoDropSpeedRange.addEventListener('input', () => {
   if (autoDrop) {
     clearInterval(autoDropIntervalId);
@@ -753,27 +764,18 @@ autoDropSpeedRange.addEventListener('input', () => {
   }
 });
 
-// Stake set select
 stakeSelect.addEventListener('change', () => {
   updateStakesSet(stakeSelect.value);
 });
 
-// Reset leaderboard button
-resetLeaderboardBtn.addEventListener('click', () => {
-  if (confirm('Are you sure you want to reset the leaderboard?')) {
-    resetLeaderboard();
-  }
-});
-
-// Popup animation
-function showPopup(text) {
-  const popup = document.createElement('div');
-  popup.className = 'popup';
-  popup.textContent = text;
-  document.body.appendChild(popup);
-  setTimeout(() => popup.remove(), 3000);
+function showMessage(msg) {
+  messageEl.textContent = msg;
+  setTimeout(() => {
+    if (messageEl.textContent === msg) messageEl.textContent = '';
+  }, 4000);
 }
 
+// Animate loop
 function animate() {
   ctx.clearRect(0, 0, width, height);
   drawPegs();
@@ -789,9 +791,7 @@ function animate() {
       ball.x += ball.vx;
       ball.y += ball.vy;
 
-      collideBallPeg(ball, pegs[Math.floor(Math.random() * pegs.length)]);
-      // Better to check all pegs but optimized for speed here
-
+      collideBallPegs(ball);
       if (collideWalls(ball)) {
         balls.splice(i, 1);
         continue;
@@ -809,20 +809,25 @@ function animate() {
       particles.splice(i, 1);
       continue;
     }
-    drawParticle(p);
+    ctx.beginPath();
+    ctx.fillStyle = `rgba(${p.color.r},${p.color.g},${p.color.b},${p.alpha})`;
+    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+    ctx.fill();
   }
 
   requestAnimationFrame(animate);
 }
 
-// Initialize
+// Initialization
 updateStakesSet('classic');
 buildPegs();
 loadLeaderboard();
+loadUsernameMap();
+initUsername();
 updateLeaderboardUI();
 animate();
 startMusic();
-</script>
 
+</script>
 </body>
 </html>
