@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Responsive Stakes-style Plinko</title>
+<title>Responsive Stakes-style Plinko Fixed</title>
 <style>
   :root{
     --bg-1:#0f0f0f;
@@ -71,9 +71,10 @@
   }
   canvas {
     width: 100%;
-    height: auto;
+    height: 100%;
     display: block;
-    max-height: 100%;
+    border-radius: 10px;
+    background: var(--slot-bg);
   }
   /* buttons and selects */
   .btn {
@@ -323,7 +324,7 @@
 
   // Game state
   let pegs = [];
-  let balls = [];
+  let ballsInGame = [];
   let multipliers = [];
   let cols, rows;
   let pegSpacingX, pegSpacingY;
@@ -340,22 +341,14 @@
   let autoMode = false;
   let autoInterval = null;
 
-  // Sound/music
-  let soundOn = true;
-  let musicOn = false;
-  let audioCtx = null;
-  let musicOsc = null;
-
   /* === Responsive & scaling === */
   function resizeCanvas() {
-    // We want canvas height ~ 7/8 of width, max height 80vh, min width 300px
     const container = canvas.parentElement;
     const containerStyles = getComputedStyle(container);
     const containerWidth = container.clientWidth - parseFloat(containerStyles.paddingLeft) - parseFloat(containerStyles.paddingRight);
     const containerHeight = container.clientHeight - parseFloat(containerStyles.paddingTop) - parseFloat(containerStyles.paddingBottom);
 
-    // Calculate width/height preserving aspect ratio ~7:8 (W:H)
-    // We must fit inside containerHeight and containerWidth
+    // Maintain ~7:8 width:height ratio and fit inside container
     let w = containerWidth;
     let h = w * 8 / 7;
     if (h > containerHeight) {
@@ -369,11 +362,9 @@
     canvas.width = Math.floor(boardWidth);
     canvas.height = Math.floor(boardHeight);
 
-    // Scale pegs & balls based on boardWidth relative to base 560px width
     pegRadiusScale = (boardWidth / 560) * parseFloat(pegSizeSelect.value);
-    ballRadiusScale = (boardWidth / 560) * 1; // base 6px radius but we scale here
+    ballRadiusScale = (boardWidth / 560);
 
-    // Rebuild pegs now that we know sizes
     buildPegs();
     multipliers = buildMultipliersForCols(riskSelect.value, cols);
   }
@@ -405,7 +396,6 @@
   /* --- Pegs grid --- */
   function buildPegs() {
     pegs.length = 0;
-    // Difficulty
     const difficulty = difficultySelect.value;
     if (difficulty === 'easy') {
       pegSpacingY = 48 * pegRadiusScale / pegRadiusBase;
@@ -422,10 +412,7 @@
     }
     cols = Math.floor(boardWidth / pegSpacingX);
     cols = Math.max(7, cols);
-    // Rebuild multipliers for slot count
-    multipliers = buildMultipliersForCols(riskSelect.value, cols);
 
-    // Build staggered grid centered horizontally
     for (let row = 0; row < rows; row++) {
       const y = 80 * (boardHeight/640) + row * pegSpacingY;
       for (let col = 0; col < cols; col++) {
@@ -439,37 +426,27 @@
 
   /* --- Create ball --- */
   function createBall() {
-    const cx = boardWidth / 2;
-    const jitterRange = pegSpacingX * 0.8;
-    const startX = cx + (Math.random() - 0.5) * jitterRange;
-    const radius = ballRadiusScale * (0.8 + Math.random() * 0.5);
-    const color = '#e8f7d0';
+    const startX = boardWidth / 2 + (Math.random() - 0.5) * pegSpacingX * 1.2;
     return {
       x: startX,
       y: 36 * (boardHeight/640),
-      vx: (Math.random() - 0.5) * 0.6 * (boardWidth/560),
+      vx: (Math.random() - 0.5) * 0.5 * (boardWidth/560),
       vy: 1 + Math.random() * 0.8,
-      radius,
-      color,
-      settled: false,
-      pathIndex: 0
+      radius: ballRadiusScale * (0.8 + Math.random() * 0.5),
+      color: '#e8f7d0',
+      settled: false
     };
   }
 
-  /* --- Balls array --- */
-  let ballsInGame = [];
-
-  /* --- Physics parameters --- */
+  /* --- Update physics --- */
   function updatePhysics() {
-    // Gravity from select
     gravity = parseFloat(gravitySelect.value);
 
-    // Move each ball
     ballsInGame.forEach(ball => {
       if (ball.settled) return;
-      ball.vy += 0.12 * gravity;
-      ball.y += ball.vy;
+      ball.vy += 0.08 * gravity;
       ball.x += ball.vx;
+      ball.y += ball.vy;
 
       // Bounce off walls
       if (ball.x - ball.radius < pegRadiusScale) {
@@ -487,29 +464,29 @@
         const dy = ball.y - peg.y;
         const dist = Math.sqrt(dx*dx + dy*dy);
         if (dist < ball.radius + pegRadiusScale) {
-          // Reflect velocity
+          // Bounce with randomness so path differs per ball
           const angle = Math.atan2(dy, dx);
           const speed = Math.sqrt(ball.vx*ball.vx + ball.vy*ball.vy);
-          const dir = Math.random() < 0.5 ? -1 : 1; // Random left or right deflection
-          ball.vx = speed * Math.cos(angle) * dir;
-          ball.vy = -Math.abs(speed * Math.sin(angle));
+          const dir = Math.random() < 0.5 ? -1 : 1;
+          ball.vx = speed * Math.cos(angle) * dir * 0.9;
+          ball.vy = -Math.abs(speed * Math.sin(angle)) * 0.7;
+
           ball.x += Math.cos(angle) * dir * 2;
           ball.y += Math.sin(angle) * dir * 2;
           break;
         }
       }
 
-      // Stop ball if it reaches bottom area
+      // Stop ball at bottom
       if (ball.y + ball.radius >= boardHeight - 40) {
         ball.settled = true;
         ball.vx = 0;
         ball.vy = 0;
         ball.y = boardHeight - 40 - ball.radius;
 
-        // Find which slot it landed in
+        // Calculate slot
         let slotIndex = Math.floor(ball.x / (boardWidth / cols));
         slotIndex = Math.min(cols - 1, Math.max(0, slotIndex));
-        // Get multiplier for slot
         const mult = multipliers[slotIndex];
         const stake = parseFloat(stakeSelect.value);
         const win = stake * mult;
@@ -519,39 +496,38 @@
         recent.unshift(win.toFixed(2));
         if (recent.length > 12) recent.pop();
 
-        // Show popup win text
         createWinPop(ball.x, ball.y, win);
-
         updateStats();
-        // Remove ball after showing popup
+
+        // Remove ball after popup timeout
         setTimeout(() => {
           ballsInGame = ballsInGame.filter(b => b !== ball);
-        }, 400);
+        }, 600);
       }
     });
   }
 
-  /* --- Draw everything --- */
+  /* --- Drawing --- */
   function draw() {
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
     // Draw slots background
-    ctx.fillStyle = 'rgba(0,0,0,0.9)';
+    ctx.fillStyle = 'var(--slot-bg)';
     ctx.fillRect(0, boardHeight - 40, boardWidth, 40);
 
     // Draw slot dividers & multipliers
     const slotWidth = boardWidth / cols;
-    ctx.font = `${Math.floor(14 * pegRadiusScale/7)}px Inter, sans-serif`;
+    ctx.font = `${Math.floor(14 * pegRadiusScale / 7)}px Inter, sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
-    ctx.fillStyle = 'var(--accent)';
+
     for (let i=0; i<cols; i++) {
       // Divider lines
       ctx.strokeStyle = 'rgba(255,255,255,0.08)';
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(i*slotWidth, boardHeight - 40);
-      ctx.lineTo(i*slotWidth, boardHeight);
+      ctx.moveTo(i * slotWidth, boardHeight - 40);
+      ctx.lineTo(i * slotWidth, boardHeight);
       ctx.stroke();
 
       // Draw multiplier text
@@ -559,7 +535,7 @@
       let text = (val < 0 ? "-" : "$") + Math.abs(val * parseFloat(stakeSelect.value)).toFixed(2);
       if(val === 0) text = "$0";
       ctx.fillStyle = val < 0 ? 'var(--danger)' : 'var(--accent)';
-      ctx.fillText(text, i*slotWidth + slotWidth/2, boardHeight - 38);
+      ctx.fillText(text, i * slotWidth + slotWidth / 2, boardHeight - 38);
     }
     // Last divider line
     ctx.strokeStyle = 'rgba(255,255,255,0.08)';
@@ -570,9 +546,9 @@
 
     // Draw pegs
     ctx.fillStyle = 'var(--muted)';
-    pegs.forEach(peg => {
+    pegs.forEach(p => {
       ctx.beginPath();
-      ctx.arc(peg.x, peg.y, pegRadiusScale, 0, Math.PI * 2);
+      ctx.arc(p.x, p.y, pegRadiusScale, 0, Math.PI * 2);
       ctx.fill();
     });
 
@@ -588,7 +564,7 @@
     });
   }
 
-  /* --- Win popups --- */
+  /* --- Win popup --- */
   function createWinPop(x,y,win) {
     const pop = document.createElement('div');
     pop.className = 'win-pop';
@@ -599,24 +575,22 @@
     setTimeout(() => {
       pop.style.transform = 'translate(-50%, -150%) scale(1.4)';
       pop.style.opacity = '0';
-    }, 100);
-    setTimeout(() => {
-      pop.remove();
-    }, 700);
+    }, 120);
+    setTimeout(() => pop.remove(), 800);
   }
 
-  /* --- Update stats UI --- */
+  /* --- Stats update --- */
   function updateStats() {
     totalWEl.textContent = '$' + totalWinnings.toFixed(2);
     ballsDroppedEl.textContent = ballsDropped;
-    avgWEl.textContent = ballsDropped > 0 ? '$' + (totalWinnings/ballsDropped).toFixed(2) : '$0.00';
+    avgWEl.textContent = ballsDropped > 0 ? '$' + (totalWinnings / ballsDropped).toFixed(2) : '$0.00';
 
     recentLog.textContent = recent.map((v,i) => `${i+1}: ${v}`).join('\n');
   }
 
-  /* --- Drop a ball --- */
+  /* --- Drop ball --- */
   function dropBall() {
-    if (ballsInGame.length > 50) return; // limit max balls
+    if (ballsInGame.length > 50) return;
     ballsInGame.push(createBall());
   }
 
@@ -633,15 +607,13 @@
     updateStats();
   }
 
-  /* --- Auto drop toggle --- */
+  /* --- Auto drop --- */
   function toggleAutoDrop() {
     autoMode = !autoMode;
-    if(autoMode) {
+    if (autoMode) {
       autoBtn.textContent = 'Auto Drop: ON';
       autoBtn.setAttribute('aria-pressed', 'true');
-      autoInterval = setInterval(() => {
-        dropBall();
-      }, Math.max(100, parseInt(autoSpeedInput.value)));
+      autoInterval = setInterval(dropBall, Math.max(100, parseInt(autoSpeedInput.value)));
     } else {
       autoBtn.textContent = 'Auto Drop: OFF';
       autoBtn.setAttribute('aria-pressed', 'false');
@@ -650,11 +622,11 @@
     }
   }
 
-  /* --- Event listeners --- */
-  dropBtn.onclick = () => dropBall();
-  clearBtn.onclick = () => clearBalls();
-  resetWinningsBtn.onclick = () => resetWinnings();
-  autoBtn.onclick = () => toggleAutoDrop();
+  /* --- Event Listeners --- */
+  dropBtn.onclick = dropBall;
+  clearBtn.onclick = clearBalls;
+  resetWinningsBtn.onclick = resetWinnings;
+  autoBtn.onclick = toggleAutoDrop;
 
   [stakeSelect, riskSelect, difficultySelect, pegSizeSelect, gravitySelect].forEach(sel => {
     sel.onchange = () => {
@@ -662,8 +634,9 @@
       resetWinnings();
     };
   });
+
   autoSpeedInput.onchange = () => {
-    if (autoMode) {
+    if(autoMode) {
       toggleAutoDrop();
       toggleAutoDrop();
     }
@@ -679,58 +652,20 @@
     musicOn = !musicOn;
     musicToggle.textContent = `Music: ${musicOn ? 'ON' : 'OFF'}`;
     musicToggle.setAttribute('aria-pressed', musicOn.toString());
-    if(musicOn) startMusic();
-    else stopMusic();
   };
 
-  /* --- Sound & music --- */
-  function playSound(freq=200, dur=100) {
-    if (!soundOn) return;
-    if(!audioCtx) audioCtx = new AudioContext();
-    const osc = audioCtx.createOscillator();
-    const gainNode = audioCtx.createGain();
-    osc.connect(gainNode);
-    gainNode.connect(audioCtx.destination);
-    osc.frequency.value = freq;
-    osc.type = 'triangle';
-    osc.start();
-    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur/1000);
-    osc.stop(audioCtx.currentTime + dur/1000);
-  }
-  function startMusic() {
-    if (!audioCtx) audioCtx = new AudioContext();
-    if(musicOsc) return;
-    musicOsc = audioCtx.createOscillator();
-    const gainNode = audioCtx.createGain();
-    musicOsc.connect(gainNode);
-    gainNode.connect(audioCtx.destination);
-    gainNode.gain.value = 0.03;
-    musicOsc.frequency.value = 110;
-    musicOsc.type = 'sine';
-    musicOsc.start();
-  }
-  function stopMusic() {
-    if(musicOsc) {
-      musicOsc.stop();
-      musicOsc.disconnect();
-      musicOsc = null;
-    }
-  }
+  /* --- Init --- */
+  let soundOn = true, musicOn = false;
 
-  /* --- Main loop --- */
+  resizeCanvas();
+  updateStats();
+
   function loop() {
     updatePhysics();
     draw();
     requestAnimationFrame(loop);
   }
 
-  /* --- Initialize --- */
-  window.addEventListener('resize', () => {
-    resizeCanvas();
-  });
-  resizeCanvas();
-  updateStats();
   loop();
 
 })();
