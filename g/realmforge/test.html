@@ -1,403 +1,1123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Realm Forge - MMORPG</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Realm Forge — Full Prototype</title>
 <style>
-  /* Reset and basics */
-  body, html {
-    margin: 0; padding: 0; overflow: hidden; background: #111; color: #eee;
-    font-family: 'Courier New', Courier, monospace;
-    user-select: none;
-  }
-  #gameCanvas {
-    display: block; margin: 0 auto; background: #222; image-rendering: pixelated;
-    cursor: default;
-  }
-  #ui {
-    position: absolute; top: 10px; left: 10px; width: 320px; max-height: 580px; overflow-y: auto;
-    background: rgba(0,0,0,0.7); padding: 10px; border-radius: 8px;
-    font-size: 13px;
-  }
-  #chatLog {
-    width: 300px; height: 130px; background: #333; overflow-y: auto; padding: 5px; margin-bottom: 5px;
-    font-family: monospace; font-size: 12px;
-  }
-  #chatInput {
-    width: 300px; padding: 4px; border-radius: 4px; border: none;
-    font-family: monospace; font-size: 12px;
-  }
-  button {
-    background: #444; border: none; padding: 6px 12px; color: #eee; border-radius: 5px;
-    cursor: pointer; margin-top: 6px;
-  }
-  button:hover { background: #666; }
-
-  /* Scrollbar style */
-  #ui::-webkit-scrollbar {
-    width: 6px;
-  }
-  #ui::-webkit-scrollbar-track {
-    background: #222;
-  }
-  #ui::-webkit-scrollbar-thumb {
-    background: #555;
-  }
-
-  /* Inventory & item styling */
-  .item {
-    display: flex; justify-content: space-between; padding: 2px 6px; margin-bottom: 2px;
-    border-radius: 3px;
-  }
-  .item.common { background: #666; color: #ccc; }
-  .item.uncommon { background: #0a662a; color: #a6f0a6; }
-  .item.rare { background: #204a87; color: #99ccee; }
-  .item.epic { background: #68228b; color: #d98de3; }
-  .item.legendary { background: #c18401; color: #ffe366; }
-  .item.divine { background: #d47e7e; color: #fff1f1; }
-
-  /* Tabs for UI */
-  #tabs {
-    display: flex; margin-bottom: 6px;
-  }
-  .tab {
-    flex: 1;
-    padding: 6px 8px;
-    background: #333;
-    text-align: center;
-    cursor: pointer;
-    user-select: none;
-    border-radius: 4px 4px 0 0;
-  }
-  .tab.active {
-    background: #555;
-    font-weight: bold;
-  }
-
-  /* Quest dialog */
-  #questDialog {
-    background: #222; padding: 10px; border-radius: 6px; margin-top: 8px;
+  /* Basic and UI styling, pixel font */
+  html,body { height:100%; margin:0; background:#0f1720; color:#e6eef8; font-family: "Press Start 2P", monospace; -webkit-font-smoothing: none; }
+  canvas { display:block; margin:0 auto; background:#4a8f51; image-rendering: pixelated; image-rendering: crisp-edges; border: 6px solid #0b1220; box-shadow: 0 0 24px #000; }
+  #ui { position: absolute; top: 6px; left: 6px; right: 6px; display:flex; gap:10px; z-index:50; pointer-events:auto; }
+  .uiBtn { background:#102030; padding:8px 10px; border-radius:6px; color:#f7db8b; cursor:pointer; border:2px solid #2b3f5a; user-select:none; font-size:11px; }
+  .uiBtn:hover { background:#274060; color:#fff; box-shadow:0 0 8px #a87f3a; }
+  #log { position:absolute; bottom:6px; left:6px; right:6px; height:130px; overflow:auto; background:rgba(2,8,12,0.7); border-radius:6px; padding:8px; z-index:50; font-size:11px; border:2px solid #213245; }
+  #menuOverlay { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 86vw; max-width:1100px; height: 78vh; background: rgba(6,12,20,0.95); border: 3px solid #30507d; padding:12px; box-sizing:border-box; display:none; z-index:100; overflow:auto; border-radius:8px;}
+  #menuOverlay.show { display:block; }
+  .menuHeader { color:#ffd88a; font-size:14px; margin-bottom:6px; }
+  .closeBtn { float:right; cursor:pointer; background:#2b3f5a; color:#fff; padding:6px 8px; border-radius:6px; }
+  table { width:100%; border-collapse:collapse; font-size:11px; }
+  th,td { border:1px solid #23364a; padding:6px; }
+  .rarity-common{ color:#cfcfcf } .rarity-uncommon{ color:#7fe07f } .rarity-rare{ color:#6fb0ff } .rarity-epic{ color:#c98aff } .rarity-legendary{ color:#ffb86b } .rarity-divine{ color:#ff88ff }
+  label { display:block; margin-top:8px; font-size:11px; color:#cfe0ff }
+  input[type=text], select, input[type=number] { width:100%; padding:6px; background:#08101a; border:1px solid #224; color:#dff; border-radius:4px }
+  button.small { padding:6px 8px; font-size:11px; margin-top:6px; }
+  #chatWindow { position:absolute; right:8px; bottom:150px; width:260px; max-height:300px; overflow:auto; background:rgba(2,6,10,0.85); border:2px solid #183252; padding:6px; z-index:80; display:none; }
+  #chatInputWrap { position:absolute; right:8px; bottom:120px; width:260px; z-index:80; display:none; }
+  #chatInput { width:200px; padding:6px; background:#08101a; color:#dff; border:1px solid #224; }
+  #chatSend { padding:6px 8px; background:#2b5f8f; color:#fff; border:none; cursor:pointer; }
+  /* healthbar and UI overlay debug */
+  #miniHud { position:absolute; left:8px; top:60px; z-index:60; font-size:11px; background:rgba(3,6,8,0.6); padding:6px; border-radius:6px; border:1px solid #203; }
+  /* responsive */
+  @media (max-width:900px) {
+    canvas { width:100%; height:60vh; }
+    #menuOverlay { width:94vw; height:80vh; }
   }
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<canvas id="gameCanvas" width="800" height="600"></canvas>
+<canvas id="game" width="864" height="576"></canvas>
 
 <div id="ui">
-  <div id="tabs">
-    <div id="tabInventory" class="tab active">Inventory</div>
-    <div id="tabShop" class="tab">Shop</div>
-    <div id="tabCraft" class="tab">Crafting</div>
-    <div id="tabAuction" class="tab">Auction House</div>
-    <div id="tabQuest" class="tab">Quests</div>
-  </div>
-  <div id="contentArea">
-    <div id="inventoryContent"></div>
-    <div id="shopContent" style="display:none;">Loading shop...</div>
-    <div id="craftContent" style="display:none;">Loading crafting...</div>
-    <div id="auctionContent" style="display:none;">Loading auction house...</div>
-    <div id="questContent" style="display:none;">Loading quests...</div>
-  </div>
-  <div id="questDialog" style="display:none;"></div>
-
-  <div id="chatLog"></div>
-  <input type="text" id="chatInput" placeholder="Say something and press Enter" />
+  <div class="uiBtn" id="btnCustomize">Customize</div>
+  <div class="uiBtn" id="btnInventory">Inventory (I)</div>
+  <div class="uiBtn" id="btnQuests">Quests (Q)</div>
+  <div class="uiBtn" id="btnShop">Shop (S)</div>
+  <div class="uiBtn" id="btnCraft">Craft (C)</div>
+  <div class="uiBtn" id="btnAuction">Auction (A)</div>
+  <div class="uiBtn" id="btnSave">Save</div>
+  <div class="uiBtn" id="btnLoad">Load</div>
+  <div class="uiBtn" id="btnChat">Chat</div>
+  <div class="uiBtn" id="btnLogout">Logout</div>
 </div>
 
+<div id="log"></div>
+<div id="miniHud"></div>
+
+<div id="menuOverlay"></div>
+
+<div id="chatWindow"></div>
+<div id="chatInputWrap"><input id="chatInput" placeholder="Type..." /><button id="chatSend">Send</button></div>
+
 <script type="module">
-// ========== Supabase Setup ==========
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+/* ============================
+   Realm Forge — Full Single File
+   ============================
+   Features:
+   - Large open world tile map
+   - 16x16 pixel player sprites with 3-frame walking
+   - Character customization menu
+   - 300+ procedurally generated items with rarity tags
+   - 300+ procedurally generated quests attached to NPCs
+   - Shop, Crafting, Auction House UIs
+   - Resource gathering
+   - Enemy AI, combat animations & sounds
+   - Save/Load locally + Supabase syncing & multiplayer approx-position
+   - Chat (basic)
+*/
 
-const SUPABASE_URL = 'https://lmufaasiaqkcrzcfirfs.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_Ws21TROq3F-VxlZnW7b9GA_YbC0RoCF';
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+/* ----------------------------
+   CONFIG: Set your Supabase URL
+   ---------------------------- */
+const SUPABASE_URL = "https://lmufaasiaqkcrzcfirfs.supabase.co"; // REPLACE with your project URL
+const SUPABASE_KEY = "sb_publishable_Ws21TROq3F-VxlZnW7b9GA_YbC0RoCF"; // provided key
 
-// ========== Canvas & Map Setup ==========
-const canvas = document.getElementById('gameCanvas');
+// If you want multiplayer disabled, set USE_SUPABASE = false
+const USE_SUPABASE = !!(SUPABASE_URL && SUPABASE_URL.includes("supabase"));
+
+// Import supabase client if using it
+let supabase = null;
+if (USE_SUPABASE) {
+  // dynamic import
+  const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm');
+  supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+}
+
+/* ----------------------------
+   CANVAS & WORLD SETTINGS
+   ---------------------------- */
+const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
+const TILE = 16;
+const MAP_W = 140;   // very large map
+const MAP_H = 96;
+const VIEW_W = canvas.width;
+const VIEW_H = canvas.height;
 
-const TILE_SIZE = 16;
-const MAP_WIDTH = 100;
-const MAP_HEIGHT = 80;
+/* ----------------------------
+   GAME STATE
+   ---------------------------- */
+let keys = {};
+let messages = [];
+const LOG_MAX = 120;
 
-const TILE_COLORS = {
-  grass: '#0a5d0a',
-  road: '#7a6954',
-  water: '#1a4a8a',
-  forest: '#084d07',
-  mine: '#6e6e6e',
-  town: '#8a5a2d',
-  mountain: '#555555',
-};
-
-const mapData = new Array(MAP_HEIGHT).fill(0).map(() => new Array(MAP_WIDTH).fill('grass'));
-
-// Generate roads, towns, forests, mines (simplified, procedural)
-for(let y=10; y<MAP_HEIGHT; y+=20){
-  for(let x=0; x<MAP_WIDTH; x++) mapData[y][x] = 'road';
+function log(msg) {
+  messages.push(`${new Date().toLocaleTimeString().slice(0,8)} - ${msg}`);
+  if (messages.length > LOG_MAX) messages.shift();
+  document.getElementById('log').innerHTML = messages.map(l => `<div>${l}</div>`).join('');
 }
-for(let x=15; x<MAP_WIDTH; x+=20){
-  for(let y=0; y<MAP_HEIGHT; y++) mapData[y][x] = 'road';
+
+/* ----------------------------
+   Procedural Items (300+)
+   ---------------------------- */
+const RARITIES = [
+  { id:'common', weight:50 },
+  { id:'uncommon', weight:30 },
+  { id:'rare', weight:12 },
+  { id:'epic', weight:5 },
+  { id:'legendary', weight:2 },
+  { id:'divine', weight:1 },
+];
+function chooseRarity() {
+  const total = RARITIES.reduce((s,r)=>s+r.weight,0);
+  let r = Math.random()*total;
+  for (const x of RARITIES) {
+    r -= x.weight;
+    if (r<=0) return x.id;
+  }
+  return RARITIES[0].id;
 }
-const towns = [];
-while(towns.length < 20){
-  const tx = Math.floor(Math.random() * (MAP_WIDTH-5)) + 2;
-  const ty = Math.floor(Math.random() * (MAP_HEIGHT-5)) + 2;
-  if(mapData[ty][tx] === 'road' || mapData[ty+1][tx] === 'road' || mapData[ty][tx+1] === 'road'){
-    for(let y=ty; y<ty+3; y++)
-      for(let x=tx; x<tx+3; x++) mapData[y][x] = 'town';
-    towns.push({x: tx, y: ty, name: `Town_${towns.length+1}`});
+
+// base prefixes and types
+const ITEM_PREFIX = ["Iron","Stone","Wooden","Steel","Golden","Mystic","Shadow","Sun","Moon","Emerald","Ruby","Crystal","Ancient","Swift","Heavy","Arcane","Divine","Phantom","Nether","Sky"];
+const ITEM_SUFFIX = ["Sword","Dagger","Axe","Bow","Spear","Staff","Shield","Helmet","Chest","Boots","Ring","Amulet","Gloves","Cloak","Belt","Blade","Hammer","Polearm","Orb","Tome"];
+const ITEMS = []; // will hold 400 items
+
+function generateItems(count=350) {
+  for (let i=0;i<count;i++) {
+    const prefix = ITEM_PREFIX[i % ITEM_PREFIX.length];
+    const suffix = ITEM_SUFFIX[(i*3) % ITEM_SUFFIX.length];
+    const rarity = chooseRarity();
+    const basePrice = Math.round((1 + Math.random()*1.8) * (RARITY_VALUE_MULTIPLIER[rarity] || 1) * (20 + i));
+    const id = `${prefix.toLowerCase()}_${suffix.toLowerCase()}_${i}`;
+    const item = {
+      id,
+      name: `${prefix} ${suffix}`,
+      rarity,
+      price: basePrice,
+      description: `${rarity.charAt(0).toUpperCase()+rarity.slice(1)} ${suffix} made of ${prefix.toLowerCase()}.`,
+      stats: generateStatsForType(suffix, rarity),
+      tags: [rarity],
+      iconColor: randomColorForRarity(rarity),
+    };
+    ITEMS.push(item);
   }
 }
-for(let i=0; i<towns.length; i++){
-  const t = towns[i];
-  for(let y=t.y-5; y<=t.y+7; y++){
-    for(let x=t.x-5; x<=t.x+7; x++){
-      if(y>=0 && y<MAP_HEIGHT && x>=0 && x<MAP_WIDTH && Math.random() < 0.3) mapData[y][x] = 'forest';
-    }
+function randomColorForRarity(r) {
+  switch(r) {
+    case 'common': return '#bfc7bf';
+    case 'uncommon': return '#7fe07f';
+    case 'rare': return '#6fb0ff';
+    case 'epic': return '#c98aff';
+    case 'legendary': return '#ffb86b';
+    case 'divine': return '#ff88ff';
+    default: return '#fff';
   }
 }
-for(let y=0; y<5; y++){
-  for(let x=0; x<5; x++){
-    if(Math.random() < 0.5) mapData[y][x] = 'mine';
-    if(Math.random() < 0.5) mapData[MAP_HEIGHT-1-y][MAP_WIDTH-1-x] = 'mine';
+const RARITY_VALUE_MULTIPLIER = { common:1, uncommon:1.8, rare:4, epic:10, legendary:25, divine:75 };
+function generateStatsForType(type, rarity) {
+  const mult = RARITY_VALUE_MULTIPLIER[rarity] || 1;
+  let stats = {};
+  // weapons
+  if (["Sword","Dagger","Axe","Bow","Spear","Polearm","Blade","Hammer"].some(t=>type.includes(t) || type===t)) {
+    stats.atk = Math.round((5 + Math.random()*15) * mult);
+    stats.speed = Math.round(1 + Math.random()*3);
+    stats.durability = Math.round(50 + Math.random()*200 * mult);
+  } else if (["Staff","Orb","Tome"].some(t=>type.includes(t) || type===t)) {
+    stats.atk = Math.round((3 + Math.random()*10) * mult);
+    stats.mp = Math.round((10 + Math.random()*80) * mult);
+    stats.durability = Math.round(40 + Math.random()*150 * mult);
+  } else {
+    // armor/accessory
+    stats.def = Math.round((2 + Math.random()*12) * mult);
+    stats.durability = Math.round(40 + Math.random()*200 * mult);
+  }
+  return stats;
+}
+generateItems(400); // generate 400 items (300+ requirement)
+
+/* ----------------------------
+   Crafting recipes (example set)
+   ---------------------------- */
+const RECIPES = [
+  { id:'craft_wooden_sword', name:'Wooden Sword', requires:{ wood:6 }, result:{ itemId: ITEMS.find(it=>it.name.includes('Wood') && it.name.includes('Sword'))?.id || ITEMS[0].id, qty:1 } },
+  { id:'craft_iron_sword', name:'Iron Sword', requires:{ iron_ore:10, coal:3 }, result:{ itemId: ITEMS.find(it=>it.name.includes('Iron') && it.name.includes('Sword'))?.id || ITEMS[1].id, qty:1 } },
+  { id:'craft_health_potion', name:'Health Potion', requires:{ herb:4 }, result:{ itemId: ITEMS[Math.floor(Math.random()*ITEMS.length)].id, qty:1 } }, // example
+  // more recipes can be procedurally generated if needed
+];
+
+/* ----------------------------
+   MAP & TILES
+   ---------------------------- */
+// tile IDs: 0 grass,1 road,2 tree,3 rock,4 water,5 building,6 mine,7 woodNode,8 stoneNode
+let map = new Array(MAP_H);
+for (let y=0;y<MAP_H;y++) {
+  map[y] = new Array(MAP_W).fill(0);
+}
+// fill simple base
+for (let y=0;y<MAP_H;y++) for (let x=0;x<MAP_W;x++){
+  if (x<6 || x>MAP_W-7 || y<4 || y>MAP_H-5) map[y][x] = 2; // border forest
+  else map[y][x] = 0;
+}
+// roads
+for (let x=0;x<MAP_W;x++) map[Math.floor(MAP_H/2)][x] = 1;
+for (let y=0;y<MAP_H;y++) map[y][Math.floor(MAP_W/3)] = 1;
+for (let t=0;t<22;t++){
+  const bx = 6 + t*5;
+  const by = 6 + (t%5)*6;
+  if (bx<MAP_W-4 && by<MAP_H-4) {
+    map[by][bx] = 5; map[by][bx+1] = 5; map[by+1][bx] = 5; map[by+1][bx+1] = 5;
   }
 }
+// mines & resource nodes
+for (let i=0;i<90;i++){
+  const rx = 8 + Math.floor(Math.random()*(MAP_W-16));
+  const ry = 8 + Math.floor(Math.random()*(MAP_H-20));
+  if (map[ry][rx]===0) map[ry][rx] = (Math.random()<0.5?6:7);
+}
+// scatter rocks/trees
+for (let i=0;i<1200;i++){
+  const rx = Math.floor(Math.random()*MAP_W);
+  const ry = Math.floor(Math.random()*MAP_H);
+  if (map[ry][rx]===0) map[ry][rx] = (Math.random()<0.6?2:3);
+}
 
-// ========== Player ==========
-let playerId = null;
-const players = {};
+/* ----------------------------
+   NPCs, ENEMIES, and QUESTS
+   ---------------------------- */
+let NPCS = [];
+let ENEMIES = [];
+let QUESTS = []; // we will attach quests to NPCs
 
-const localPlayer = {
-  id: null,
-  x: MAP_WIDTH/2|0,
-  y: MAP_HEIGHT/2|0,
-  px: 0, py: 0,
-  speed: 0.12,
+// Generate NPCs ~120 placed across map
+function placeNPCs(n) {
+  for (let i=0;i<n;i++){
+    let x,y,tries=0;
+    do {
+      x = 6 + Math.floor(Math.random()*(MAP_W-12));
+      y = 6 + Math.floor(Math.random()*(MAP_H-12));
+      tries++;
+      if (tries>300) break;
+    } while (map[y][x] !== 0 && map[y][x] !== 1); // prefer grass/road
+    const id = 'npc_'+i;
+    const name = ['Elder','Trader','Guard','Farmer','Blacksmith','Herbalist','Miner','Ranger','Mage','Smith'][i%10] + ' ' + ['A','B','C','D','E','F','G','H','I','J'][i%10];
+    const npc = { id, name, x:x*TILE, y:y*TILE, talkLines:generateDialog(name), quests:[], shopId:null };
+    NPCS.push(npc);
+  }
+}
+function generateDialog(name) {
+  return [
+    `Hello, I'm ${name}.`,
+    `Can you help me with a task?`,
+    `The world is big and strange.`,
+    `Bring me items and I'll reward you.`,
+  ];
+}
+placeNPCs(120);
+
+// Create 300+ quests and attach to random NPCs
+function generateQuests(count=320) {
+  for (let i=1;i<=count;i++){
+    const qid = 'quest_'+i;
+    const objectiveTypes = ['collect','gather','kill','deliver'];
+    const type = objectiveTypes[Math.floor(Math.random()*objectiveTypes.length)];
+    // pick random item for collect or deliver
+    const item = ITEMS[Math.floor(Math.random()*ITEMS.length)];
+    const amount = Math.max(1, Math.floor((Math.random()*1.5 + (item.rarity==='common'?1: item.rarity==='uncommon'?2:item.rarity==='rare'?3:4))* (Math.random()*5)));
+    const giver = NPCS[Math.floor(Math.random()*NPCS.length)];
+    const q = {
+      id: qid,
+      title: `${type.charAt(0).toUpperCase()+type.slice(1)} ${item.name}`,
+      description: `Complete this ${type} objective: ${amount} x ${item.name}.`,
+      type,
+      itemId: item.id,
+      amount,
+      giverId: giver.id,
+      reward: { gold: Math.round(20 + Math.random()*200 * (RARITY_VALUE_MULTIPLIER[item.rarity] || 1)), itemId: ITEMS[Math.floor(Math.random()*ITEMS.length)].id },
+      status: 'available',
+      progress:0,
+    };
+    QUESTS.push(q);
+    // attach to NPC
+    if(!giver.quests) giver.quests=[];
+    giver.quests.push(q.id);
+  }
+}
+generateQuests(320);
+
+/* ----------------------------
+   Player state
+   ---------------------------- */
+let player = {
+  id: 'p_'+Math.floor(Math.random()*999999),
+  name: 'Hero'+Math.floor(Math.random()*999),
+  x: Math.floor(MAP_W/2)*TILE,
+  y: Math.floor(MAP_H/2)*TILE,
+  vx:0, vy:0,
+  speed: 96, // pixels/sec
   dir: 'down',
-  frame: 1,
-  moving: false,
-  moveTick: 0,
-  customization: {hair:0,shirt:0,pants:0,skin:0},
-  inventory: [],
-  gold: 100,
+  frame:0, frameTimer:0, frameInterval:140,
+  hp:120, maxHp:120,
+  mp:60, maxMp:60,
+  inventory: { wood:10, herb:5, iron_ore:2, coal:1 }, // starting materials
   quests: {},
-  hp: 100,
-  maxHp: 100,
+  gold: 800,
+  craftCooldown:0,
+  customization: { hair:0, hairColor:'#4B2E05', shirt:0, shirtColor:'#cc5500', pants:0, pantsColor:'#0055cc', skin:'#F6D7B6' },
+  lastPosUpdate:0,
+  isLoggedIn: false,
 };
 
-// ========== Input ==========
-const keys = {};
-window.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
-window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
-
-// ========== Sprite Drawing ==========
-const SKIN_COLORS = ['#f9d7b6','#e0a96d','#c4844e','#8b5a2a'];
-const HAIR_COLORS = ['#452a1a','#2b1e11','#d49a49','#d4c86f','#e0e0e0','#000000'];
-const SHIRT_COLORS = ['#452a1a','#4a81d1','#d14a4a','#44d166','#d19e4a'];
-const PANTS_COLORS = ['#222222','#4a81d1','#d14a4a','#44d166','#d19e4a'];
-
-function drawPlayerSprite(ctx, x, y, c, dir, frame){
-  ctx.clearRect(x,y,16,16);
-  ctx.fillStyle = SKIN_COLORS[c.skin%SKIN_COLORS.length];
-  ctx.fillRect(x+4,y+2,8,6);
-  ctx.fillRect(x+5,y+8,6,6);
-  ctx.fillStyle = HAIR_COLORS[c.hair % HAIR_COLORS.length];
-  if(dir === 'down'){
-    ctx.fillRect(x+3+(frame===1? -1 : 0),y+1,10,5);
-  } else if(dir === 'up'){
-    ctx.fillRect(x+3,y+0,10,6);
-  } else if(dir === 'left'){
-    ctx.fillRect(x+2,y+2,8,5);
-  } else if(dir === 'right'){
-    ctx.fillRect(x+4,y+2,8,5);
-  }
-  ctx.fillStyle = SHIRT_COLORS[c.shirt % SHIRT_COLORS.length];
-  if(frame === 1){
-    ctx.fillRect(x+3,y+14,10,2);
-    ctx.fillRect(x+5,y+10,6,6);
-  } else {
-    if(frame === 0){
-      ctx.fillRect(x+2,y+13,4,3);
-      ctx.fillRect(x+6,y+13,6,3);
-    } else {
-      ctx.fillRect(x+3,y+13,5,3);
-      ctx.fillRect(x+7,y+13,4,3);
+/* ----------------------------
+   Player sprite generation (16x16, 3 frames, 4 dirs)
+   ---------------------------- */
+function genPlayerSprites(custom) {
+  const dirs = ['down','left','right','up'];
+  const frames = 3;
+  const sprites = {};
+  for (const d of dirs) {
+    sprites[d] = [];
+    for (let f=0; f<frames; f++) {
+      const c = document.createElement('canvas');
+      c.width = TILE; c.height = TILE;
+      const g = c.getContext('2d');
+      // clear
+      g.clearRect(0,0,TILE,TILE);
+      // body base (skin)
+      g.fillStyle = custom.skin;
+      g.fillRect(5,4,6,6);
+      // shirt
+      g.fillStyle = custom.shirtColor;
+      g.fillRect(4,8,8,4);
+      // pants
+      g.fillStyle = custom.pantsColor;
+      g.fillRect(4,12,8,4);
+      // hair (vary by frame)
+      g.fillStyle = custom.hairColor;
+      if (f===0) g.fillRect(4,0,8,4);
+      if (f===1) g.fillRect(5,0,6,4);
+      if (f===2) g.fillRect(3,0,10,4);
+      // eyes
+      g.fillStyle = '#000';
+      g.fillRect(6,7,1,1);
+      g.fillRect(8,7,1,1);
+      sprites[d].push(c);
     }
   }
-  ctx.fillStyle = PANTS_COLORS[c.pants % PANTS_COLORS.length];
-  ctx.fillRect(x+4,y+10,8,6);
+  return sprites;
+}
+let playerSprites = genPlayerSprites(player.customization);
+
+/* ----------------------------
+   Enemy AI
+   ---------------------------- */
+function spawnEnemies(num=60) {
+  for (let i=0;i<num;i++){
+    const ex = Math.floor(Math.random()*(MAP_W-10)+5);
+    const ey = Math.floor(Math.random()*(MAP_H-10)+5);
+    const e = {
+      id: 'e_'+i,
+      x: ex*TILE, y: ey*TILE,
+      hp: 30 + Math.floor(Math.random()*120),
+      maxHp: 30 + Math.floor(Math.random()*120),
+      speed: 30 + Math.random()*70,
+      state:'idle', // idle, patrol, chase, attack
+      dir:'down', frame:0, frameTimer:0,
+      aggroRange: 96 + Math.random()*160,
+      attackRange: 16,
+      lastAttack: 0,
+    };
+    ENEMIES.push(e);
+  }
+}
+spawnEnemies(90);
+
+/* ----------------------------
+   Auction house and global market (local + supabase)
+   ---------------------------- */
+let AUCTIONS = []; // {id, sellerId, itemId, qty, price, createdAt}
+async function loadAuctionsFromSupabase() {
+  if (!USE_SUPABASE) return;
+  const { data, error } = await supabase.from('auctions').select('*');
+  if (error) { console.warn('auction fetch error', error); return; }
+  AUCTIONS = data || [];
+}
+async function createAuctionOnSupabase(listing) {
+  if (!USE_SUPABASE) return;
+  const { data, error } = await supabase.from('auctions').insert([listing]);
+  if (error) console.warn('create auction error', error);
+}
+async function deleteAuctionOnSupabase(id) {
+  if (!USE_SUPABASE) return;
+  const { error } = await supabase.from('auctions').delete().eq('id',id);
+  if (error) console.warn('delete auction error', error);
 }
 
-// ========== Camera ==========
-const camera = {
-  x: 0, y: 0,
-  width: canvas.width,
-  height: canvas.height,
-  follow(p){
-    this.x = p.px - this.width/2 + TILE_SIZE/2;
-    this.y = p.py - this.height/2 + TILE_SIZE/2;
-    this.x = Math.max(0, Math.min(this.x, MAP_WIDTH*TILE_SIZE - this.width));
-    this.y = Math.max(0, Math.min(this.y, MAP_HEIGHT*TILE_SIZE - this.height));
-  }
+/* ----------------------------
+   Sound effects (tiny base64 beeps)
+   ---------------------------- */
+function tinySound(freq=440,duration=0.08,vol=0.2) {
+  // returns an Audio object using Web Audio API and offline render to base64
+  // For simplicity we'll create oscillator-based sounds at play time (no pre-embed)
+  return { play: () => {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = 'sine'; o.frequency.value = freq;
+      g.gain.value = vol;
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start();
+      setTimeout(()=>{ o.stop(); audioCtx.close(); }, duration*1000);
+    } catch(e){ /* ignore on mobile if not allowed */ }
+  } };
+}
+const SND = {
+  walk: tinySound(660,0.05,0.05),
+  attack: tinySound(180,0.12,0.12),
+  hit: tinySound(120,0.06,0.12),
+  buy: tinySound(900,0.08,0.08),
+  craft: tinySound(420,0.09,0.09),
+  quest: tinySound(640,0.12,0.09),
+  gather: tinySound(520,0.06,0.07),
 };
 
-// ========== Other players ==========
-function drawOtherPlayer(p){
-  const sx = p.px - camera.x;
-  const sy = p.py - camera.y;
-  drawPlayerSprite(ctx, sx, sy, p.customization, p.dir, p.frame);
-}
-
-// ========== Player movement ==========
-function updatePlayer(dt){
-  let moveX=0, moveY=0;
-  if(keys['w']||keys['arrowup']) moveY = -1;
-  if(keys['s']||keys['arrowdown']) moveY = 1;
-  if(keys['a']||keys['arrowleft']) moveX = -1;
-  if(keys['d']||keys['arrowright']) moveX = 1;
-  if(moveX && moveY) {
-    moveX *= 0.707; moveY *= 0.707;
-  }
-  localPlayer.px += moveX*localPlayer.speed*dt;
-  localPlayer.py += moveY*localPlayer.speed*dt;
-
-  const newX = Math.floor(localPlayer.px/TILE_SIZE);
-  const newY = Math.floor(localPlayer.py/TILE_SIZE);
-
-  if(newX !== localPlayer.x || newY !== localPlayer.y){
-    localPlayer.x = newX;
-    localPlayer.y = newY;
-    localPlayer.x = Math.max(0,Math.min(MAP_WIDTH-1,localPlayer.x));
-    localPlayer.y = Math.max(0,Math.min(MAP_HEIGHT-1,localPlayer.y));
-  }
-
-  localPlayer.moving = (moveX !== 0 || moveY !== 0);
-
-  if(localPlayer.moving){
-    localPlayer.moveTick += dt;
-    if(localPlayer.moveTick > 200){
-      localPlayer.frame = (localPlayer.frame+1)%3;
-      localPlayer.moveTick=0;
-    }
-    localPlayer.dir = Math.abs(moveX) > Math.abs(moveY) ? (moveX>0 ? 'right' : 'left') : (moveY>0 ? 'down' : 'up');
-  } else {
-    localPlayer.frame = 1;
+/* ----------------------------
+   Helper: draw tile & world
+   ---------------------------- */
+function drawTile(t,x,y) {
+  const px = x*TILE, py = y*TILE;
+  switch(t) {
+    case 0: ctx.fillStyle='#3fa552'; ctx.fillRect(px,py,TILE,TILE); break; // grass
+    case 1: ctx.fillStyle='#8f6a2f'; ctx.fillRect(px,py,TILE,TILE); break; // road
+    case 2: // tree
+      ctx.fillStyle='#2d5b2f'; ctx.fillRect(px,py,TILE,TILE);
+      ctx.fillStyle='#2a8a3d'; ctx.beginPath(); ctx.moveTo(px+8,py+2); ctx.lineTo(px+2,py+14); ctx.lineTo(px+14,py+14); ctx.fill();
+      break;
+    case 3:
+      ctx.fillStyle='#6b6b6b'; ctx.fillRect(px,py,TILE,TILE);
+      ctx.fillStyle='#9b9b9b'; ctx.fillRect(px+3,py+4,10,8);
+      break;
+    case 4:
+      ctx.fillStyle='#2b6fb2'; ctx.fillRect(px,py,TILE,TILE); break; // water
+    case 5:
+      ctx.fillStyle='#f0c36a'; ctx.fillRect(px,py,TILE,TILE); ctx.fillStyle='#b46300'; ctx.fillRect(px+6,py+8,4,8); break;
+    case 6:
+      ctx.fillStyle='#3a3a3a'; ctx.fillRect(px,py,TILE,TILE); ctx.fillStyle='#a8a8a8'; ctx.fillRect(px+4,py+7,8,3); break;
+    case 7:
+      ctx.fillStyle='#2c6f2c'; ctx.fillRect(px,py,TILE,TILE); ctx.fillStyle='#6fae6f'; ctx.fillRect(px+3,py+4,10,8); break;
+    case 8:
+      ctx.fillStyle='#7f7f7f'; ctx.fillRect(px,py,TILE,TILE); ctx.fillStyle='#bfbfbf'; ctx.fillRect(px+3,py+4,10,8); break;
+    default:
+      ctx.fillStyle='#3fa552'; ctx.fillRect(px,py,TILE,TILE);
   }
 }
 
-// ========== Draw Map ==========
-function drawMap(){
-  const startX = Math.floor(camera.x/TILE_SIZE);
-  const startY = Math.floor(camera.y/TILE_SIZE);
-  const endX = Math.min(startX + Math.ceil(camera.width/TILE_SIZE)+1, MAP_WIDTH);
-  const endY = Math.min(startY + Math.ceil(camera.height/TILE_SIZE)+1, MAP_HEIGHT);
-
-  for(let y=startY; y<endY; y++){
-    for(let x=startX; x<endX; x++){
-      ctx.fillStyle = TILE_COLORS[mapData[y][x]] || '#000';
-      ctx.fillRect(x*TILE_SIZE - camera.x, y*TILE_SIZE - camera.y, TILE_SIZE, TILE_SIZE);
-    }
-  }
+/* ----------------------------
+   Viewport & camera
+   ---------------------------- */
+function getCamera() {
+  let camX = clamp(player.x - VIEW_W/2, 0, MAP_W*TILE - VIEW_W);
+  let camY = clamp(player.y - VIEW_H/2, 0, MAP_H*TILE - VIEW_H);
+  return { camX, camY };
 }
+function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
 
-// ========== Supabase multiplayer ==========
-async function initMultiplayer(){
-  playerId = 'player_' + Math.floor(Math.random()*99999999);
-  localPlayer.id = playerId;
-
-  await supabase.from('players').upsert({id: playerId, x: localPlayer.x, y: localPlayer.y, dir: localPlayer.dir, customization: localPlayer.customization});
-
-  supabase
-    .from('players')
-    .on('INSERT', payload => {
-      if(payload.new.id !== playerId) {
-        players[payload.new.id] = {...payload.new, px: payload.new.x*TILE_SIZE, py: payload.new.y*TILE_SIZE, frame:1, moving:false};
+/* ----------------------------
+   World draw routine
+   ---------------------------- */
+function drawWorld() {
+  ctx.clearRect(0,0,VIEW_W,VIEW_H);
+  const {camX,camY} = getCamera();
+  const sx = Math.floor(camX/TILE), sy = Math.floor(camY/TILE);
+  const offX = - (camX - sx*TILE), offY = - (camY - sy*TILE);
+  // draw tiles in view
+  const tilesX = Math.ceil(VIEW_W / TILE)+1, tilesY = Math.ceil(VIEW_H / TILE)+1;
+  for (let j=0;j<tilesY;j++){
+    for (let i=0;i<tilesX;i++){
+      const mx = sx + i, my = sy + j;
+      if (mx>=0 && mx<MAP_W && my>=0 && my<MAP_H) {
+        // draw at i*tile + offX, j*tile+offY
+        const px = i*TILE + offX, py = j*TILE + offY;
+        drawTile(map[my][mx], Math.floor((px+camX)/TILE), Math.floor((py+camY)/TILE));
       }
-    })
-    .on('UPDATE', payload => {
-      if(payload.new.id !== playerId){
-        const p = players[payload.new.id];
-        if(!p) players[payload.new.id] = {...payload.new, px: payload.new.x*TILE_SIZE, py: payload.new.y*TILE_SIZE, frame:1, moving:false};
-        else {
-          p.x = payload.new.x;
-          p.y = payload.new.y;
-          p.px = p.x*TILE_SIZE;
-          p.py = p.y*TILE_SIZE;
-          p.dir = payload.new.dir;
-        }
-      }
-    })
-    .on('DELETE', payload => { delete players[payload.old.id]; })
-    .subscribe();
-
-  window.addEventListener('beforeunload', async () => {
-    await supabase.from('players').delete().eq('id', playerId);
-  });
+    }
+  }
+  // draw NPCs
+  for (const npc of NPCS) {
+    const nx = npc.x - camX, ny = npc.y - camY;
+    if (nx< -TILE || ny < -TILE || nx > VIEW_W+TILE || ny > VIEW_H+TILE) continue;
+    // simple sprite rectangle
+    ctx.fillStyle = '#ffd88a';
+    ctx.fillRect(nx, ny, TILE, TILE);
+    ctx.fillStyle = '#000';
+    ctx.fillRect(nx+3, ny+5, 2,2);
+    ctx.fillRect(nx+10, ny+5, 2,2);
+  }
+  // draw enemies
+  for (const e of ENEMIES) {
+    const ex = e.x - camX, ey = e.y - camY;
+    if (ex< -TILE || ey < -TILE || ex > VIEW_W+TILE || ey > VIEW_H+TILE) continue;
+    ctx.fillStyle = '#a84a4a';
+    ctx.fillRect(ex, ey, TILE, TILE);
+    // hp bar
+    ctx.fillStyle = '#000';
+    ctx.fillRect(ex, ey-5, TILE, 4);
+    ctx.fillStyle = '#f44';
+    ctx.fillRect(ex, ey-5, TILE * (e.hp / e.maxHp), 4);
+  }
+  // draw other players (if any)
+  for (const id in OTHER_PLAYERS) {
+    const op = OTHER_PLAYERS[id];
+    const ox = op.x - camX, oy = op.y - camY;
+    if (ox< -TILE || oy < -TILE || ox > VIEW_W+TILE || oy > VIEW_H+TILE) continue;
+    ctx.fillStyle = op.customization?.shirtColor || '#ccc';
+    ctx.fillRect(ox, oy, TILE, TILE);
+    ctx.fillStyle = '#000';
+    ctx.fillRect(ox+3, oy+5, 2,2);
+    ctx.fillRect(ox+10, oy+5, 2,2);
+  }
+  // draw player sprite in center relative
+  const px = player.x - camX, py = player.y - camY;
+  const sprite = playerSprites[player.dir][player.frame];
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(sprite, px, py, TILE, TILE);
+  // HUD
+  ctx.fillStyle = 'rgba(0,0,0,0.6)';
+  ctx.fillRect(8,8,140,36);
+  ctx.fillStyle = '#fff'; ctx.font='11px monospace';
+  ctx.fillText(`${player.name}`, 12,20);
+  ctx.fillStyle = '#ff6b6b'; ctx.fillRect(12,24, (player.hp/player.maxHp)*120,6);
+  ctx.fillStyle = '#8ad2ff'; ctx.fillRect(12,34, (player.mp/player.maxMp)*120,6);
+  ctx.fillStyle = '#fff'; ctx.fillText(`Gold: ${player.gold}`, 12,50);
 }
 
-let lastPosUpdate = 0;
-async function sendPosition(){
+/* ----------------------------
+   Input handling
+   ---------------------------- */
+window.addEventListener('keydown', (e) => {
+  keys[e.key.toLowerCase()] = true;
+  // avoid scroll
+  if (['arrowup','arrowdown','arrowleft','arrowright',' '].includes(e.key.toLowerCase())) e.preventDefault();
+  if (e.key.toLowerCase() === 'i') toggleMenu('inventory');
+  if (e.key.toLowerCase() === 'q') toggleMenu('quests');
+  if (e.key.toLowerCase() === 's') toggleMenu('shop');
+  if (e.key.toLowerCase() === 'c') toggleMenu('craft');
+  if (e.key.toLowerCase() === 'a') toggleMenu('auction');
+  if (e.key === 'Escape') closeMenu();
+});
+window.addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
+
+/* ----------------------------
+   Movement & updates
+   ---------------------------- */
+let lastFrameTime = performance.now();
+function update(dt) {
+  // movement
+  let moved = false;
+  const sp = player.speed * dt;
+  if (keys['arrowup'] || keys['w']) { player.y -= sp; player.dir='up'; moved = true; }
+  if (keys['arrowdown'] || keys['s']) { player.y += sp; player.dir='down'; moved = true; }
+  if (keys['arrowleft'] || keys['a']) { player.x -= sp; player.dir='left'; moved = true; }
+  if (keys['arrowright'] || keys['d']) { player.x += sp; player.dir='right'; moved = true; }
+  // clamp
+  player.x = clamp(player.x, TILE, MAP_W*TILE - TILE*2);
+  player.y = clamp(player.y, TILE, MAP_H*TILE - TILE*2);
+  // animation
+  if (moved) {
+    player.frameTimer += dt*1000;
+    if (player.frameTimer > player.frameInterval) { player.frame = (player.frame+1)%3; player.frameTimer = 0; SND.walk.play(); }
+  } else { player.frame = 1; player.frameTimer = 0; }
+  // update enemies
+  for (const e of ENEMIES) updateEnemy(e, dt);
+  // update multiplayer periodic pos update
   const now = Date.now();
-  if(now - lastPosUpdate < 400) return;
-  lastPosUpdate = now;
-
-  await supabase.from('players').upsert({
-    id: playerId,
-    x: localPlayer.x,
-    y: localPlayer.y,
-    dir: localPlayer.dir,
-    customization: localPlayer.customization,
-  });
+  if (USE_SUPABASE && player.isLoggedIn && now - player.lastPosUpdate > 400) {
+    player.lastPosUpdate = now; syncPositionToServer();
+  }
+  // update HUD mini
+  document.getElementById('miniHud').innerHTML = `Pos: ${Math.round(player.x)},${Math.round(player.y)} &nbsp; Quests: ${Object.keys(player.quests||{}).length} &nbsp; Items: ${Object.keys(player.inventory||{}).length}`;
 }
 
-// ========== Game loop ==========
-let lastTime = performance.now();
-function gameLoop(t){
-  const dt = t - lastTime;
-  lastTime = t;
-
-  updatePlayer(dt);
-  camera.follow(localPlayer);
-
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  drawMap();
-
-  for(let id in players) drawOtherPlayer(players[id]);
-  drawPlayerSprite(ctx, localPlayer.px - camera.x, localPlayer.py - camera.y, localPlayer.customization, localPlayer.dir, localPlayer.frame);
-
-  sendPosition();
-
-  requestAnimationFrame(gameLoop);
+/* Enemy update */
+function updateEnemy(e, dt) {
+  const dx = player.x - e.x, dy = player.y - e.y;
+  const dist = Math.hypot(dx,dy);
+  if (dist < e.aggroRange) {
+    // chase
+    e.state = 'chase';
+    const ang = Math.atan2(dy,dx);
+    e.x += Math.cos(ang) * e.speed * dt;
+    e.y += Math.sin(ang) * e.speed * dt;
+    // attack if in range
+    if (dist < e.attackRange+TILE) {
+      // attack cooldown
+      if (Date.now() - e.lastAttack > 700) {
+        e.lastAttack = Date.now();
+        // damage player
+        const damage = Math.max(1, Math.floor(4 + Math.random()*8));
+        player.hp -= damage;
+        if (player.hp < 0) player.hp = 0;
+        SND.hit.play();
+        log(`Hit by enemy for ${damage} dmg! HP ${player.hp}/${player.maxHp}`);
+      }
+    }
+  } else {
+    // random patrol
+    if (Math.random()<0.002) {
+      e.x += (Math.random()-0.5)*TILE*2;
+      e.y += (Math.random()-0.5)*TILE*2;
+    }
+  }
+  // clamp
+  e.x = clamp(e.x, TILE, MAP_W*TILE - TILE);
+  e.y = clamp(e.y, TILE, MAP_H*TILE - TILE);
 }
 
-// ========== UI tabs ==========
-const tabs = {
-  inventory: document.getElementById('tabInventory'),
-  shop: document.getElementById('tabShop'),
-  craft: document.getElementById('tabCraft'),
-  auction: document.getElementById('tabAuction'),
-  quest: document.getElementById('tabQuest'),
-};
-const contents = {
-  inventory: document.getElementById('inventoryContent'),
-  shop: document.getElementById('shopContent'),
-  craft: document.getElementById('craftContent'),
-  auction: document.getElementById('auctionContent'),
-  quest: document.getElementById('questContent'),
-};
-function activateTab(name){
-  for(let t in tabs){
-    tabs[t].classList.toggle('active', t===name);
-    contents[t].style.display = (t===name) ? 'block' : 'none';
+/* ----------------------------
+   Combat: attack enemies in front
+   ---------------------------- */
+function playerAttack() {
+  SND.attack.play();
+  // find near enemies within attack range 18
+  const range = 20;
+  for (const e of ENEMIES) {
+    const dx = e.x - player.x, dy = e.y - player.y;
+    const dist = Math.hypot(dx,dy);
+    if (dist <= range) {
+      // apply damage
+      const atk = 8 + Math.floor(Math.random()*10);
+      e.hp -= atk;
+      SND.hit.play();
+      log(`You hit enemy for ${atk} dmg`);
+      if (e.hp <= 0) {
+        // drop some gold / items
+        const g = Math.floor(5 + Math.random()*45);
+        player.gold += g;
+        log(`Enemy slain! Loot: ${g} gold`);
+        // remove enemy
+        ENEMIES = ENEMIES.filter(x=>x.id!==e.id);
+      }
+      break; // one attack per press
+    }
   }
 }
-for(let t in tabs){
-  tabs[t].onclick = () => activateTab(t);
+
+/* ----------------------------
+   UI & Menus
+   ---------------------------- */
+const menuOverlay = document.getElementById('menuOverlay');
+
+function openMenuHtml(title, html) {
+  menuOverlay.innerHTML = `<div><span class="menuHeader">${title}</span><div class="closeBtn" id="menuClose">Close</div></div><hr/>` + html;
+  menuOverlay.classList.add('show');
+  document.getElementById('menuClose').onclick = closeMenu;
+}
+function closeMenu() { menuOverlay.classList.remove('show'); currentMenu = null; }
+
+let currentMenu = null;
+document.getElementById('btnCustomize').onclick = ()=>{ currentMenu='custom'; openCustomizationMenu(); };
+document.getElementById('btnInventory').onclick = ()=>{ currentMenu='inventory'; openInventory(); };
+document.getElementById('btnQuests').onclick = ()=>{ currentMenu='quests'; openQuests(); };
+document.getElementById('btnShop').onclick = ()=>{ currentMenu='shop'; openShop(); };
+document.getElementById('btnCraft').onclick = ()=>{ currentMenu='craft'; openCraft(); };
+document.getElementById('btnAuction').onclick = ()=>{ currentMenu='auction'; openAuction(); };
+document.getElementById('btnSave').onclick = ()=>{ saveGame(); };
+document.getElementById('btnLoad').onclick = ()=>{ loadGame(); };
+document.getElementById('btnChat').onclick = ()=>{ toggleChat(); };
+document.getElementById('btnLogout').onclick = ()=>{ logout(); };
+
+// Inventory view
+function openInventory() {
+  let html = `<h3>Inventory</h3><table><thead><tr><th>Item</th><th>Qty</th><th>Rarity</th><th>Use / Sell</th></tr></thead><tbody>`;
+  const invKeys = Object.keys(player.inventory);
+  if (invKeys.length===0) html += `<tr><td colspan="4">No items</td></tr>`;
+  else {
+    for (const id of invKeys) {
+      const qty = player.inventory[id];
+      const itm = ITEMS.find(i=>i.id===id) || { name:id, rarity:'common', price: 5 };
+      html += `<tr><td>${itm.name || id}</td><td>${qty}</td><td class="${'rarity-'+itm.rarity}">${itm.rarity}</td><td><button class="useBtn" data-id="${id}">Use</button> <button class="sellBtn" data-id="${id}">Sell</button></td></tr>`;
+    }
+  }
+  html += `</tbody></table>`;
+  openMenuHtml('Inventory', html);
+  // attach buttons
+  menuOverlay.querySelectorAll('.useBtn').forEach(b=>b.onclick = (e)=>{ useItem(e.target.dataset.id); openInventory(); });
+  menuOverlay.querySelectorAll('.sellBtn').forEach(b=>b.onclick = (e)=>{ sellItem(e.target.dataset.id); openInventory(); });
 }
 
-// ========== Items & Inventory ==========
-const RARITIES = ['common','uncommon','rare','epic','legendary','divine'];
-const RARITY_COLORS =
+function useItem(id) {
+  const itm = ITEMS.find(i=>i.id===id);
+  if (!itm) { log('Cannot use that item'); return; }
+  // simple: if potion-like (mp or hp) heal
+  if (itm.name.toLowerCase().includes('potion') || itm.name.toLowerCase().includes('salve') || itm.stats?.hp) {
+    player.hp = Math.min(player.maxHp, player.hp + (itm.stats?.hp || 25));
+    player.inventory[id]--; if (player.inventory[id]<=0) delete player.inventory[id];
+    SND.craft.play();
+    log(`Used ${itm.name} — HP now ${player.hp}/${player.maxHp}`);
+  } else {
+    log(`Used ${itm.name} — nothing happened`);
+  }
+}
+
+function sellItem(id) {
+  const itm = ITEMS.find(i=>i.id===id);
+  if (!itm) { log('Cannot sell'); return; }
+  player.gold += Math.floor(itm.price * 0.6);
+  player.inventory[id]--; if (player.inventory[id]<=0) delete player.inventory[id];
+  SND.buy.play();
+  log(`Sold 1 ${itm.name} for ${Math.floor(itm.price * 0.6)} gold`);
+}
+
+// Shop view (shop sells a filtered subset of ITEMS based on shop type — for demo we show random)
+function openShop() {
+  // pick a list of items (200 sample)
+  const shopItems = shuffleArray(ITEMS).slice(0, 220);
+  let html = `<h3>General Shop</h3><table><thead><tr><th>Item</th><th>Rarity</th><th>Price</th><th>Buy</th></tr></thead><tbody>`;
+  for (const it of shopItems) {
+    html += `<tr><td>${it.name}</td><td class="${'rarity-'+it.rarity}">${it.rarity}</td><td>${it.price}</td><td><button class="buyBtn" data-id="${it.id}">Buy</button></td></tr>`;
+  }
+  html += `</tbody></table>`;
+  openMenuHtml('Shop', html);
+  menuOverlay.querySelectorAll('.buyBtn').forEach(b => b.onclick = e => { buyItem(e.target.dataset.id); openShop(); });
+}
+
+function buyItem(id) {
+  const it = ITEMS.find(x=>x.id===id);
+  if (!it) return;
+  if (player.gold < it.price) { log('Not enough gold'); return; }
+  player.gold -= it.price;
+  player.inventory[id] = (player.inventory[id] || 0) + 1;
+  SND.buy.play();
+  log(`Bought 1 ${it.name} for ${it.price} gold`);
+}
+
+// Crafting menu
+function openCraft() {
+  let html = `<h3>Crafting</h3><table><thead><tr><th>Recipe</th><th>Requires</th><th>Result</th><th>Action</th></tr></thead><tbody>`;
+  for (const r of RECIPES) {
+    const reqs = Object.entries(r.requires).map(([k,v])=>`${k} x${v}`).join(', ');
+    const resItem = ITEMS.find(i=>i.id===r.result.itemId) || { name:r.result.itemId };
+    html += `<tr><td>${r.name}</td><td>${reqs}</td><td>${resItem.name} x${r.result.qty}</td><td><button class="craftBtn" data-id="${r.id}">Craft</button></td></tr>`;
+  }
+  html += `</tbody></table>`;
+  openMenuHtml('Crafting', html);
+  menuOverlay.querySelectorAll('.craftBtn').forEach(b=>b.onclick = e => { craftRecipe(e.target.dataset.id); openCraft(); });
+}
+
+function craftRecipe(id) {
+  const r = RECIPES.find(x=>x.id===id);
+  if (!r) return;
+  // check materials
+  for (const [k,v] of Object.entries(r.requires)) {
+    if ((player.inventory[k]||0) < v) { log('Missing materials'); return; }
+  }
+  for (const [k,v] of Object.entries(r.requires)) player.inventory[k] -= v;
+  player.inventory[r.result.itemId] = (player.inventory[r.result.itemId]||0) + r.result.qty;
+  SND.craft.play();
+  log(`Crafted ${r.name}`);
+}
+
+// Auction House UI
+function openAuction() {
+  // local AUCTIONS show
+  let html = `<h3>Auction House</h3>`;
+  html += `<div style="display:flex;gap:8px"><div style="flex:1"><h4>Listings</h4><table><thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Buy</th></tr></thead><tbody>`;
+  if (AUCTIONS.length===0) html += `<tr><td colspan=4>No listings</td></tr>`;
+  else {
+    for (const a of AUCTIONS) {
+      const it = ITEMS.find(i=>i.id===a.itemId) || { name:a.itemId };
+      html += `<tr><td>${it.name}</td><td>${a.qty}</td><td>${a.price}</td><td><button class="buyAuction" data-id="${a.id}">Buy</button></td></tr>`;
+    }
+  }
+  html += `</tbody></table></div><div style="width:320px;"><h4>Create Listing</h4>
+    <label>Item (id): <input id="listItemId" /></label>
+    <label>Qty: <input id="listQty" type="number" value="1" /></label>
+    <label>Price (per unit): <input id="listPrice" type="number" value="100" /></label>
+    <button id="createListingBtn">List Item</button>
+  </div></div>`;
+  openMenuHtml('Auction House', html);
+  menuOverlay.querySelectorAll('.buyAuction').forEach(b=>b.onclick = e => { buyAuction(e.target.dataset.id); openAuction(); });
+  document.getElementById('createListingBtn').onclick = () => {
+    const itemId = document.getElementById('listItemId').value.trim();
+    const qty = parseInt(document.getElementById('listQty').value||'0');
+    const price = parseInt(document.getElementById('listPrice').value||'0');
+    if (!itemId||qty<1||price<1) { log('Invalid listing'); return; }
+    if ((player.inventory[itemId]||0) < qty) { log('Not enough items'); return; }
+    // remove from inventory and create listing
+    player.inventory[itemId] -= qty; if (player.inventory[itemId]<=0) delete player.inventory[itemId];
+    const listing = { id: 'auc_'+Date.now()+'_'+Math.floor(Math.random()*999), sellerId: player.id, itemId, qty, price, createdAt: new Date().toISOString() };
+    AUCTIONS.push(listing);
+    createAuctionOnSupabase(listing); // sync remote
+    log(`Listed ${qty} x ${itemId} for ${price} each`);
+    openAuction();
+  };
+}
+function buyAuction(listingId) {
+  const aIdx = AUCTIONS.findIndex(x=>x.id===listingId);
+  if (aIdx<0) return;
+  const a = AUCTIONS[aIdx];
+  const total = a.price * a.qty;
+  if (player.gold < total) { log('Not enough gold'); return; }
+  player.gold -= total;
+  player.inventory[a.itemId] = (player.inventory[a.itemId]||0) + a.qty;
+  // remove listing
+  AUCTIONS.splice(aIdx,1);
+  deleteAuctionOnSupabase(listingId);
+  log(`Bought ${a.qty} x ${a.itemId} for ${total} gold`);
+}
+
+/* ----------------------------
+   Quest UI & logic
+   ---------------------------- */
+function openQuests() {
+  let html = `<h3>Quests</h3><div style="display:flex;gap:10px"><div style="flex:1"><h4>Available / Active</h4><table><thead><tr><th>Title</th><th>Status</th><th>Action</th></tr></thead><tbody>`;
+  for (const q of QUESTS.slice(0,180)) { // show first 180 for speed
+    const st = player.quests[q.id]?.status || 'available';
+    html += `<tr><td>${q.title}</td><td>${st}</td><td>${st==='available'? `<button class="acceptQ" data-id="${q.id}">Accept</button>` : st==='active'? `<button class="turnQ" data-id="${q.id}">Turn In</button>` : 'Done' }</td></tr>`;
+  }
+  html += `</tbody></table></div><div style="width:320px"><h4>Details</h4><div id="questDetails">Select a quest</div></div></div>`;
+  openMenuHtml('Quests', html);
+  menuOverlay.querySelectorAll('.acceptQ').forEach(b=>b.onclick = e => { acceptQuest(e.target.dataset.id); openQuests(); });
+  menuOverlay.querySelectorAll('.turnQ').forEach(b=>b.onclick = e => { turnInQuest(e.target.dataset.id); openQuests(); });
+}
+function acceptQuest(qid) {
+  const q = QUESTS.find(x=>x.id===qid);
+  if (!q) return;
+  player.quests[qid] = { status:'active', progress:0 };
+  log(`Accepted quest: ${q.title}`);
+}
+function turnInQuest(qid) {
+  const q = QUESTS.find(x=>x.id===qid);
+  if (!q) return;
+  // check completion: if collect objective, verify inventory
+  if (q.type==='collect' || q.type==='gather' || q.type==='deliver') {
+    if ((player.inventory[q.itemId]||0) < q.amount) { log('You do not have required items'); return; }
+    player.inventory[q.itemId] -= q.amount; if (player.inventory[q.itemId]<=0) delete player.inventory[q.itemId];
+  } else if (q.type==='kill') {
+    if ((q.progress||0) < q.amount) { log('Kill more targets'); return; }
+  }
+  player.gold += q.reward.gold;
+  if (q.reward.itemId) player.inventory[q.reward.itemId] = (player.inventory[q.reward.itemId]||0) + 1;
+  player.quests[qid].status = 'completed';
+  log(`Quest completed: ${q.title}. Reward: ${q.reward.gold} gold`);
+  SND.quest.play();
+}
+
+/* ----------------------------
+   Character customization UI
+   ---------------------------- */
+function openCustomizationMenu() {
+  const hairColors = ['#4B2E05','#222222','#ffcc66','#552288','#aa3333'];
+  const shirtColors = ['#cc5500','#ffff00','#009900','#990000','#2288ff'];
+  const pantsColors = ['#0055cc','#333333','#aa3333','#226622','#444444'];
+  let html = `<div style="display:flex;gap:12px;"><div style="flex:1"><label>Name:<input id="custName" value="${player.name}" /></label><label>Hair Color:<select id="hairColor">${hairColors.map(c=>`<option value="${c}" ${player.customization.hairColor===c?'selected':''}>${c}</option>`)}</select></label><label>Shirt Color:<select id="shirtColor">${shirtColors.map(c=>`<option value="${c}" ${player.customization.shirtColor===c?'selected':''}>${c}</option>`)}</select></label><label>Pants Color:<select id="pantsColor">${pantsColors.map(c=>`<option value="${c}" ${player.customization.pantsColor===c?'selected':''}>${c}</option>`)}</select></label><button id="saveCust" class="small">Save</button></div><div style="width:200px" id="custPreview"></div></div>`;
+  openMenuHtml('Character Customization', html);
+  function drawPreview() {
+    const d = document.getElementById('custPreview');
+    d.innerHTML = '';
+    const c = document.createElement('canvas'); c.width=64; c.height=64;
+    const g = c.getContext('2d');
+    // simple big sprite
+    g.fillStyle = document.getElementById('shirtColor').value; g.fillRect(16,28,32,20); // shirt
+    g.fillStyle = document.getElementById('pantsColor').value; g.fillRect(16,48,32,12); // pants
+    g.fillStyle = document.getElementById('hairColor').value; g.fillRect(20,8,24,12); // hair
+    d.appendChild(c);
+  }
+  drawPreview();
+  document.getElementById('hairColor').onchange = drawPreview;
+  document.getElementById('shirtColor').onchange = drawPreview;
+  document.getElementById('pantsColor').onchange = drawPreview;
+  document.getElementById('saveCust').onclick = () => {
+    player.name = document.getElementById('custName').value || player.name;
+    player.customization.hairColor = document.getElementById('hairColor').value;
+    player.customization.shirtColor = document.getElementById('shirtColor').value;
+    player.customization.pantsColor = document.getElementById('pantsColor').value;
+    playerSprites = genPlayerSprites(player.customization);
+    log('Customization saved');
+    closeMenu();
+  };
+}
+
+/* ----------------------------
+   Save/Load (local + optional supabase)
+   ---------------------------- */
+function saveGame() {
+  const snapshot = JSON.stringify({ player, inventory:player.inventory, quests:player.quests });
+  localStorage.setItem('realmforge_save', snapshot);
+  log('Game saved locally.');
+  if (USE_SUPABASE && player.isLoggedIn) {
+    // upsert players table with state
+    supabase.from('players').upsert([{
+      id: player.id, x: player.x, y: player.y, data: snapshot, name: player.name, lastActive: new Date().toISOString()
+    }]).then(res=>{ if(res.error) console.warn(res.error); else log('Saved to Supabase'); });
+  }
+}
+function loadGame() {
+  const s = localStorage.getItem('realmforge_save');
+  if (!s){ log('No save found'); return; }
+  const obj = JSON.parse(s);
+  Object.assign(player, obj.player || {});
+  if (obj.inventory) player.inventory = obj.inventory;
+  if (obj.quests) player.quests = obj.quests;
+  playerSprites = genPlayerSprites(player.customization);
+  log('Game loaded');
+}
+
+/* ----------------------------
+   Multiplayer: send/receive approximate positions
+   ---------------------------- */
+let OTHER_PLAYERS = {}; // id => {x,y,name,customization}
+
+async function setupMultiplayer() {
+  if (!USE_SUPABASE) return;
+  // Ensure players table exists: developer must create it
+  // Start listening to players table changes
+  supabase.channel('players-ch')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'players' }, payload => {
+      const rec = payload.new;
+      if (!rec || !rec.id || rec.id === player.id) return;
+      OTHER_PLAYERS[rec.id] = { id:rec.id, x:rec.x, y:rec.y, name:rec.name, customization:rec.customization || {} };
+    })
+    .subscribe();
+  // periodic send updates
+  setInterval(() => {
+    if (!player.isLoggedIn) return;
+    const now = Date.now();
+    if (now - player.lastPosUpdate < 400) return;
+    player.lastPosUpdate = now;
+    // upsert
+    supabase.from('players').upsert([{ id: player.id, x: player.x, y: player.y, name: player.name, customization: player.customization, lastActive: new Date().toISOString() }])
+      .then(res => { if (res.error) console.warn(res.error); });
+  }, 400);
+}
+
+/* ----------------------------
+   Chat (local + optional supabase)
+   ---------------------------- */
+let chatOpen = false;
+document.getElementById('chatSend').onclick = sendChat;
+function toggleChat() {
+  chatOpen = !chatOpen;
+  document.getElementById('chatWindow').style.display = chatOpen ? 'block' : 'none';
+  document.getElementById('chatInputWrap').style.display = chatOpen ? 'block' : 'none';
+}
+function sendChat() {
+  const txt = document.getElementById('chatInput').value.trim();
+  if (!txt) return;
+  document.getElementById('chatInput').value = '';
+  // local echo
+  log(`[CHAT] ${player.name}: ${txt}`);
+  if (USE_SUPABASE) {
+    supabase.from('chat').insert([{ user: player.name, msg: txt }]).then(res=>{ if(res.error) console.warn(res.error); });
+  }
+}
+
+/* ----------------------------
+   Util
+   ---------------------------- */
+function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]] } return a; }
+
+/* ----------------------------
+   Networking: position sync
+   ---------------------------- */
+async function syncPositionToServer(){
+  if (!USE_SUPABASE) return;
+  supabase.from('players').upsert([{ id: player.id, x: player.x, y: player.y, name:player.name, customization:player.customization, lastActive:new Date().toISOString() }])
+    .then(r=>{ if (r.error) console.warn('sync err', r.error); });
+}
+
+/* ----------------------------
+   Logout & login (simple)
+   ---------------------------- */
+function logout(){
+  player.isLoggedIn = false;
+  if (USE_SUPABASE) {
+    // optional: remove player presence or mark offline
+    supabase.from('players').delete().eq('id',player.id).then(()=>{ log('Logged out from Supabase'); });
+  }
+  log('Logged out (local)');
+}
+
+/* ----------------------------
+   Helpers: gathering & resource interactions
+   ---------------------------- */
+function tryGather() {
+  const tileX = Math.floor(player.x / TILE), tileY = Math.floor(player.y / TILE);
+  const t = map[tileY] && map[tileY][tileX];
+  if (t==7) { // wood
+    SND.gather.play();
+    player.inventory.wood = (player.inventory.wood||0) + 1;
+    log('Gathered wood.');
+    // optionally remove node
+    if (Math.random()<0.2) map[tileY][tileX] = 0;
+    return;
+  }
+  if (t==8) {
+    SND.gather.play();
+    player.inventory.stone = (player.inventory.stone||0) + 1;
+    log('Gathered stone.');
+    if (Math.random()<0.15) map[tileY][tileX] = 0;
+    return;
+  }
+  if (t==6) {
+    SND.gather.play();
+    player.inventory.iron_ore = (player.inventory.iron_ore||0) + 1;
+    player.inventory.coal = (player.inventory.coal||0) + (Math.random()<0.4?1:0);
+    log('Mined ore.');
+    if (Math.random()<0.05) map[tileY][tileX] = 0;
+    return;
+  }
+  log('Nothing to gather here.');
+}
+
+/* ----------------------------
+   Input actions: E to interact, F to attack, G to gather
+   ---------------------------- */
+window.addEventListener('keydown', (e) => {
+  if (e.key.toLowerCase() === 'f') playerAttack();
+  if (e.key.toLowerCase() === 'g') tryGather();
+  if (e.key.toLowerCase() === 'e') tryInteract();
+});
+
+function tryInteract() {
+  // check NPC proximity
+  for (const npc of NPCS) {
+    const dx = npc.x - player.x, dy = npc.y - player.y;
+    if (Math.hypot(dx,dy) < 24) {
+      // open NPC dialog
+      openNpcDialog(npc);
+      return;
+    }
+  }
+  // check items on ground? (not implemented)
+  log('Nothing to interact with.');
+}
+
+function openNpcDialog(npc) {
+  let html = `<h3>${npc.name}</h3><div>`;
+  const line = npc.talkLines[Math.floor(Math.random()*npc.talkLines.length)];
+  html += `<p>${line}</p>`;
+  // list NPC quests if any
+  if (npc.quests && npc.quests.length>0) {
+    html += `<h4>Quests</h4><table><thead><tr><th>Quest</th><th>Action</th></tr></thead><tbody>`;
+    for (const qid of npc.quests.slice(0,8)) {
+      const q = QUESTS.find(x=>x.id===qid);
+      const st = player.quests[qid]?.status || 'available';
+      html += `<tr><td>${q.title}</td><td>${st==='available'? `<button class="acceptNpc" data-id="${qid}">Accept</button>`: st==='active'? `<button class="turnNpc" data-id="${qid}">Turn</button>` : 'Done'}</td></tr>`;
+    }
+    html += `</tbody></table>`;
+  }
+  // shop button
+  html += `<div style="margin-top:8px"><button id="talkClose" class="small">Close</button></div></div>`;
+  openMenuHtml(`Talk: ${npc.name}`, html);
+  // attach handlers
+  menuOverlay.querySelectorAll('.acceptNpc').forEach(b=> b.onclick = e => { acceptQuest(e.target.dataset.id); openNpcDialog(npc); });
+  menuOverlay.querySelectorAll('.turnNpc').forEach(b=> b.onclick = e => { turnInQuest(e.target.dataset.id); openNpcDialog(npc); });
+  document.getElementById('talkClose').onclick = closeMenu;
+}
+
+/* ----------------------------
+   Game loop
+   ---------------------------- */
+function loop(now) {
+  const dt = Math.min(0.05, (now - lastFrameTime) / 1000);
+  lastFrameTime = now;
+  update(dt);
+  drawWorld();
+  requestAnimationFrame(loop);
+}
+lastFrameTime = performance.now();
+requestAnimationFrame(loop);
+
+/* ----------------------------
+   Init & bootstrap
+   ---------------------------- */
+log('Realm Forge starting — building world...');
+playerSprites = genPlayerSprites(player.customization);
+if (USE_SUPABASE) {
+  log('Supabase enabled — attempting setup.');
+  // for multiplayer to work, developer must set up tables: players, auctions, chat
+  // We'll attempt to fetch initial auctions and players
+  (async ()=>{
+    try {
+      await setupMultiplayer();
+      await loadAuctionsFromSupabase();
+      log('Connected to Supabase realtime (if tables exist).');
+    } catch(e) {
+      console.warn('Supabase init error', e); log('Supabase init failed — continuing offline.');
+    }
+  })();
+} else {
+  log('Supabase disabled — multiplayer and global features unavailable.');
+}
+
+/* Utility final helpers */
+function shuffle(a){ for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return a; }
+
+log('World ready. Controls: WASD/Arrows to move, F attack, G gather, E interact. Menus: I/Q/S/C/A keys toggle.');
+</script>
+</body>
+</html>
