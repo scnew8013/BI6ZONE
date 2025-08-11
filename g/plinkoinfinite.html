@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Multi-Ball Dense Plinko</title>
+<title>Multi-Ball Dense Plinko with Removal</title>
 <style>
   body {
     background: #222;
@@ -78,7 +78,7 @@
   const stakes = [2, 5, 10, 20, 50, 100, 50, 20, 10, 5, 2];
 
   const pegs = [];
-  const balls = []; // array of all active balls
+  const balls = [];
 
   function buildPegs() {
     pegs.length = 0;
@@ -160,6 +160,7 @@
     }
   }
 
+  // Returns true if ball landed and should be removed
   function collideSlotsBase(ball) {
     if (ball.y + ball.radius >= slotsY) {
       ball.y = slotsY - ball.radius;
@@ -170,29 +171,30 @@
         if (!ball.stopped) {
           ball.stopped = true;
           settleBallInSlot(ball);
+          return true;
         }
       }
     }
+    return false;
   }
 
   function settleBallInSlot(ball) {
     const slotIndex = Math.floor(ball.x / slotWidth);
     const winAmount = stakes[slotIndex] || 0;
-    // Show message briefly for this ball, queue messages with timeout to avoid overlap
     message.textContent = `Ball landed in slot ${slotIndex + 1} and won $${winAmount}!`;
     setTimeout(() => {
-      // Clear message only if it hasn't changed meanwhile
       if (message.textContent === `Ball landed in slot ${slotIndex + 1} and won $${winAmount}!`) {
         message.textContent = '';
       }
     }, 3500);
   }
 
-  function resetBall() {
+  // Add a tiny random horizontal velocity so balls don't follow the same path
+  function createNewBall() {
     return {
       x: width / 2,
       y: 50,
-      vx: 0,
+      vx: (Math.random() * 0.6) - 0.3, // random horizontal velocity between -0.3 and +0.3
       vy: 2,
       radius: ballRadius,
       stopped: false,
@@ -203,7 +205,10 @@
     ctx.clearRect(0, 0, width, height);
     drawPegs();
     drawSlots();
-    for (const ball of balls) {
+
+    // Update all balls
+    for (let i = balls.length - 1; i >= 0; i--) {
+      const ball = balls[i];
       if (!ball.stopped) {
         ball.vy += gravity;
         ball.vx *= friction;
@@ -218,7 +223,11 @@
           collideBallPeg(ball, peg);
         }
 
-        collideSlotsBase(ball);
+        if (collideSlotsBase(ball)) {
+          // Remove ball once landed
+          balls.splice(i, 1);
+          continue;
+        }
       }
       drawBall(ball);
     }
@@ -226,8 +235,7 @@
   }
 
   dropBtn.addEventListener('click', () => {
-    const newBall = resetBall();
-    balls.push(newBall);
+    balls.push(createNewBall());
   });
 
   buildPegs();
