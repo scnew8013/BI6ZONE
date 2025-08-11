@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Physics Plinko - Smaller</title>
+<title>Dense Pegs Physics Plinko</title>
 <style>
   body {
     background: #222;
@@ -40,7 +40,7 @@
 </head>
 <body>
 
-<h1>Physics Plinko</h1>
+<h1>Dense Pegs Plinko</h1>
 <canvas id="board" width="320" height="480"></canvas>
 <div id="message"></div>
 <button id="dropBtn">Drop Ball</button>
@@ -52,35 +52,50 @@
   const message = document.getElementById('message');
   const dropBtn = document.getElementById('dropBtn');
 
-  // Smaller board & physics settings
+  // Canvas size
   const width = canvas.width;
   const height = canvas.height;
-  const gravity = 0.45;
-  const friction = 0.98; // air resistance
-  const pegRadius = 6;
-  const ballRadius = 10;
-  const rows = 9;
-  const cols = 7;
-  const pegSpacingX = width / cols; 
-  const pegSpacingY = 40;
 
+  // Physics settings
+  const gravity = 0.45;
+  const friction = 0.98;
+  const pegRadius = 4;   // Smaller pegs
+  const ballRadius = 10;
+
+  // Peg grid
+  const rows = 14;       // More rows
+  const cols = 11;       // More columns
+
+  // Peg spacing tighter
+  const pegSpacingX = width / cols;
+  const pegSpacingY = 30;
+
+  // Shift peg grid right by quarter peg spacing
+  const pegGridShiftX = pegSpacingX * 0.25;
+
+  // Slots
   const slotHeight = 70;
   const slotWidth = pegSpacingX;
   const slotsY = height - slotHeight;
 
-  // Stakes with smaller big win, rarer chances
-  const stakes = [5, 10, 20, 50, 150, 50, 20];
+  // Stakes (keep 11 slots to match columns)
+  const stakes = [2, 5, 10, 20, 50, 100, 50, 20, 10, 5, 2];
 
   const pegs = [];
   let ball = null;
 
+  // Build a denser peg grid with shift
   function buildPegs() {
     pegs.length = 0;
     for (let row = 0; row < rows; row++) {
-      const y = 80 + row * pegSpacingY;
+      const y = 70 + row * pegSpacingY;
       for (let col = 0; col < cols; col++) {
-        let x = col * pegSpacingX + (row % 2 === 0 ? pegSpacingX / 2 : 0);
-        if (x < pegRadius || x > width - pegRadius) continue;
+        // Offset every other row by half peg spacing + shift
+        let xBase = col * pegSpacingX + (row % 2 === 0 ? pegSpacingX / 2 : 0);
+        let x = xBase + pegGridShiftX;
+        // Keep pegs inside canvas boundaries
+        if (x < pegRadius) continue;
+        if (x > width - pegRadius) continue;
         pegs.push({ x, y });
       }
     }
@@ -98,7 +113,7 @@
   function drawSlots() {
     ctx.fillStyle = '#333';
     ctx.strokeStyle = '#666';
-    ctx.font = 'bold 16px Arial';
+    ctx.font = 'bold 14px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
@@ -133,8 +148,8 @@
       const overlap = ball.radius + pegRadius - dist;
       ball.x += nx * overlap;
       ball.y += ny * overlap;
-      ball.vx *= 0.8;
-      ball.vy *= 0.8;
+      ball.vx *= 0.85;
+      ball.vy *= 0.85;
     }
   }
 
@@ -176,9 +191,9 @@
   function resetBall() {
     ball = {
       x: width / 2,
-      y: 50, // start above first row of pegs
+      y: 50,
       vx: 0,
-      vy: 2, // small downward velocity to avoid sticking on first peg
+      vy: 2,
       radius: ballRadius,
       stopped: false,
     };
