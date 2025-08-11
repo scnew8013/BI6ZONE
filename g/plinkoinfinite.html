@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Physics Plinko</title>
+<title>Physics Plinko - Smaller</title>
 <style>
   body {
     background: #222;
@@ -41,7 +41,7 @@
 <body>
 
 <h1>Physics Plinko</h1>
-<canvas id="board" width="420" height="600"></canvas>
+<canvas id="board" width="320" height="480"></canvas>
 <div id="message"></div>
 <button id="dropBtn">Drop Ball</button>
 
@@ -52,48 +52,40 @@
   const message = document.getElementById('message');
   const dropBtn = document.getElementById('dropBtn');
 
-  // Board and physics settings
+  // Smaller board & physics settings
   const width = canvas.width;
   const height = canvas.height;
-  const gravity = 0.5;
-  const friction = 0.99; // air resistance
-  const pegRadius = 8;
-  const ballRadius = 12;
-  const rows = 10;
-  const cols = 9;
+  const gravity = 0.45;
+  const friction = 0.98; // air resistance
+  const pegRadius = 6;
+  const ballRadius = 10;
+  const rows = 9;
+  const cols = 7;
   const pegSpacingX = width / cols; 
-  const pegSpacingY = 50;
+  const pegSpacingY = 40;
 
-  // Slots positions and sizes
-  const slotHeight = 80;
+  const slotHeight = 70;
   const slotWidth = pegSpacingX;
   const slotsY = height - slotHeight;
 
-  // Adjust stakes to make big wins rarer and small wins common
-  const stakes = [5, 10, 20, 50, 200, 50, 20, 10, 5];
+  // Stakes with smaller big win, rarer chances
+  const stakes = [5, 10, 20, 50, 150, 50, 20];
 
-  // Pegs data - each peg is {x,y}
   const pegs = [];
+  let ball = null;
 
-  // Ball state
-  let ball = null; // {x, y, vx, vy, radius, stopped}
-
-  // Build pegs in a classic Plinko offset pattern
   function buildPegs() {
     pegs.length = 0;
     for (let row = 0; row < rows; row++) {
-      const y = 100 + row * pegSpacingY;
+      const y = 80 + row * pegSpacingY;
       for (let col = 0; col < cols; col++) {
-        // Offset every other row by half pegSpacingX
         let x = col * pegSpacingX + (row % 2 === 0 ? pegSpacingX / 2 : 0);
-        // Avoid pegs too close to edges
         if (x < pegRadius || x > width - pegRadius) continue;
         pegs.push({ x, y });
       }
     }
   }
 
-  // Draw pegs
   function drawPegs() {
     ctx.fillStyle = '#f5c518';
     for (const peg of pegs) {
@@ -103,27 +95,23 @@
     }
   }
 
-  // Draw slots with stakes
   function drawSlots() {
     ctx.fillStyle = '#333';
     ctx.strokeStyle = '#666';
-    ctx.font = 'bold 18px Arial';
+    ctx.font = 'bold 16px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
     for (let i = 0; i < cols; i++) {
       let x = i * slotWidth;
-      // Slot base
       ctx.fillRect(x, slotsY, slotWidth, slotHeight);
       ctx.strokeRect(x, slotsY, slotWidth, slotHeight);
-      // Stake text
       ctx.fillStyle = '#f5c518';
       ctx.fillText('$' + stakes[i], x + slotWidth / 2, slotsY + slotHeight / 2);
       ctx.fillStyle = '#333';
     }
   }
 
-  // Draw ball
   function drawBall() {
     if (!ball) return;
     ctx.beginPath();
@@ -132,30 +120,24 @@
     ctx.fill();
   }
 
-  // Detect collision between ball and a peg, respond with bounce
   function collideBallPeg(peg) {
     const dx = ball.x - peg.x;
     const dy = ball.y - peg.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
     if (dist < ball.radius + pegRadius) {
-      // Calculate normal vector
       const nx = dx / dist;
       const ny = dy / dist;
-      // Reflect velocity over normal
       const dot = ball.vx * nx + ball.vy * ny;
       ball.vx = ball.vx - 2 * dot * nx;
       ball.vy = ball.vy - 2 * dot * ny;
-      // Slightly push ball outside peg to prevent sticking
       const overlap = ball.radius + pegRadius - dist;
       ball.x += nx * overlap;
       ball.y += ny * overlap;
-      // Damp velocity a bit for realistic bounce
       ball.vx *= 0.8;
       ball.vy *= 0.8;
     }
   }
 
-  // Detect collision with walls and reflect
   function collideWalls() {
     if (ball.x - ball.radius < 0) {
       ball.x = ball.radius;
@@ -171,13 +153,11 @@
     }
   }
 
-  // Detect collision with bottom slots base and stop ball
   function collideSlotsBase() {
     if (ball.y + ball.radius >= slotsY) {
       ball.y = slotsY - ball.radius;
       ball.vy = 0;
       ball.vx *= friction;
-      // Stop ball if velocity low
       if (Math.abs(ball.vx) < 0.2) {
         ball.vx = 0;
         ball.stopped = true;
@@ -186,7 +166,6 @@
     }
   }
 
-  // Find which slot ball landed in and display message
   function settleBallInSlot() {
     const slotIndex = Math.floor(ball.x / slotWidth);
     const winAmount = stakes[slotIndex] || 0;
@@ -194,36 +173,31 @@
     dropBtn.disabled = false;
   }
 
-  // Reset game for next drop
   function resetBall() {
     ball = {
       x: width / 2,
-      y: 30,
+      y: 50, // start above first row of pegs
       vx: 0,
-      vy: 0,
+      vy: 2, // small downward velocity to avoid sticking on first peg
       radius: ballRadius,
       stopped: false,
     };
     message.textContent = '';
   }
 
-  // Main animation loop
   function animate() {
     ctx.clearRect(0, 0, width, height);
     drawPegs();
     drawSlots();
     if (ball) {
       if (!ball.stopped) {
-        // Apply gravity
         ball.vy += gravity;
         ball.vx *= friction;
         ball.vy *= friction;
 
-        // Update position
         ball.x += ball.vx;
         ball.y += ball.vy;
 
-        // Collisions
         collideWalls();
 
         for (const peg of pegs) {
@@ -238,13 +212,11 @@
   }
 
   dropBtn.addEventListener('click', () => {
-    if (ball && !ball.stopped) return; // ball in motion
-
+    if (ball && !ball.stopped) return;
     resetBall();
     dropBtn.disabled = true;
   });
 
-  // Init
   buildPegs();
   resetBall();
   animate();
