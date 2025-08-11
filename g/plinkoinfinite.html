@@ -1,734 +1,754 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Ultimate Plinko Experience</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Stakes Plinko Infinite</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
-
-  /* Reset & base */
-  * {
-    box-sizing: border-box;
-  }
-  body {
-    margin: 0; padding: 20px;
-    background: linear-gradient(135deg, #0d0f15 0%, #20262f 100%);
-    color: #eee;
-    font-family: 'Montserrat', sans-serif;
-    text-align: center;
-    user-select: none;
-  }
-  h1 {
-    font-weight: 700;
-    margin-bottom: 8px;
-    color: #f5c518;
-    text-shadow: 0 0 8px #f5c518bb;
-  }
-  canvas {
-    background: #12161f;
-    border-radius: 12px;
-    box-shadow: 0 0 20px #f5c518aa;
-    display: block;
-    margin: 12px auto 0 auto;
+  :root{
+    --bg-1:#0f0f0f;
+    --bg-2:#151616;
+    --accent:#bada55; /* neon-ish green/yellow */
+    --muted:#9aa0a6;
+    --panel:#111315;
+    --panel-2:#16181a;
+    --text:#e9eef2;
+    --danger:#d9534f;
+    --slot-bg:#0c0e10;
   }
 
-  /* UI */
-  #ui {
-    max-width: 360px;
-    margin: 14px auto 0 auto;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
-  }
-  button, input[type=range], select {
-    font-family: inherit;
-    font-weight: 600;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    background: #f5c518;
-    color: #222;
-    padding: 10px 14px;
-    min-width: 100px;
-    transition: background 0.25s;
-  }
-  button:hover, input[type=range]:hover, select:hover {
-    background: #ddb610;
-  }
-  button:disabled {
-    background: #888;
-    cursor: default;
-  }
-  label {
-    font-size: 14px;
-    margin: 0 6px 0 0;
-    color: #f5c518dd;
-  }
-  .control-group {
-    display: flex;
-    align-items: center;
-  }
-  input[type=range] {
-    -webkit-appearance: none;
-    height: 8px;
-    background: #333;
-    outline: none;
-    border-radius: 4px;
-    flex-grow: 1;
-  }
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    background: #f5c518;
-    cursor: pointer;
-    border-radius: 50%;
-    border: 1px solid #ddb610;
-    transition: background 0.3s;
-  }
-  input[type=range]:hover::-webkit-slider-thumb {
-    background: #ddb610;
-  }
-  #stats {
-    margin-top: 18px;
-    font-size: 14px;
-    color: #aaa;
-    text-align: left;
-    max-width: 360px;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.4;
-    font-family: monospace;
-    user-select: text;
-  }
-  #historyLog {
-    max-height: 100px;
-    overflow-y: auto;
-    margin-top: 8px;
-    background: #222a3a;
-    padding: 6px 12px;
-    border-radius: 8px;
-    color: #ccc;
-    font-size: 12px;
-    font-family: monospace;
-  }
-  #graphContainer {
-    max-width: 360px;
-    margin: 14px auto 0 auto;
-  }
-  #graph {
-    width: 100%;
-    height: 100px;
-    background: #222a3a;
-    border-radius: 8px;
-  }
-  #soundControls {
-    margin-top: 12px;
-  }
-  #soundControls label {
-    margin-right: 16px;
-    font-weight: 700;
-    cursor: pointer;
-  }
-  #soundControls input[type=checkbox] {
-    margin-right: 6px;
-    cursor: pointer;
+  html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,var(--bg-1),var(--bg-2));color:var(--text);-webkit-font-smoothing:antialiased}
+  .wrap {
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+    box-sizing:border-box;
   }
 
-  /* Animations */
-  .popup {
-    position: fixed;
-    bottom: 80px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #f5c518dd;
-    padding: 12px 24px;
-    border-radius: 24px;
-    font-weight: 700;
-    font-size: 22px;
-    color: #222;
-    text-shadow: 0 0 4px #ddb610bb;
-    animation: popupFade 3s forwards;
-    pointer-events: none;
-    z-index: 999;
+  /* Main 3-column layout */
+  .plinko-container {
+    display:flex;
+    gap:18px;
+    width:100%;
+    max-width:1100px; /* fits most laptops */
+    align-items:flex-start;
+    justify-content:center;
   }
-  @keyframes popupFade {
-    0% {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-    100% {
-      opacity: 0;
-      transform: translateX(-50%) translateY(-40px);
-    }
+
+  /* panels */
+  .sidebar {
+    width:220px;
+    background:linear-gradient(180deg,var(--panel),var(--panel-2));
+    border-radius:10px;
+    padding:14px;
+    box-sizing:border-box;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
   }
+  .sidebar h3 {
+    margin:6px 0 12px 0;
+    font-size:16px;
+    color:var(--accent);
+  }
+  .left .group, .right .group { margin-bottom:12px; }
+
+  /* center board */
+  .board-wrap{
+    flex:1 1 auto;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    min-width:560px;
+    max-width:640px;
+  }
+
+  canvas{
+    width:100%;
+    height:auto;
+    background:var(--slot-bg);
+    border-radius:10px;
+    display:block;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+    border:1px solid rgba(255,255,255,0.03);
+  }
+
+  /* buttons + selects */
+  .btn {
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    background:var(--accent);
+    color:#0a0a0a;
+    padding:10px 12px;
+    border-radius:8px;
+    font-weight:700;
+    cursor:pointer;
+    border:0;
+    width:100%;
+  }
+  .btn.secondary {
+    background:transparent;
+    color:var(--muted);
+    border:1px solid rgba(255,255,255,0.03);
+    font-weight:600;
+  }
+  .btn.small { padding:8px 10px; font-size:14px; border-radius:6px }
+  .btn:active { transform:translateY(1px) }
+  .row { display:flex; gap:8px; }
+  label { display:block; color:var(--muted); font-size:13px; margin-bottom:6px; }
+  select, input[type=number] {
+    width:100%;
+    padding:8px;
+    border-radius:8px;
+    border:0;
+    background:rgba(255,255,255,0.02);
+    color:var(--text);
+    font-weight:600;
+  }
+  .small-note { font-size:12px; color:var(--muted); margin-top:6px; }
+
+  /* winnings popup (simple pop) */
+  .win-pop {
+    position:absolute;
+    transform:translate(-50%,-50%);
+    background:var(--accent);
+    color:#040404;
+    padding:8px 10px;
+    border-radius:8px;
+    font-weight:800;
+    pointer-events:none;
+    font-size:14px;
+    opacity:1;
+    transition:transform 600ms ease,opacity 600ms linear;
+  }
+
+  /* stats */
+  .stat {
+    display:flex;
+    justify-content:space-between;
+    font-weight:700;
+    color:var(--muted);
+    margin-bottom:6px;
+  }
+  .stat .val { color:var(--accent); }
+
+  /* responsive adjustments */
+  @media (max-width:1100px){
+    .plinko-container{max-width:95%}
+    .sidebar{width:190px}
+    .board-wrap{min-width:480px}
+  }
+  @media (max-width:880px){
+    .plinko-container{flex-direction:column;align-items:center}
+    .sidebar{width:100%;display:flex;order:2}
+    .left{order:1}
+    .right{order:3}
+    .board-wrap{min-width:320px;width:100%}
+    canvas{height:420px}
+  }
+
+  /* slot labels style */
+  .slot-label{font-weight:800;font-size:13px}
+  /* subtle hover */
+  .btn:hover{filter:brightness(1.03)}
 </style>
 </head>
 <body>
+<div class="wrap">
+  <div class="plinko-container">
+    <!-- LEFT: actions -->
+    <div class="sidebar left" aria-label="Game actions">
+      <h3>Actions</h3>
 
-<h1>Ultimate Plinko Experience</h1>
-<canvas id="board" width="360" height="520" aria-label="Plinko game board"></canvas>
+      <div class="group">
+        <label>Stake (bet amount)</label>
+        <select id="stakeSelect">
+          <option value="1">$1</option>
+          <option value="2">$2</option>
+          <option value="5" selected>$5</option>
+          <option value="10">$10</option>
+          <option value="20">$20</option>
+          <option value="50">$50</option>
+        </select>
+      </div>
 
-<div id="ui">
-  <button id="dropBtn" aria-label="Drop a ball">Drop Ball</button>
-  <button id="autoDropBtn" aria-pressed="false" aria-label="Toggle auto dropping balls">Auto Drop: OFF</button>
-  <button id="clearBtn" aria-label="Clear all balls">Clear Balls</button>
-  <button id="resetBtn" aria-label="Reset game and total winnings">Reset Game</button>
-</div>
+      <div class="group">
+        <label>Risk Mode</label>
+        <select id="riskSelect">
+          <option value="low">Low Risk</option>
+          <option value="medium" selected>Medium Risk</option>
+          <option value="high">High Risk</option>
+        </select>
+        <div class="small-note">Higher risk → rarer big payouts (and possible losses)</div>
+      </div>
 
-<div id="controls">
-  <div class="control-group" style="max-width:360px; margin: 12px auto; justify-content: space-between;">
-    <label for="gravityRange">Gravity:</label>
-    <input id="gravityRange" type="range" min="0.1" max="1" step="0.05" value="0.45" />
+      <div class="group">
+        <label>Drop</label>
+        <button id="dropBtn" class="btn">Drop Ball</button>
+      </div>
+
+      <div class="group row">
+        <button id="autoBtn" class="btn small">Auto Drop: OFF</button>
+        <button id="clearBtn" class="btn small secondary">Clear Balls</button>
+      </div>
+
+      <div class="group">
+        <label>Auto drop speed (ms)</label>
+        <input id="autoSpeed" type="number" min="100" max="2000" step="50" value="500" />
+      </div>
+
+      <div class="group">
+        <label>Board difficulty</label>
+        <select id="difficultySelect">
+          <option value="easy">Easy</option>
+          <option value="normal" selected>Normal</option>
+          <option value="hard">Hard</option>
+        </select>
+        <div class="small-note">Difficulty adjusts peg spacing and gravity.</div>
+      </div>
+
+      <div class="group">
+        <button id="resetWinnings" class="btn secondary">Reset Winnings</button>
+      </div>
+
+    </div>
+
+    <!-- CENTER: board -->
+    <div class="board-wrap" role="main">
+      <canvas id="board" width="560" height="640" aria-label="Plinko board"></canvas>
+      <div id="popContainer" style="position:relative;width:100%;height:0"></div>
+    </div>
+
+    <!-- RIGHT: settings & stats -->
+    <div class="sidebar right" aria-label="Settings and stats">
+      <h3>Settings & Stats</h3>
+
+      <div class="group">
+        <div class="stat"><span>Total Winnings</span><span class="val" id="totalWinnings">$0</span></div>
+        <div class="stat"><span>Balls Dropped</span><span class="val" id="ballsDropped">0</span></div>
+        <div class="stat"><span>Avg / Ball</span><span class="val" id="avgW">$0.00</span></div>
+      </div>
+
+      <div class="group">
+        <label>Sound</label>
+        <div class="row">
+          <button id="soundToggle" class="btn small">Sound: ON</button>
+          <button id="musicToggle" class="btn small secondary">Music: OFF</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <label>Peg size</label>
+        <select id="pegSizeSelect">
+          <option value="3">Small</option>
+          <option value="4" selected>Normal</option>
+          <option value="6">Large</option>
+        </select>
+      </div>
+
+      <div class="group">
+        <label>Gravity</label>
+        <select id="gravitySelect">
+          <option value="0.35">Low</option>
+          <option value="0.45" selected>Normal</option>
+          <option value="0.6">High</option>
+        </select>
+      </div>
+
+      <div class="group">
+        <label>Recent Results</label>
+        <div id="recentLog" style="background:#0b0b0b;padding:8px;border-radius:6px;max-height:160px;overflow:auto;font-family:monospace;font-size:13px;color:var(--muted)"></div>
+      </div>
+    </div>
   </div>
-  <div class="control-group" style="max-width:360px; margin: 12px auto; justify-content: space-between;">
-    <label for="pegSizeRange">Peg Size:</label>
-    <input id="pegSizeRange" type="range" min="2" max="10" step="0.5" value="4" />
-  </div>
-  <div class="control-group" style="max-width:360px; margin: 12px auto; justify-content: space-between;">
-    <label for="autoDropSpeedRange">Auto Drop Speed (ms):</label>
-    <input id="autoDropSpeedRange" type="range" min="100" max="2000" step="100" value="500" />
-  </div>
-  <div class="control-group" style="max-width:360px; margin: 12px auto; justify-content: space-between;">
-    <label for="stakeSelect">Stake Set:</label>
-    <select id="stakeSelect" aria-label="Select stake set">
-      <option value="classic" selected>Classic Stakes</option>
-      <option value="high">High Stakes</option>
-      <option value="low">Low Stakes</option>
-      <option value="random">Random Stakes</option>
-    </select>
-  </div>
-  <div id="soundControls">
-    <label><input type="checkbox" id="soundToggle" checked /> Sound</label>
-    <label><input type="checkbox" id="musicToggle" checked /> Music</label>
-  </div>
-</div>
-
-<div id="message" role="alert" aria-live="polite" style="min-height:28px; margin-top:12px; font-weight:700; font-size:18px; color:#f5c518;"></div>
-<div id="totalWinnings" aria-live="polite" style="font-size:20px; font-weight:bold; margin-top:6px; color:#f5c518;">Total Winnings: $0</div>
-
-<div id="stats">
-  <div>Balls Dropped: <span id="ballsDropped">0</span></div>
-  <div>Average Winnings per Ball: $<span id="avgWinnings">0.00</span></div>
-  <div>History (latest 20):</div>
-  <div id="historyLog" aria-live="polite"></div>
-</div>
-
-<div id="graphContainer" aria-label="Winnings graph">
-  <canvas id="graph" width="360" height="100" role="img"></canvas>
 </div>
 
 <script>
-// -- Audio setup --
-const AudioContext = window.AudioContext || window.webkitAudioContext;
-const audioCtx = new AudioContext();
+/* =========================
+   Stakes-style Plinko core
+   =========================
+   - centered peg grid
+   - multi-ball support
+   - risk modes with multipliers
+   - stake selection
+   - left/right sidebars layout (done in HTML/CSS)
+   - pop-up win text (no glow or particles)
+   - laptop-friendly, responsive
+*/
 
-function playSound(freq, duration = 0.12, type = 'sine', volume = 0.3) {
-  if (!soundOn) return;
-  const oscillator = audioCtx.createOscillator();
-  const gainNode = audioCtx.createGain();
+(() => {
+  const canvas = document.getElementById('board');
+  const ctx = canvas.getContext('2d');
 
-  oscillator.type = type;
-  oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
-  gainNode.gain.setValueAtTime(volume, audioCtx.currentTime);
+  // UI refs
+  const dropBtn = document.getElementById('dropBtn');
+  const autoBtn = document.getElementById('autoBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const resetWinningsBtn = document.getElementById('resetWinnings');
+  const stakeSelect = document.getElementById('stakeSelect');
+  const riskSelect = document.getElementById('riskSelect');
+  const difficultySelect = document.getElementById('difficultySelect');
+  const autoSpeedInput = document.getElementById('autoSpeed');
+  const pegSizeSelect = document.getElementById('pegSizeSelect');
+  const gravitySelect = document.getElementById('gravitySelect');
+  const totalWEl = document.getElementById('totalWinnings');
+  const ballsDroppedEl = document.getElementById('ballsDropped');
+  const avgWEl = document.getElementById('avgW');
+  const recentLog = document.getElementById('recentLog');
+  const popContainer = document.getElementById('popContainer');
+  const soundToggle = document.getElementById('soundToggle');
+  const musicToggle = document.getElementById('musicToggle');
 
-  oscillator.connect(gainNode);
-  gainNode.connect(audioCtx.destination);
+  // Canvas resolution
+  const W = canvas.width;
+  const H = canvas.height;
 
-  oscillator.start();
-  oscillator.stop(audioCtx.currentTime + duration);
+  // Physics & board params (will be adjusted by difficulty)
+  let pegRadius = parseFloat(pegSizeSelect.value); // small
+  let gravity = parseFloat(gravitySelect.value);
+  let pegSpacingX = W / 13;  // default columns
+  let pegSpacingY = 44;
+  let rows = 14;
+  let cols = Math.floor(W / pegSpacingX);
 
-  gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-}
+  // ball/peg arrays
+  const pegs = [];
+  const balls = [];
 
-// -- Background music (simple loop) --
-let musicOscillator;
-let musicGainNode;
-function startMusic() {
-  if (!musicOn) return;
-  if (musicOscillator) return;
-  musicOscillator = audioCtx.createOscillator();
-  musicGainNode = audioCtx.createGain();
-  musicOscillator.type = 'triangle';
-  musicOscillator.frequency.setValueAtTime(110, audioCtx.currentTime);
-  musicGainNode.gain.setValueAtTime(0.04, audioCtx.currentTime);
-  musicOscillator.connect(musicGainNode);
-  musicGainNode.connect(audioCtx.destination);
-  musicOscillator.start();
-}
-function stopMusic() {
-  if (musicOscillator) {
-    musicOscillator.stop();
-    musicOscillator.disconnect();
-    musicGainNode.disconnect();
-    musicOscillator = null;
-    musicGainNode = null;
-  }
-}
+  // statistics
+  let totalWinnings = 0;
+  let ballsDropped = 0;
+  const recent = []; // last 20
 
-// -- Game variables --
-const canvas = document.getElementById('board');
-const ctx = canvas.getContext('2d');
+  // auto drop
+  let autoMode = false;
+  let autoInterval = null;
 
-const graphCanvas = document.getElementById('graph');
-const graphCtx = graphCanvas.getContext('2d');
+  // sound/music flags
+  let soundOn = true;
+  let musicOn = false;
 
-const dropBtn = document.getElementById('dropBtn');
-const autoDropBtn = document.getElementById('autoDropBtn');
-const clearBtn = document.getElementById('clearBtn');
-const resetBtn = document.getElementById('resetBtn');
-
-const gravityRange = document.getElementById('gravityRange');
-const pegSizeRange = document.getElementById('pegSizeRange');
-const autoDropSpeedRange = document.getElementById('autoDropSpeedRange');
-const stakeSelect = document.getElementById('stakeSelect');
-
-const messageEl = document.getElementById('message');
-const totalWinningsEl = document.getElementById('totalWinnings');
-const ballsDroppedEl = document.getElementById('ballsDropped');
-const avgWinningsEl = document.getElementById('avgWinnings');
-const historyLog = document.getElementById('historyLog');
-
-const soundToggle = document.getElementById('soundToggle');
-const musicToggle = document.getElementById('musicToggle');
-
-const width = canvas.width;
-const height = canvas.height;
-
-let gravity = parseFloat(gravityRange.value);
-let pegRadius = parseFloat(pegSizeRange.value);
-const ballRadiusBase = 6;
-
-const rows = 14;
-const cols = 11;
-
-const pegSpacingX = width / cols;
-const pegSpacingY = 30;
-
-const slotHeight = 80;
-const slotWidth = pegSpacingX;
-const slotsY = height - slotHeight;
-
-let stakes = [2, 5, 10, 20, 50, 100, 50, 20, 10, 5, 2]; // classic default
-
-const pegs = [];
-const balls = [];
-const particles = [];
-const winningsHistory = [];
-
-let totalWinnings = 0;
-let ballsDropped = 0;
-let autoDrop = false;
-let autoDropIntervalId = null;
-
-let soundOn = true;
-let musicOn = true;
-
-function updateStakesSet(setName) {
-  switch (setName) {
-    case 'classic':
-      stakes = [2, 5, 10, 20, 50, 100, 50, 20, 10, 5, 2];
-      break;
-    case 'high':
-      stakes = [10, 20, 50, 100, 200, 500, 200, 100, 50, 20, 10];
-      break;
-    case 'low':
-      stakes = [1, 1, 2, 3, 5, 10, 5, 3, 2, 1, 1];
-      break;
-    case 'random':
-      stakes = Array.from({length: cols}, () => Math.floor(Math.random()*100)+1);
-      break;
-  }
-}
-
-// -- Setup pegs based on current pegRadius --
-function buildPegs() {
-  pegs.length = 0;
-  for (let row = 0; row < rows; row++) {
-    const y = 70 + row * pegSpacingY;
-    for (let col = 0; col < cols; col++) {
-      // Centered grid: staggered
-      let xBase = col * pegSpacingX + (row % 2 === 0 ? pegSpacingX / 2 : 0);
-      let x = xBase;
-      if (x < pegRadius) continue;
-      if (x > width - pegRadius) continue;
-      pegs.push({ x, y });
+  /* --- Risk multipliers sets (multipliers applied to stake) ---
+     We'll define arrays with length = number of slots (cols).
+     Layout aims: small wins near center, big wins at edges.
+     High risk has larger multiples and some negative multipliers to lose money.
+  */
+  function getMultiplierArray(risk) {
+    // arrays sized to match cols; we'll remap/resample to current cols
+    if (risk === 'low') {
+      // frequent modest returns, edges small
+      return [0.25,0.5,0.8,1.2,1.6,2.5,2.5,1.6,1.2,0.8,0.5,0.25];
+    } else if (risk === 'medium') {
+      return [0.1,0.25,0.6,1,2,5,5,2,1,0.6,0.25,0.1];
+    } else { // high
+      // include losses in some middle slots for tension (negative)
+      return [-1,0.05,0.2,-0.5,1,3,10,3,1,-0.5,0.2,0.05];
     }
   }
-}
 
-// -- Drawing helpers --
-function drawPegs() {
-  ctx.fillStyle = '#f5c518';
-  for (const peg of pegs) {
-    ctx.beginPath();
-    ctx.arc(peg.x, peg.y, pegRadius, 0, Math.PI * 2);
-    ctx.fill();
-  }
-}
-
-function drawSlots() {
-  ctx.fillStyle = '#222a3a';
-  ctx.strokeStyle = '#444d5c';
-  ctx.lineWidth = 2;
-  ctx.font = 'bold 14px Montserrat, Arial, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-
-  for (let i = 0; i < cols; i++) {
-    let x = i * slotWidth;
-    // Draw slot base rectangle
-    ctx.fillRect(x, slotsY, slotWidth, slotHeight);
-    ctx.strokeRect(x, slotsY, slotWidth, slotHeight);
-
-    // Highlight jackpot slot (middle one) if stake >= 100
-    if (stakes[i] >= 100) {
-      ctx.strokeStyle = '#ffcc00';
-      ctx.lineWidth = 4;
-      ctx.strokeRect(x+4, slotsY+4, slotWidth-8, slotHeight-8);
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = '#444d5c';
+  // Resample multiplier template to current slot count (cols)
+  function buildMultipliersForCols(risk, colsLocal) {
+    const template = getMultiplierArray(risk);
+    const res = [];
+    for (let i = 0; i < colsLocal; i++) {
+      const tpos = i * (template.length - 1) / Math.max(1, colsLocal - 1);
+      const lo = Math.floor(tpos);
+      const hi = Math.min(template.length - 1, lo + 1);
+      const fract = tpos - lo;
+      const val = template[lo] * (1 - fract) + template[hi] * fract;
+      res.push(parseFloat(val.toFixed(3)));
     }
-
-    ctx.fillStyle = '#f5c518';
-    ctx.fillText(`$${stakes[i]}`, x + slotWidth / 2, slotsY + slotHeight / 2);
-    ctx.fillStyle = '#222a3a';
+    return res;
   }
-}
 
-function drawBall(ball) {
-  ctx.beginPath();
-  ctx.fillStyle = ball.color;
-  ctx.shadowColor = ball.color;
-  ctx.shadowBlur = 6;
-  ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.shadowBlur = 0;
-}
+  // current multipliers (per-slot)
+  let multipliers = buildMultipliersForCols(riskSelect.value, cols);
 
-function drawParticle(p) {
-  ctx.beginPath();
-  ctx.fillStyle = `rgba(${p.color.r},${p.color.g},${p.color.b},${p.alpha})`;
-  ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-  ctx.fill();
-}
+  /* ---------- Build a centered, staggered peg grid ---------- */
+  function buildPegs() {
+    pegs.length = 0;
+    // adjust peg spacing based on difficulty
+    // easier -> fewer pegs (bigger spacing)
+    const difficulty = difficultySelect.value;
+    if (difficulty === 'easy') {
+      pegSpacingY = 48;
+      pegSpacingX = W / 11;
+      rows = 12;
+    } else if (difficulty === 'hard') {
+      pegSpacingY = 36;
+      pegSpacingX = W / 15;
+      rows = 16;
+    } else { // normal
+      pegSpacingY = 44;
+      pegSpacingX = W / 13;
+      rows = 14;
+    }
+    cols = Math.floor(W / pegSpacingX);
+    // ensure at least 7 slots
+    cols = Math.max(7, cols);
 
-// -- Physics & collision --
-function collideBallPeg(ball, peg) {
-  const dx = ball.x - peg.x;
-  const dy = ball.y - peg.y;
-  const dist = Math.sqrt(dx * dx + dy * dy);
-  if (dist < ball.radius + pegRadius) {
-    const nx = dx / dist;
-    const ny = dy / dist;
-    const dot = ball.vx * nx + ball.vy * ny;
-    ball.vx = ball.vx - 2 * dot * nx;
-    ball.vy = ball.vy - 2 * dot * ny;
-    const overlap = ball.radius + pegRadius - dist;
-    ball.x += nx * overlap;
-    ball.y += ny * overlap;
-    ball.vx *= 0.85;
-    ball.vy *= 0.85;
+    // recalc multipliers for new cols
+    multipliers = buildMultipliersForCols(riskSelect.value, cols);
 
-    // Particle effect on peg hit
-    createParticles(ball.x, ball.y, 8, ball.color);
-
-    // Play bounce sound with pitch depending on peg row
-    playSound(440 + peg.y * 1.5, 0.08, 'triangle', 0.2);
-  }
-}
-
-function collideWalls(ball) {
-  let bounced = false;
-  if (ball.x - ball.radius < 0) {
-    ball.x = ball.radius;
-    ball.vx = -ball.vx * 0.8;
-    bounced = true;
-  }
-  if (ball.x + ball.radius > width) {
-    ball.x = width - ball.radius;
-    ball.vx = -ball.vx * 0.8;
-    bounced = true;
-  }
-  if (ball.y - ball.radius < 0) {
-    ball.y = ball.radius;
-    ball.vy = -ball.vy * 0.8;
-    bounced = true;
-  }
-  if (bounced) playSound(320, 0.07, 'square', 0.15);
-}
-
-function collideSlotsBase(ball) {
-  if (ball.y + ball.radius >= slotsY) {
-    ball.y = slotsY - ball.radius;
-    ball.vy = 0;
-    ball.vx *= 0.92; // friction on floor
-
-    if (Math.abs(ball.vx) < 0.15) {
-      ball.vx = 0;
-      if (!ball.stopped) {
-        ball.stopped = true;
-        settleBallInSlot(ball);
-        return true;
+    // create staggered grid centered horizontally
+    for (let row = 0; row < rows; row++) {
+      const y = 80 + row * pegSpacingY;
+      for (let col = 0; col < cols; col++) {
+        const offset = (row % 2 === 0) ? pegSpacingX / 2 : 0;
+        const x = col * pegSpacingX + offset + (W - (cols - 1) * pegSpacingX) / 2 - pegSpacingX/2;
+        if (x < pegRadius || x > W - pegRadius) continue;
+        pegs.push({x,y});
       }
     }
   }
-  return false;
-}
 
-// -- Particles system --
-function createParticles(x, y, count, color) {
-  for (let i = 0; i < count; i++) {
-    particles.push({
-      x: x + (Math.random() - 0.5) * 6,
-      y: y + (Math.random() - 0.5) * 6,
-      vx: (Math.random() - 0.5) * 2.5,
-      vy: (Math.random() - 0.5) * 2.5,
-      radius: Math.random() * 2 + 1,
-      alpha: 1,
-      decay: 0.02 + Math.random() * 0.03,
-      color: hexToRgb(color),
+  /* ---------- Ball factory ---------- */
+  function createBall() {
+    // drop from near center with small horizontal randomization so different paths occur
+    const cx = W / 2;
+    const jitterRange = pegSpacingX * 0.8;
+    const startX = cx + (Math.random() - 0.5) * jitterRange;
+    const radius = 5 + Math.random() * 3; // 5..8
+    const color = '#e8f7d0'; // pale accent (no glow)
+    return {
+      x: startX,
+      y: 36,
+      vx: (Math.random() - 0.5) * 0.6,
+      vy: 1 + Math.random() * 0.6,
+      radius,
+      color,
+      stopped: false,
+      settled: false
+    };
+  }
+
+  /* ---------- Collision helpers ---------- */
+  function circleCollide(a, b) {
+    const dx = a.x - b.x;
+    const dy = a.y - b.y;
+    return dx*dx + dy*dy;
+  }
+
+  /* ---------- UI helpers ---------- */
+  function displayWinPopup(x, y, text) {
+    // create a small popup above the slot then fade/translate
+    const el = document.createElement('div');
+    el.className = 'win-pop';
+    el.textContent = text;
+    // position relatively to canvas
+    // convert canvas-local coords to CSS percent
+    const rect = canvas.getBoundingClientRect();
+    const left = rect.left + x * (rect.width / W);
+    const top = rect.top + y * (rect.height / H);
+    el.style.left = `${left}px`;
+    el.style.top = `${top - 20}px`;
+    document.body.appendChild(el);
+    // trigger move up & fade
+    requestAnimationFrame(() => {
+      el.style.transform = 'translate(-50%,-100px)';
+      el.style.opacity = '0';
     });
+    setTimeout(()=>el.remove(),600);
   }
-}
 
-// Helper to convert hex color string to rgb object
-function hexToRgb(hex) {
-  // Simple hex to rgb converter
-  if (hex.startsWith('#')) {
-    hex = hex.slice(1);
+  function addRecentResult(val) {
+    recent.unshift(val);
+    if (recent.length > 20) recent.pop();
+    // update recent log text
+    recentLog.innerHTML = recent.map((v,i) => {
+      const sign = v >= 0 ? '+' : '';
+      return `<div style="padding:4px 0">${sign}${v.toFixed(2)}</div>`;
+    }).join('');
   }
-  if (hex.length === 3) {
-    hex = hex.split('').map(c => c+c).join('');
+
+  function updateStatsUI() {
+    totalWEl.textContent = `$${totalWinnings.toFixed(2)}`;
+    ballsDroppedEl.textContent = String(ballsDropped);
+    avgWEl.textContent = (ballsDropped ? (totalWinnings/ballsDropped).toFixed(2) : '0.00');
   }
-  const bigint = parseInt(hex, 16);
-  return {
-    r: (bigint >> 16) & 255,
-    g: (bigint >> 8) & 255,
-    b: bigint & 255,
-  };
-}
 
-// -- Settle ball in slot and update winnings --
-function settleBallInSlot(ball) {
-  const slotIndex = Math.min(cols - 1, Math.max(0, Math.floor(ball.x / slotWidth)));
-  const winAmount = stakes[slotIndex] || 0;
+  /* ---------- Sound (tiny click/win beeps) ---------- */
+  let audioCtx = null;
+  function ensureAudio() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+  }
+  function beep(freq=440, time=0.08, type='sine', vol=0.15) {
+    if (!soundOn) return;
+    ensureAudio();
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = type;
+    o.frequency.value = freq;
+    g.gain.value = vol;
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start();
+    setTimeout(()=>{ o.stop(); g.disconnect(); }, time*1000);
+  }
 
-  totalWinnings += winAmount;
-  ballsDropped++;
-  winningsHistory.push(winAmount);
-  if (winningsHistory.length > 20) winningsHistory.shift();
+  // music simple loop if enabled
+  let musicOsc=null;
+  function startMusic(){
+    if (!musicOn) return;
+    ensureAudio();
+    if (musicOsc) return;
+    musicOsc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    musicOsc.type = 'triangle';
+    musicOsc.frequency.value = 95;
+    gain.gain.value = 0.02;
+    musicOsc.connect(gain); gain.connect(audioCtx.destination);
+    musicOsc.start();
+  }
+  function stopMusic(){
+    if (musicOsc) {
+      try { musicOsc.stop(); } catch(e){}
+      musicOsc.disconnect();
+      musicOsc=null;
+    }
+  }
 
-  totalWinningsEl.textContent = `Total Winnings: $${totalWinnings}`;
-  ballsDroppedEl.textContent = ballsDropped;
-  avgWinningsEl.textContent = (totalWinnings / ballsDropped).toFixed(2);
+  /* ---------- Main animation loop ---------- */
+  function step() {
+    // physics step & draw
+    ctx.clearRect(0,0,W,H);
 
-  updateHistoryLog();
-  updateGraph();
+    // background base
+    ctx.fillStyle = '#0c0d0e';
+    ctx.fillRect(0,0,W,H);
 
-  showPopup(`+ $${winAmount}`);
+    // draw pegs
+    ctx.fillStyle = '#bfcbb0';
+    for (const p of pegs) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, pegRadius, 0, Math.PI*2);
+      ctx.fill();
+    }
 
-  // Play win sound based on prize amount
-  playSound(220 + winAmount * 3, 0.3, 'square', 0.3);
+    // draw slots base
+    const slotH = 96;
+    const slotsY = H - slotH;
+    ctx.fillStyle = '#0b0c0d';
+    ctx.fillRect(0, slotsY, W, slotH);
 
-  // Particle burst of gold
-  createParticles(ball.x, ball.y, 25, '#f5c518');
+    // draw slot separators and labels
+    for (let i=0;i<cols;i++){
+      const slotX = i * (W / cols);
+      ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(slotX, slotsY);
+      ctx.lineTo(slotX, H);
+      ctx.stroke();
 
-  // Remove ball from balls array handled by caller
-}
+      // label
+      const mult = multipliers[i];
+      const stakeVal = parseFloat(stakeSelect.value);
+      const display = (mult < 0) ? `-${Math.abs(mult).toFixed(2)}x` : `${mult.toFixed(2)}x`;
+      ctx.fillStyle = mult < 0 ? '#d9534f' : 'var(--accent)';
+      ctx.font = '700 14px Inter, system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(display, slotX + (W/cols)/2, slotsY + 52);
+    }
 
-// -- History Log UI --
-function updateHistoryLog() {
-  historyLog.innerHTML = winningsHistory
-    .slice()
-    .reverse()
-    .map((win, i) => {
-      const time = new Date().toLocaleTimeString();
-      return `<div>Ball ${ballsDropped - i}: $${win} at ${time}</div>`;
-    })
-    .join('');
-}
+    // update and draw balls
+    for (let i = balls.length - 1; i >= 0; i--) {
+      const b = balls[i];
+      if (!b.stopped) {
+        // physics
+        b.vy += gravity;
+        b.vx *= 0.997;
+        b.vy *= 0.997;
+        b.x += b.vx;
+        b.y += b.vy;
 
-// -- Winnings graph --
-function updateGraph() {
-  graphCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
-  const maxWin = Math.max(...winningsHistory, 100);
-  const barWidth = graphCanvas.width / winningsHistory.length;
+        // wall collisions
+        if (b.x - b.radius < 0) { b.x = b.radius; b.vx = -b.vx*0.7; beep(260,0.05,'square',0.1); }
+        if (b.x + b.radius > W) { b.x = W - b.radius; b.vx = -b.vx*0.7; beep(260,0.05,'square',0.1); }
 
-  winningsHistory.forEach((win, i) => {
-    const barHeight = (win / maxWin) * graphCanvas.height;
-    graphCtx.fillStyle = '#f5c518';
-    graphCtx.fillRect(i * barWidth, graphCanvas.height - barHeight, barWidth * 0.8, barHeight);
+        // peg collisions (simple)
+        for (const p of pegs) {
+          const dx = b.x - p.x;
+          const dy = b.y - p.y;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          if (dist < b.radius + pegRadius) {
+            // push out
+            const overlap = (b.radius + pegRadius) - dist + 0.01;
+            const nx = dx / dist || 0;
+            const ny = dy / dist || 1;
+            b.x += nx * overlap;
+            b.y += ny * overlap;
+            // reflect velocity roughly
+            const dot = b.vx*nx + b.vy*ny;
+            b.vx = b.vx - 2*dot*nx;
+            b.vy = b.vy - 2*dot*ny;
+            b.vx *= 0.78;
+            b.vy *= 0.78;
+            // small random horizontal tweak so paths diverge more
+            b.vx += (Math.random()-0.5)*0.18;
+            beep(420 + (p.y%200),0.03,'sine',0.06);
+          }
+        }
+
+        // bottom / slot detection
+        if (b.y + b.radius >= slotsY) {
+          // snap to just above base
+          b.y = slotsY - b.radius - 0.2;
+          b.vy = 0;
+          // friction to slow
+          b.vx *= 0.96;
+
+          if (Math.abs(b.vx) < 0.12) {
+            // settle -> compute slot index and payout
+            b.stopped = true;
+            const slotIndex = Math.min(cols-1, Math.max(0, Math.floor(b.x / (W/cols))));
+            const multiplier = multipliers[slotIndex] || 0;
+            const stake = parseFloat(stakeSelect.value);
+            const payout = stake * multiplier; // can be negative
+            totalWinnings += payout;
+            ballsDropped++;
+            recent.unshift(payout);
+            if (recent.length>20) recent.pop();
+            updateStatsUI();
+
+            // show popup text above slot
+            const slotCenterX = slotIndex * (W/cols) + (W/cols)/2;
+            displayWinPopup(slotCenterX, slotsY + 30, (payout>=0?'+':'') + '$' + payout.toFixed(2));
+
+            // record recent
+            addRecentResult(payout);
+
+            // remove ball from array after brief delay so user sees it
+            setTimeout(()=> {
+              const idx = balls.indexOf(b);
+              if (idx>=0) balls.splice(idx,1);
+            }, 220);
+            // small win beep
+            beep(320 + Math.abs(payout)*6, 0.12, 'triangle', 0.14);
+          }
+        }
+      }
+      // draw ball
+      ctx.beginPath();
+      ctx.fillStyle = b.color;
+      ctx.arc(b.x, b.y, b.radius, 0, Math.PI*2);
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    requestAnimationFrame(step);
+  }
+
+  /* ---------- event handlers ---------- */
+  dropBtn.addEventListener('click', ()=>{
+    if (audioAllowed()) resumeAudioIfNeeded();
+    balls.push(createBall());
   });
-}
 
-// -- Ball factory with varied size and random color --
-function createNewBall() {
-  // Decide drop side left or right (random)
-  const leftDropX = width * 0.25;
-  const rightDropX = width * 0.75;
+  clearBtn.addEventListener('click', ()=>{
+    balls.length = 0;
+  });
 
-  const side = Math.random() < 0.5 ? 'left' : 'right';
-  const startX = side === 'left'
-    ? leftDropX + (Math.random() - 0.5) * pegSpacingX * 0.8
-    : rightDropX + (Math.random() - 0.5) * pegSpacingX * 0.8;
+  resetWinningsBtn.addEventListener('click', ()=>{
+    totalWinnings = 0;
+    ballsDropped = 0;
+    recent.length = 0;
+    updateStatsUI();
+    recentLog.innerHTML = '';
+  });
 
-  // Vary ball size (between 4 and 8) and color based on side
-  const radius = 4 + Math.random() * 4;
-  const color = side === 'left' ? '#f54242' : '#42aaf5'; // red or blue
+  // auto toggle
+  autoBtn.addEventListener('click', ()=>{
+    autoMode = !autoMode;
+    autoBtn.textContent = `Auto Drop: ${autoMode ? 'ON' : 'OFF'}`;
+    if (autoMode) {
+      autoInterval = setInterval(()=>{ balls.push(createBall()); }, Math.max(100, parseInt(autoSpeedInput.value)));
+    } else {
+      clearInterval(autoInterval);
+      autoInterval = null;
+    }
+  });
 
-  return {
-    x: startX,
-    y: 50,
-    vx: (Math.random() * 0.6) - 0.3,
-    vy: 2,
-    radius,
-    color,
-    stopped: false,
-  };
-}
+  // risk change -> rebuild multipliers
+  riskSelect.addEventListener('change', ()=>{
+    multipliers = buildMultipliersForCols(riskSelect.value, cols);
+  });
 
-// -- Drop ball button --
-dropBtn.addEventListener('click', () => {
-  balls.push(createNewBall());
-  if (audioCtx.state === 'suspended') audioCtx.resume(); // Resume audio on user interaction
-});
+  difficultySelect.addEventListener('change', ()=>{
+    buildPegs();
+  });
 
-// -- Clear balls button --
-clearBtn.addEventListener('click', () => {
-  balls.length = 0;
-  messageEl.textContent = '';
-});
+  pegSizeSelect.addEventListener('change', ()=>{
+    pegRadius = parseFloat(pegSizeSelect.value);
+    buildPegs();
+  });
 
-// -- Reset game button --
-resetBtn.addEventListener('click', () => {
-  balls.length = 0;
-  totalWinnings = 0;
-  ballsDropped = 0;
-  winningsHistory.length = 0;
-  messageEl.textContent = '';
-  totalWinningsEl.textContent = `Total Winnings: $0`;
-  ballsDroppedEl.textContent = `0`;
-  avgWinningsEl.textContent = `0.00`;
-  updateHistoryLog();
-  updateGraph();
-});
+  gravitySelect.addEventListener('change', ()=>{
+    gravity = parseFloat(gravitySelect.value);
+  });
 
-// -- Auto drop toggle button --
-autoDropBtn.addEventListener('click', () => {
-  autoDrop = !autoDrop;
-  autoDropBtn.textContent = autoDrop ? 'Auto Drop: ON' : 'Auto Drop: OFF';
-  autoDropBtn.setAttribute('aria-pressed', autoDrop ? 'true' : 'false');
-  if (autoDrop) {
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    autoDropIntervalId = setInterval(() => {
-      balls.push(createNewBall());
-    }, parseInt(autoDropSpeedRange.value));
-  } else {
-    clearInterval(autoDropIntervalId);
+  autoSpeedInput.addEventListener('change', ()=>{
+    if (autoMode) {
+      clearInterval(autoInterval);
+      autoInterval = setInterval(()=>{ balls.push(createBall()); }, Math.max(100, parseInt(autoSpeedInput.value)));
+    }
+  });
+
+  soundToggle.addEventListener('click', ()=>{
+    soundOn = !soundOn;
+    soundToggle.textContent = `Sound: ${soundOn? 'ON' : 'OFF'}`;
+    if (soundOn) resumeAudioIfNeeded();
+  });
+
+  musicToggle.addEventListener('click', ()=>{
+    musicOn = !musicOn;
+    musicToggle.textContent = `Music: ${musicOn? 'ON' : 'OFF'}`;
+    if (musicOn) startMusic(); else stopMusic();
+  });
+
+  // small utility to show audio resume prompts if needed
+  function audioAllowed(){ return !!(window.AudioContext || window.webkitAudioContext); }
+  function resumeAudioIfNeeded(){
+    try {
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    } catch(e){}
   }
-});
+  function startMusic(){ if (!audioAllowed()) return; ensureAudio(); if (!musicOn) return; if (!musicOsc){ musicOsc = audioCtx.createOscillator(); const g = audioCtx.createGain(); musicOsc.type='triangle'; musicOsc.frequency.value=90; g.gain.value=0.02; musicOsc.connect(g); g.connect(audioCtx.destination); musicOsc.start(); } }
+  function stopMusic(){ if (musicOsc){ try{ musicOsc.stop(); }catch(e){} musicOsc.disconnect(); musicOsc=null;} }
 
-// -- Sound toggle --
-soundToggle.addEventListener('change', () => {
-  soundOn = soundToggle.checked;
-});
+  function addRecentResult(v){
+    // already handled above; also update recentLog
+    recentLog.innerHTML = recent.map((val, i) => {
+      const sign = val>=0?'+':'';
+      return `<div style="padding:4px 0;color:${val<0? 'var(--danger)' : 'var(--accent)'}">${sign}${val.toFixed(2)}</div>`;
+    }).join('');
+  }
 
-// -- Music toggle --
-musicToggle.addEventListener('change', () => {
-  musicOn = musicToggle.checked;
-  if (musicOn) startMusic();
-  else stopMusic();
-});
+  function updateStatsUI(){
+    totalWEl.textContent = `$${totalWinnings.toFixed(2)}`;
+    ballsDroppedEl.textContent = String(ballsDropped);
+    avgWEl.textContent = ballsDropped ? (totalWinnings/ballsDropped).toFixed(2) : '0.00';
+  }
 
-// -- Difficulty controls --
-gravityRange.addEventListener('input', () => {
-  gravity = parseFloat(gravityRange.value);
-});
-pegSizeRange.addEventListener('input', () => {
-  pegRadius = parseFloat(pegSizeRange.value);
+  /* ---------- initialization ---------- */
+  // initial values from UI
+  pegRadius = parseFloat(pegSizeSelect.value);
+  gravity = parseFloat(gravitySelect.value);
+
+  // build pegs and multipliers initially
   buildPegs();
-});
-autoDropSpeedRange.addEventListener('input', () => {
-  if (autoDrop) {
-    clearInterval(autoDropIntervalId);
-    autoDropIntervalId = setInterval(() => {
-      balls.push(createNewBall());
-    }, parseInt(autoDropSpeedRange.value));
-  }
-});
+  multipliers = buildMultipliersForCols(riskSelect.value, cols);
 
-// -- Stake set select --
-stakeSelect.addEventListener('change', () => {
-  updateStakesSet(stakeSelect.value);
-});
+  // start loop
+  step();
 
-// -- Show winnings popup animation --
-function showPopup(text) {
-  const popup = document.createElement('div');
-  popup.className = 'popup';
-  popup.textContent = text;
-  document.body.appendChild(popup);
-  setTimeout(() => popup.remove(), 3000);
-}
-
-// -- Animate loop --
-function animate() {
-  ctx.clearRect(0, 0, width, height);
-  drawPegs();
-  drawSlots();
-
-  // Update and draw balls
-  for (let i = balls.length - 1; i >= 0; i--) {
-    const ball = balls[i];
-    if (!ball.stopped) {
-      ball.vy += gravity;
-      ball.vx *= 0.98;
-      ball.vy *= 0.98;
-
-      ball.x += ball.vx;
-      ball.y += ball.vy;
-
-      collideWalls(ball);
-
-      for (const peg of pegs) {
-        collideBallPeg(ball, peg);
-      }
-
-      if (collideSlotsBase(ball)) {
-        balls.splice(i, 1);
-        continue;
-      }
-    }
-    drawBall(ball);
-  }
-
-  // Update and draw particles
-  for (let i = particles.length - 1; i >= 0; i--) {
-    const p = particles[i];
-    p.x += p.vx;
-    p.y += p.vy;
-    p.alpha -= p.decay;
-    if (p.alpha <= 0) {
-      particles.splice(i, 1);
-      continue;
-    }
-    drawParticle(p);
-  }
-
-  requestAnimationFrame(animate);
-}
-
-// -- Initialize game --
-updateStakesSet('classic');
-buildPegs();
-animate();
-startMusic();
-
+  // ensure resize keeps proportions (canvas CSS handles scaling)
+  window.addEventListener('resize', ()=>{ /* responsive handled via CSS; static canvas size used for logic */ });
+})();
 </script>
-
 </body>
 </html>
