@@ -1,1 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Realm Forge — Full Prototype</title>
+<style>
+  /* Basic UI + canvas styles */
+  html,body { height:100%; margin:0; background:#0b1220; color:#e6eef8; font-family: "Press Start 2P", monospace; }
+  canvas { display:block; margin:0 auto; background:#2b5; image-rendering: pixelated; image-rendering: crisp-edges; border:6px solid #071024; box-shadow:0 0 30px #000; }
+  #ui { position:absolute; top:8px; left:8px; right:8px; display:flex; gap:8px; z-index:60; pointer-events:auto; }
+  .uiBtn { background:#102030; padding:8px 10px; border-radius:6px; color:#f7db8b; cursor:pointer; border:2px solid #2b3f5a; font-size:11px; user-select:none; }
+  .uiBtn:hover { background:#274060; color:#fff; box-shadow:0 0 8px #a87f3a; }
+  #log { position:absolute; bottom:8px; left:8px; right:8px; height:140px; overflow:auto; background:rgba(2,6,10,0.8); border-radius:6px; padding:8px; z-index:60; font-size:11px; border:2px solid #183; }
+  #menuOverlay { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:86vw; max-width:1120px; height:78vh; background:rgba(6,12,20,0.96); border:3px solid #304b6a; padding:12px; box-sizing:border-box; display:none; z-index:100; overflow:auto; border-radius:8px; }
+  #menuOverlay.show { display:block; }
+  .menuHeader { color:#ffd88a; font-size:14px; margin-bottom:6px; display:block; }
+  .closeBtn { float:right; cursor:pointer; background:#2b3f5a; color:#fff; padding:6px 8px; border-radius:6px; }
+  table { width:100%; border-collapse:collapse; font-size:11px; }
+  th,td { border:1px solid #23364a; padding:6px; text-align:left; }
+  .rarity-common{ color:#cfcfcf } .rarity-uncommon{ color:#7fe07f } .rarity-rare{ color:#6fb0ff } .rarity-epic{ color:#c98aff } .rarity-legendary{ color:#ffb86b } .rarity-divine{ color:#ff88ff }
+  label { display:block; margin-top:8px; font-size:11px; color:#cfe0ff }
+  input[type=text], select, input[type=number] { width:100%; padding:6px; background:#08101a; border:1px solid #224; color:#dff; border-radius:4px }
+  button.small { padding:6px 8px; font-size:11px; margin-top:6px; }
+  #chatWindow { position:absolute; right:8px; bottom:160px; width:260px; max-height:300px; overflow:auto; background:rgba(2,6,10,0.85); color:#fff; font-size:10px; padding:6px; border:2px solid #183252; z-index:80; display:none; }
+  #chatInputWrap { position:absolute; right:8px; bottom:120px; width:260px; z-index:82; display:none; }
+  #chatInput { width:200px; padding:6px; background:#08101a; color:#dff; border:1px solid #224; }
+  #chatSend { padding:6px 8px; background:#2b5f8f; color:#fff; border:none; cursor:pointer; }
+  #miniHud { position:absolute; left:8px; top:64px; z-index:60; font-size:11px; background:rgba(3,6,8,0.6); padding:6px; border-radius:6px; border:1px solid #203; color:#dff; }
+  @media (max-width:900px) { canvas { width:100%; height:60vh; } #menuOverlay { width:94vw; height:80vh; } }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
 
+<canvas id="game" width="864" height="576"></canvas>
+
+<div id="ui">
+  <div class="uiBtn" id="btnCustomize">Customize</div>
+  <div class="uiBtn" id="btnInventory">Inventory (I)</div>
+  <div class="uiBtn" id="btnQuests">Quests (Q)</div>
+  <div class="uiBtn" id="btnShop">Shop (S)</div>
+  <div class="uiBtn" id="btnCraft">Craft (C)</div>
+  <div class="uiBtn" id="btnAuction">Auction (A)</div>
+  <div class="uiBtn" id="btnSave">Save</div>
+  <div class="uiBtn" id="btnLoad">Load</div>
+  <div class="uiBtn" id="btnChat">Chat</div>
+  <div class="uiBtn" id="btnLogout">Logout</div>
+</div>
+
+<div id="log"></div>
+<div id="miniHud"></div>
+<div id="menuOverlay"></div>
+
+<div id="chatWindow"></div>
+<div id="chatInputWrap"><input id="chatInput" placeholder="Type..." /><button id="chatSend">Send</button></div>
+
+<script type="module">
+/* =========================================================
+   Realm Forge — Single-file Full Prototype
+   - All major systems in one HTML file
+   - Supabase multiplayer integrated below
+   ========================================================= */
+
+/* ----------------------
+   Supabase configuration
+   ---------------------- */
+const SUPABASE_URL = "https://lmufaasiaqkcrzcfirfs.supabase.co";
+const SUPABASE_KEY = "sb_publishable_Ws21TROq3F-VxlZnW7b9GA_YbC0RoCF";
+let supabase = null;
+const USE_SUPABASE = !!SUPABASE_URL && !!SUPABASE_KEY;
+
+if (USE_SUPABASE) {
+  try {
+    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm');
+    supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+    console.log('Supabase client initialized');
+  } catch (e) {
+    console.warn('Supabase import failed', e);
+  }
+}
+
+/* ----------------------
+   Canvas & world config
+   ---------------------- */
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const TILE = 16;
+const MAP_W = 140;
+const MAP_H = 96;
+const VIEW_W = canvas.width;
+const VIEW_H = canvas.height;
+
+/* ----------------------
+   Utility functions
+   ---------------------- */
+function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+function randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+function now(){ return Date.now(); }
+function log(msg){
+  const el = document.getElementById('log');
+  const ts = new Date().toLocaleTimeString().slice(0,8);
+  el.innerHTML += `<div>[${ts}] ${msg}</div>`;
+  el.scrollTop = el.scrollHeight;
+}
+
+/* ----------------------
+   Procedural items (400)
+   ---------------------- */
+const RARITIES = [
+  { id:'common', weight:50 },
+  { id:'uncommon', weight:30 },
+  { id:'rare', weight:12 },
+  { id:'epic', weight:5 },
+  { id:'legendary', weight:2 },
+  { id:'divine', weight:1 },
+];
+function chooseRarity(){
+  const total = RARITIES.reduce((s,r)=>s+r.weight,0);
+  let r = Math.random()*total;
+  for (const x of RARITIES){ r -= x.weight; if (r<=0) return x.id; }
+  return RARITIES[0].id;
+}
+const PREFIX = ["Iron","Stone","Wooden","Steel","Golden","Mystic","Shadow","Sun","Moon","Emerald","Ruby","Crystal","Ancient","Swift","Heavy","Arcane","Divine","Phantom","Nether","Sky"];
+const SUFFIX = ["Sword","Dagger","Axe","Bow","Spear","Staff","Shield","Helmet","Chest","Boots","Ring","Amulet","Gloves","Cloak","Belt","Blade","Hammer","Polearm","Orb","Tome"];
+const ITEMS = [];
+const RARITY_MULT = { common:1, uncommon:1.8, rare:4, epic:10, legendary:25, divine:75 };
+function genItemStats(type, rarity) {
+  const mult = RARITY_MULT[rarity] || 1;
+  if (["Sword","Dagger","Axe","Bow","Spear","Polearm","Blade","Hammer"].includes(type)) {
+    return { atk: Math.round((5 + Math.random()*15) * mult), speed: Math.round(1 + Math.random()*3), dur: Math.round(50 + Math.random()*200*mult) };
+  } else if (["Staff","Orb","Tome"].includes(type)) {
+    return { atk: Math.round((3 + Math.random()*10) * mult), mp: Math.round((10 + Math.random()*80) * mult), dur: Math.round(40 + Math.random()*150*mult) };
+  } else {
+    return { def: Math.round((2 + Math.random()*12) * mult), dur: Math.round(40 + Math.random()*200 * mult) };
+  }
+}
+function genItems(count=400){
+  for (let i=0;i<count;i++){
+    const prefix = PREFIX[i % PREFIX.length];
+    const suffix = SUFFIX[(i*3) % SUFFIX.length];
+    const rarity = chooseRarity();
+    const id = `${prefix.toLowerCase()}_${suffix.toLowerCase()}_${i}`;
+    const price = Math.round((20 + Math.random()*200) * (RARITY_MULT[rarity] || 1));
+    ITEMS.push({
+      id,
+      name: `${prefix} ${suffix}`,
+      rarity,
+      price,
+      description: `${rarity} ${suffix} made of ${prefix.toLowerCase()}.`,
+      stats: genItemStats(suffix, rarity),
+      tags: [rarity],
+      color: { common:'#bfc7bf',uncommon:'#7fe07f',rare:'#6fb0ff',epic:'#c98aff',legendary:'#ffb86b',divine:'#ff88ff'}[rarity] || '#fff'
+    });
+  }
+}
+genItems(400);
+log(`Generated ${ITEMS.length} items.`);
+
+/* ----------------------
+   Crafting recipes (sample)
+   ---------------------- */
+const RECIPES = [
+  { id:'craft_wood_sword', name:'Wooden Sword', requires:{ wood:6 }, result:{ itemId: ITEMS.find(i=>i.name.includes('Wooden') && i.name.includes('Sword'))?.id || ITEMS[0].id, qty:1 } },
+  { id:'craft_iron_sword', name:'Iron Sword', requires:{ iron_ore:10, coal:3 }, result:{ itemId: ITEMS.find(i=>i.name.includes('Iron') && i.name.includes('Sword'))?.id || ITEMS[1].id, qty:1 } },
+  { id:'craft_health_potion', name:'Health Potion', requires:{ herb:4 }, result:{ itemId: ITEMS[randInt(0,ITEMS.length-1)].id, qty:1 } },
+];
+
+/* ----------------------
+   Map generation (tiles)
+   ---------------------- */
+// tiles: 0 grass,1 road,2 tree,3 rock,4 water,5 building,6 mine,7 woodNode,8 stoneNode
+let map = new Array(MAP_H);
+for (let y=0;y<MAP_H;y++){ map[y] = new Array(MAP_W).fill(0); }
+for (let y=0;y<MAP_H;y++) for (let x=0;x<MAP_W;x++){
+  if (x<6||x>MAP_W-7||y<4||y>MAP_H-5) map[y][x]=2;
+  else map[y][x]=0;
+}
+// main roads
+for (let x=0;x<MAP_W;x++) map[Math.floor(MAP_H/2)][x]=1;
+for (let y=0;y<MAP_H;y++) map[y][Math.floor(MAP_W/3)]=1;
+// towns
+for (let t=0;t<22;t++){
+  const bx = 6 + t*5;
+  const by = 6 + (t%5)*6;
+  if (bx<MAP_W-4 && by<MAP_H-4){
+    map[by][bx]=5; map[by][bx+1]=5; map[by+1][bx]=5; map[by+1][bx+1]=5;
+  }
+}
+// mines / nodes
+for (let i=0;i<120;i++){
+  const rx = randInt(8, MAP_W-16), ry = randInt(8, MAP_H-20);
+  if (map[ry][rx]===0) map[ry][rx] = (Math.random()<0.5?6: (Math.random()<0.6?7:8));
+}
+// scatter trees/rocks
+for (let i=0;i<1600;i++){
+  const rx = randInt(0,MAP_W-1), ry = randInt(0,MAP_H-1);
+  if (map[ry][rx]===0) map[ry][rx] = (Math.random()<0.6?2:3);
+}
+
+/* ----------------------
+   NPCs & Quests
+   ---------------------- */
+const NPCS = [];
+const ENEMIES = [];
+const QUESTS = [];
+
+function placeNPCs(n=120){
+  for (let i=0;i<n;i++){
+    let tries=0, x,y;
+    do { x=randInt(6,MAP_W-8); y=randInt(6,MAP_H-8); tries++; } while((map[y][x]!==0 && map[y][x]!==1) && tries<400);
+    const id = `npc_${i}`;
+    const name = ['Elder','Trader','Guard','Farmer','Blacksmith','Herbalist','Miner','Ranger','Mage','Smith'][i%10] + ' ' + ['A','B','C','D','E','F','G','H','I','J'][i%10];
+    NPCS.push({ id, name, x:x*TILE, y:y*TILE, talk:[`Hello, I'm ${name}.`,`Can you help me?`,`Bring me items.`], quests:[] });
+  }
+}
+placeNPCs(120);
+
+function genQuests(count=320){
+  for (let i=1;i<=count;i++){
+    const qid = `q_${i}`;
+    const type = ['collect','gather','kill','deliver'][randInt(0,3)];
+    const item = ITEMS[randInt(0,ITEMS.length-1)];
+    const amount = Math.max(1, Math.floor((1 + Math.random()*2) * (item.rarity==='common'?1:item.rarity==='uncommon'?1.5:item.rarity==='rare'?2:3)));
+    const giver = NPCS[randInt(0,NPCS.length-1)];
+    const q = {
+      id: qid,
+      title: `${type.charAt(0).toUpperCase()+type.slice(1)} ${item.name}`,
+      desc: `Objective: ${amount} × ${item.name}`,
+      type, itemId: item.id, amount, giverId: giver.id,
+      reward: { gold: Math.round(20 + Math.random()*200 * (RARITY_MULT[item.rarity]||1)), itemId: ITEMS[randInt(0,ITEMS.length-1)].id },
+      status: 'available', progress:0
+    };
+    QUESTS.push(q); giver.quests.push(q.id);
+  }
+}
+genQuests(320);
+log(`Placed ${NPCS.length} NPCs and generated ${QUESTS.length} quests.`);
+
+/* ----------------------
+   Enemies
+   ---------------------- */
+function spawnEnemies(n=90){
+  for (let i=0;i<n;i++){
+    const ex = randInt(6,MAP_W-8), ey = randInt(6,MAP_H-8);
+    ENEMIES.push({ id:`e_${i}`, x:ex*TILE, y:ey*TILE, hp:30+randInt(0,120), maxHp:30+randInt(0,120), speed:30+Math.random()*70, state:'idle', aggro:96+Math.random()*180, lastAtk:0 });
+  }
+}
+spawnEnemies(90);
+
+/* ----------------------
+   Player
+   ---------------------- */
+let player = {
+  id: 'p_'+randInt(1000,999999),
+  name: 'Hero'+randInt(1,999),
+  x: Math.floor(MAP_W/2)*TILE, y: Math.floor(MAP_H/2)*TILE,
+  vx:0, vy:0, speed:96, dir:'down', frame:0, frameTimer:0, frameInterval:140,
+  hp:140, maxHp:140, mp:60, maxMp:60,
+  inventory:{ wood:12, herb:5, iron_ore:2, coal:1 }, quests:{}, gold:1200,
+  customization:{ hairColor:'#4B2E05', shirtColor:'#cc5500', pantsColor:'#0055cc', skin:'#F6D7B6' },
+  lastPosUpdate:0, isLoggedIn:false
+};
+
+/* ----------------------
+   Player sprite generation (16x16)
+   ---------------------- */
+function genPlayerSprites(custom){
+  const dirs = ['down','left','right','up']; const frames = 3;
+  const sprites = {};
+  for (const d of dirs){
+    sprites[d]=[];
+    for (let f=0;f<frames;f++){
+      const c=document.createElement('canvas'); c.width=TILE; c.height=TILE;
+      const g=c.getContext('2d'); g.clearRect(0,0,TILE,TILE);
+      g.fillStyle = custom.skin; g.fillRect(5,4,6,6); // body
+      g.fillStyle = custom.shirtColor; g.fillRect(4,8,8,4); // shirt
+      g.fillStyle = custom.pantsColor; g.fillRect(4,12,8,4); // pants
+      g.fillStyle = custom.hairColor;
+      if (f===0) g.fillRect(4,0,8,4);
+      if (f===1) g.fillRect(5,0,6,4);
+      if (f===2) g.fillRect(3,0,10,4);
+      g.fillStyle = '#000'; g.fillRect(6,7,1,1); g.fillRect(8,7,1,1);
+      sprites[d].push(c);
+    }
+  }
+  return sprites;
+}
+let playerSprites = genPlayerSprites(player.customization);
+
+/* ----------------------
+   Sounds (tiny oscillator beeps)
+   ---------------------- */
+function beep(freq=440, t=0.06, vol=0.08){
+  try{
+    const ac = new (window.AudioContext||window.webkitAudioContext)();
+    const o = ac.createOscillator(); const g= ac.createGain();
+    o.type='sine'; o.frequency.value=freq; g.gain.value = vol;
+    o.connect(g); g.connect(ac.destination); o.start();
+    setTimeout(()=>{ o.stop(); ac.close(); }, t*1000);
+  }catch(e){}
+}
+const SND = {
+  walk: ()=>beep(660,0.03,0.02),
+  attack: ()=>beep(180,0.09,0.08),
+  hit: ()=>beep(120,0.06,0.06),
+  buy: ()=>beep(900,0.06,0.05),
+  craft: ()=>beep(420,0.07,0.05),
+  quest: ()=>beep(640,0.08,0.05),
+  gather: ()=>beep(520,0.04,0.04)
+};
+
+/* ----------------------
+   Drawing helpers
+   ---------------------- */
+function drawTile(t,x,y){
+  const px=x*TILE, py=y*TILE;
+  switch(t){
+    case 0: ctx.fillStyle='#3fa552'; ctx.fillRect(px,py,TILE,TILE); break;
+    case 1: ctx.fillStyle='#a67c00'; ctx.fillRect(px,py,TILE,TILE); break;
+    case 2: ctx.fillStyle='#2d5b2f'; ctx.fillRect(px,py,TILE,TILE); ctx.fillStyle='#2a8a3d'; ctx.beginPath(); ctx.moveTo(px+8,py+2); ctx.lineTo(px+2,py+14); ctx.lineTo(px+14,py+14); ctx.fill(); break;
+    case 3: ctx.fillStyle='#6b6b6b'; ctx.fillRect(px,py,TILE,TILE); ctx.fillStyle='#9b9b9b'; ctx.fillRect(px+3,py+4,10,8); break;
+    case 4: ctx.fillStyle='#2b6fb2'; ctx.fillRect(px,py,TILE,TILE); break;
+    case 5: ctx.fillStyle='#f0c36a'; ctx.fillRect(px,py,TILE,TILE); ctx.fillStyle='#b46300'; ctx.fillRect(px+6,py+8,4,8); break;
+    case 6: ctx.fillStyle='#3a3a3a'; ctx.fillRect(px,py,TILE,TILE); ctx.fillStyle='#a8a8a8'; ctx.fillRect(px+4,py+7,8,3); break;
+    case 7: ctx.fillStyle='#2c6f2c'; ctx.fillRect(px,py,TILE,TILE); ctx.fillStyle='#6fae6f'; ctx.fillRect(px+3,py+4,10,8); break;
+    case 8: ctx.fillStyle='#7f7f7f'; ctx.fillRect(px,py,TILE,TILE); ctx.fillStyle='#bfbfbf'; ctx.fillRect(px+3,py+4,10,8); break;
+    default: ctx.fillStyle='#3fa552'; ctx.fillRect(px,py,TILE,TILE);
+  }
+}
+function getCamera(){
+  const camX = clamp(player.x - VIEW_W/2, 0, MAP_W*TILE - VIEW_W);
+  const camY = clamp(player.y - VIEW_H/2, 0, MAP_H*TILE - VIEW_H);
+  return { camX, camY };
+}
+
+/* ----------------------
+   Update & draw world
+   ---------------------- */
+function update(dt){
+  // movement
+  const prevX = player.x, prevY = player.y;
+  const speed = player.speed * dt;
+  let moving=false;
+  if (keys['arrowup']||keys['w']) { player.y -= speed; player.dir='up'; moving=true; }
+  if (keys['arrowdown']||keys['s']) { player.y += speed; player.dir='down'; moving=true; }
+  if (keys['arrowleft']||keys['a']) { player.x -= speed; player.dir='left'; moving=true; }
+  if (keys['arrowright']||keys['d']) { player.x += speed; player.dir='right'; moving=true; }
+  player.x = clamp(player.x, TILE, MAP_W*TILE - TILE*2);
+  player.y = clamp(player.y, TILE, MAP_H*TILE - TILE*2);
+  if (moving){ player.frameTimer += dt*1000; if (player.frameTimer > player.frameInterval){ player.frame = (player.frame+1)%3; player.frameTimer = 0; SND.walk(); } } else { player.frame = 1; player.frameTimer = 0; }
+  // enemies
+  for (const e of ENEMIES) updateEnemy(e, dt);
+  // multiplayer updates
+  if (USE_SUPABASE && player.isLoggedIn && Date.now() - player.lastPosUpdate > 400) {
+    player.lastPosUpdate = Date.now();
+    syncPosition();
+  }
+  document.getElementById('miniHud').innerHTML = `Pos: ${Math.round(player.x)},${Math.round(player.y)} &nbsp; Quests: ${Object.keys(player.quests||{}).length} &nbsp; Items: ${Object.keys(player.inventory||{}).length}`;
+}
+function draw(){
+  ctx.clearRect(0,0,VIEW_W,VIEW_H);
+  const {camX,camY} = getCamera();
+  const sx = Math.floor(camX/TILE), sy = Math.floor(camY/TILE);
+  const offX = - (camX - sx*TILE), offY = - (camY - sy*TILE);
+  const tilesX = Math.ceil(VIEW_W / TILE)+1, tilesY = Math.ceil(VIEW_H / TILE)+1;
+  for (let j=0;j<tilesY;j++){
+    for (let i=0;i<tilesX;i++){
+      const mx = sx + i, my = sy + j;
+      if (mx>=0 && mx<MAP_W && my>=0 && my<MAP_H){
+        drawTile(map[my][mx], mx, my);
+      }
+    }
+  }
+  // NPCs
+  for (const n of NPCS){
+    const nx = n.x - camX, ny = n.y - camY;
+    if (nx < -TILE || ny < -TILE || nx > VIEW_W+TILE || ny > VIEW_H+TILE) continue;
+    ctx.fillStyle = '#ffd88a'; ctx.fillRect(nx, ny, TILE, TILE);
+    ctx.fillStyle = '#000'; ctx.fillRect(nx+3, ny+5, 2,2); ctx.fillRect(nx+10, ny+5, 2,2);
+  }
+  // Enemies
+  for (const e of ENEMIES){
+    const ex = e.x - camX, ey = e.y - camY;
+    if (ex < -TILE || ey < -TILE || ex > VIEW_W+TILE || ey > VIEW_H+TILE) continue;
+    ctx.fillStyle = '#a84a4a'; ctx.fillRect(ex, ey, TILE, TILE);
+    ctx.fillStyle = '#000'; ctx.fillRect(ex, ey-5, TILE, 4);
+    ctx.fillStyle = '#f44'; ctx.fillRect(ex, ey-5, TILE * (e.hp / e.maxHp), 4);
+  }
+  // Other players
+  for (const id in OTHER_PLAYERS){
+    const op = OTHER_PLAYERS[id];
+    const ox = op.x - camX, oy = op.y - camY;
+    if (ox < -TILE || oy < -TILE || ox > VIEW_W+TILE || oy > VIEW_H+TILE) continue;
+    ctx.fillStyle = op.customization?.shirtColor || '#ccc';
+    ctx.fillRect(ox, oy, TILE, TILE);
+    ctx.fillStyle = '#000'; ctx.fillRect(ox+3, oy+5, 2,2); ctx.fillRect(ox+10, oy+5, 2,2);
+  }
+  // Player
+  const px = player.x - camX, py = player.y - camY;
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(playerSprites[player.dir][player.frame], px, py, TILE, TILE);
+  // HUD
+  ctx.fillStyle='rgba(0,0,0,0.6)'; ctx.fillRect(8,8,160,44);
+  ctx.fillStyle='#fff'; ctx.font='11px monospace'; ctx.fillText(`${player.name}`, 12,22);
+  ctx.fillStyle='#ff6b6b'; ctx.fillRect(12,28, (player.hp/player.maxHp)*120,6);
+  ctx.fillStyle='#8ad2ff'; ctx.fillRect(12,38, (player.mp/player.maxMp)*120,6);
+  ctx.fillStyle='#fff'; ctx.fillText(`Gold: ${player.gold}`, 12,54);
+}
+function gameLoop(ts){
+  const dt = Math.min(0.05, (ts - lastTs)/1000);
+  lastTs = ts;
+  update(dt);
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+
+/* ----------------------
+   Enemy AI & combat
+   ---------------------- */
+function updateEnemy(e, dt){
+  const dx = player.x - e.x, dy = player.y - e.y; const dist = Math.hypot(dx,dy);
+  if (dist < e.aggro){
+    const ang = Math.atan2(dy,dx);
+    e.x += Math.cos(ang) * e.speed * dt;
+    e.y += Math.sin(ang) * e.speed * dt;
+    if (dist < 20 && Date.now() - e.lastAtk > 600){
+      e.lastAtk = Date.now();
+      const dmg = Math.max(1, Math.floor(4 + Math.random()*8));
+      player.hp -= dmg; if (player.hp < 0) player.hp = 0;
+      SND.hit(); log(`Hit by enemy for ${dmg}. HP ${player.hp}/${player.maxHp}`);
+    }
+  } else {
+    if (Math.random() < 0.003) { e.x += (Math.random()-0.5)*TILE*2; e.y += (Math.random()-0.5)*TILE*2; }
+  }
+  e.x = clamp(e.x, TILE, MAP_W*TILE - TILE); e.y = clamp(e.y, TILE, MAP_H*TILE - TILE);
+}
+function playerAttack(){
+  SND.attack();
+  const range = 22;
+  for (const e of ENEMIES){
+    const dx = e.x - player.x, dy = e.y - player.y;
+    const d = Math.hypot(dx,dy);
+    if (d <= range){
+      const atk = 8 + Math.floor(Math.random()*12);
+      e.hp -= atk; SND.hit(); log(`You hit enemy for ${atk}`);
+      if (e.hp <= 0){
+        player.gold += Math.floor(5 + Math.random()*45);
+        log(`Enemy slain! Loot: gold`);
+        // remove
+        const idx = ENEMIES.findIndex(x=>x.id===e.id); if (idx>=0) ENEMIES.splice(idx,1);
+      }
+      break;
+    }
+  }
+}
+
+/* ----------------------
+   Interaction: gather & talk
+   ---------------------- */
+function tryGather(){
+  const tx = Math.floor(player.x/TILE), ty=Math.floor(player.y/TILE);
+  const t = map[ty] && map[ty][tx];
+  if (t === 7){ player.inventory.wood = (player.inventory.wood||0)+1; SND.gather(); log('Gathered wood'); if (Math.random()<0.2) map[ty][tx]=0; return; }
+  if (t === 8){ player.inventory.stone = (player.inventory.stone||0)+1; SND.gather(); log('Gathered stone'); if (Math.random()<0.15) map[ty][tx]=0; return; }
+  if (t === 6){ player.inventory.iron_ore = (player.inventory.iron_ore||0)+1; player.inventory.coal = (player.inventory.coal||0) + (Math.random()<0.4?1:0); SND.gather(); log('Mined ore'); if (Math.random()<0.05) map[ty][tx]=0; return; }
+  log('Nothing to gather here.');
+}
+function tryInteract(){
+  for (const n of NPCS){ if (Math.hypot(n.x - player.x, n.y - player.y) < 26) { openNpcDialog(n); return; } }
+  log('Nothing to interact with.');
+}
+function openNpcDialog(npc){
+  let html = `<h3>${npc.name}</h3><p>${npc.talk[randInt(0,npc.talk.length-1)]}</p>`;
+  if (npc.quests && npc.quests.length){
+    html += `<h4>Quests</h4><table><thead><tr><th>Quest</th><th>Action</th></tr></thead><tbody>`;
+    for (const qid of npc.quests.slice(0,8)){
+      const q = QUESTS.find(x=>x.id===qid);
+      const st = player.quests[qid]?.status || 'available';
+      html += `<tr><td>${q.title}</td><td>${st==='available'? `<button class="acceptQ" data-id="${qid}">Accept</button>` : st==='active'? `<button class="turnQ" data-id="${qid}">Turn In</button>` : 'Done'}</td></tr>`;
+    }
+    html += `</tbody></table>`;
+  }
+  html += `<div style="margin-top:8px"><button id="closeNpc" class="small">Close</button></div>`;
+  openMenuHtml(`Talk: ${npc.name}`, html);
+  menuOverlay.querySelectorAll('.acceptQ').forEach(b=>b.onclick = e=>{ acceptQuest(e.target.dataset.id); openNpcDialog(npc); });
+  menuOverlay.querySelectorAll('.turnQ').forEach(b=>b.onclick = e=>{ turnInQuest(e.target.dataset.id); openNpcDialog(npc); });
+  document.getElementById('closeNpc').onclick = closeMenu;
+}
+
+/* ----------------------
+   Quests: accept & turn in
+   ---------------------- */
+function acceptQuest(qid){ const q = QUESTS.find(x=>x.id===qid); if (!q) return; player.quests[qid] = { status:'active', progress:0 }; log(`Accepted: ${q.title}`); }
+function turnInQuest(qid){
+  const q = QUESTS.find(x=>x.id===qid); if (!q) return;
+  if (q.type==='collect' || q.type==='deliver'){ if ((player.inventory[q.itemId]||0) < q.amount){ log('Missing items'); return; } player.inventory[q.itemId]-=q.amount; if (player.inventory[q.itemId]<=0) delete player.inventory[q.itemId]; }
+  if (q.type==='kill'){ if ((q.progress||0) < q.amount){ log('Kill more'); return; } }
+  player.gold += q.reward.gold; if (q.reward.itemId) player.inventory[q.reward.itemId] = (player.inventory[q.reward.itemId]||0)+1;
+  player.quests[qid].status='completed'; log(`Completed ${q.title}. Reward: ${q.reward.gold} gold`); SND.quest();
+}
+
+/* ----------------------
+   Menus: generic open/close
+   ---------------------- */
+const menuOverlay = document.getElementById('menuOverlay');
+function openMenuHtml(title, html){
+  menuOverlay.innerHTML = `<div><span class="menuHeader">${title}</span><div class="closeBtn" id="menuClose">Close</div></div><hr/>${html}`;
+  menuOverlay.classList.add('show');
+  document.getElementById('menuClose').onclick = closeMenu;
+}
+function closeMenu(){ menuOverlay.classList.remove('show'); currentMenu=null; }
+let currentMenu = null;
+
+/* ----------------------
+   Inventory UI
+   ---------------------- */
+function openInventory(){
+  let html = `<h3>Inventory</h3><table><thead><tr><th>Item</th><th>Qty</th><th>Rarity</th><th>Action</th></tr></thead><tbody>`;
+  const keys = Object.keys(player.inventory);
+  if (keys.length===0) html += `<tr><td colspan=4>No items</td></tr>`;
+  else {
+    for (const id of keys){
+      const qty = player.inventory[id];
+      const it = ITEMS.find(i=>i.id===id) || { name:id, rarity:'common', price:5 };
+      html += `<tr><td>${it.name}</td><td>${qty}</td><td class="rarity-${it.rarity}">${it.rarity}</td><td><button class="useBtn" data-id="${id}">Use</button> <button class="sellBtn" data-id="${id}">Sell</button></td></tr>`;
+    }
+  }
+  html += `</tbody></table>`;
+  openMenuHtml('Inventory', html);
+  menuOverlay.querySelectorAll('.useBtn').forEach(b=>b.onclick = e=>{ useItem(e.target.dataset.id); openInventory(); });
+  menuOverlay.querySelectorAll('.sellBtn').forEach(b=>b.onclick = e=>{ sellItem(e.target.dataset.id); openInventory(); });
+}
+function useItem(id){ const it = ITEMS.find(i=>i.id===id); if(!it) { log('Cannot use'); return; } if (it.name.toLowerCase().includes('potion') || it.stats?.hp){ player.hp = Math.min(player.maxHp, player.hp + (it.stats?.hp || 25)); player.inventory[id]--; if (player.inventory[id]<=0) delete player.inventory[id]; SND.craft(); log(`Used ${it.name}. HP ${player.hp}/${player.maxHp}`); } else log(`Used ${it.name}`); }
+function sellItem(id){ const it = ITEMS.find(i=>i.id===id); if(!it) return; player.gold += Math.floor(it.price * 0.6); player.inventory[id]--; if (player.inventory[id]<=0) delete player.inventory[id]; SND.buy(); log(`Sold 1 ${it.name} for ${Math.floor(it.price * 0.6)} gold`); }
+
+/* ----------------------
+   Shop
+   ---------------------- */
+function openShop(){
+  const shopItems = ITEMS.slice().sort(()=>Math.random()-0.5).slice(0,220);
+  let html = `<h3>Shop</h3><table><thead><tr><th>Item</th><th>Rarity</th><th>Price</th><th>Buy</th></tr></thead><tbody>`;
+  for (const it of shopItems) html += `<tr><td>${it.name}</td><td class="rarity-${it.rarity}">${it.rarity}</td><td>${it.price}</td><td><button class="buyBtn" data-id="${it.id}">Buy</button></td></tr>`;
+  html += `</tbody></table>`;
+  openMenuHtml('Shop', html);
+  menuOverlay.querySelectorAll('.buyBtn').forEach(b=>b.onclick = e=>{ buyItem(e.target.dataset.id); openShop(); });
+}
+function buyItem(id){ const it = ITEMS.find(i=>i.id===id); if(!it) return; if (player.gold < it.price){ log('Not enough gold'); return; } player.gold -= it.price; player.inventory[id] = (player.inventory[id]||0)+1; SND.buy(); log(`Bought ${it.name} for ${it.price} gold`); }
+
+/* ----------------------
+   Crafting
+   ---------------------- */
+function openCraft(){
+  let html = `<h3>Crafting</h3><table><thead><tr><th>Recipe</th><th>Requires</th><th>Result</th><th>Action</th></tr></thead><tbody>`;
+  for (const r of RECIPES){
+    const reqs = Object.entries(r.requires).map(([k,v])=>`${k} x${v}`).join(', ');
+    const res = ITEMS.find(i=>i.id===r.result.itemId) || { name:r.result.itemId };
+    html += `<tr><td>${r.name}</td><td>${reqs}</td><td>${res.name} x${r.result.qty}</td><td><button class="craftBtn" data-id="${r.id}">Craft</button></td></tr>`;
+  }
+  html += `</tbody></table>`;
+  openMenuHtml('Crafting', html);
+  menuOverlay.querySelectorAll('.craftBtn').forEach(b=>b.onclick = e=>{ craft(e.target.dataset.id); openCraft(); });
+}
+function craft(id){
+  const r = RECIPES.find(x=>x.id===id); if(!r) return;
+  for (const [k,v] of Object.entries(r.requires)) if ((player.inventory[k]||0) < v) { log('Missing materials'); return; }
+  for (const [k,v] of Object.entries(r.requires)) { player.inventory[k] -= v; if (player.inventory[k]<=0) delete player.inventory[k]; }
+  player.inventory[r.result.itemId] = (player.inventory[r.result.itemId]||0) + r.result.qty;
+  SND.craft(); log(`Crafted ${r.name}`);
+}
+
+/* ----------------------
+   Auction house
+   ---------------------- */
+let AUCTIONS = []; // local list of {id,sellerId,itemId,qty,price,createdAt}
+async function loadAuctions(){ if (!USE_SUPABASE) return; const { data, error } = await supabase.from('auctions').select('*'); if (!error) AUCTIONS = data || []; }
+async function createAuctionRemote(list){ if(!USE_SUPABASE) return; await supabase.from('auctions').insert([list]); }
+async function deleteAuctionRemote(id){ if(!USE_SUPABASE) return; await supabase.from('auctions').delete().eq('id',id); }
+function openAuction(){
+  let html = `<h3>Auction House</h3><div style="display:flex;gap:8px"><div style="flex:1"><h4>Listings</h4><table><thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Buy</th></tr></thead><tbody>`;
+  if (AUCTIONS.length === 0) html += `<tr><td colspan=4>No listings</td></tr>`; else {
+    for (const a of AUCTIONS){
+      const it = ITEMS.find(i=>i.id===a.itemId) || { name:a.itemId };
+      html += `<tr><td>${it.name}</td><td>${a.qty}</td><td>${a.price}</td><td><button class="buyAuction" data-id="${a.id}">Buy</button></td></tr>`;
+    }
+  }
+  html += `</tbody></table></div><div style="width:320px"><h4>Create Listing</h4>
+    <label>Item ID: <input id="listItemId"></label>
+    <label>Qty: <input id="listQty" type="number" value="1"></label>
+    <label>Price per unit: <input id="listPrice" type="number" value="100"></label>
+    <button id="createListingBtn" class="small">List Item</button></div></div>`;
+  openMenuHtml('Auction House', html);
+  menuOverlay.querySelectorAll('.buyAuction').forEach(b=>b.onclick = e=>{ buyAuction(e.target.dataset.id); openAuction(); });
+  document.getElementById('createListingBtn').onclick = ()=>{
+    const itemId = document.getElementById('listItemId').value.trim();
+    const qty = parseInt(document.getElementById('listQty').value||'0');
+    const price = parseInt(document.getElementById('listPrice').value||'0');
+    if (!itemId || qty<1 || price<1){ log('Invalid listing'); return; }
+    if ((player.inventory[itemId]||0) < qty){ log('Not enough items'); return; }
+    player.inventory[itemId] -= qty; if (player.inventory[itemId]<=0) delete player.inventory[itemId];
+    const listing = { id:`auc_${Date.now()}_${randInt(0,999)}`, sellerId:player.id, itemId, qty, price, createdAt:new Date().toISOString() };
+    AUCTIONS.push(listing);
+    createAuctionRemote(listing);
+    log(`Listed ${qty} x ${itemId} for ${price} each`);
+    openAuction();
+  };
+}
+function buyAuction(listingId){
+  const idx = AUCTIONS.findIndex(x=>x.id===listingId); if (idx<0) return;
+  const a = AUCTIONS[idx], total = a.qty * a.price;
+  if (player.gold < total){ log('Not enough gold'); return; }
+  player.gold -= total;
+  player.inventory[a.itemId] = (player.inventory[a.itemId]||0) + a.qty;
+  AUCTIONS.splice(idx,1); deleteAuctionRemote(listingId);
+  log(`Bought ${a.qty} x ${a.itemId} for ${total} gold`);
+}
+
+/* ----------------------
+   Customization UI
+   ---------------------- */
+function openCustomization(){
+  const hairColors = ['#4B2E05','#222222','#ffcc66','#552288','#aa3333'];
+  const shirtColors = ['#cc5500','#ffff00','#009900','#990000','#2288ff'];
+  const pantsColors = ['#0055cc','#333333','#aa3333','#226622','#444444'];
+  let html = `<div style="display:flex;gap:12px;"><div style="flex:1">
+    <label>Name: <input id="custName" value="${player.name}"></label>
+    <label>Hair Color: <select id="hairColor">${hairColors.map(c=>`<option value="${c}" ${player.customization.hairColor===c?'selected':''}>${c}</option>`)}</select></label>
+    <label>Shirt Color: <select id="shirtColor">${shirtColors.map(c=>`<option value="${c}" ${player.customization.shirtColor===c?'selected':''}>${c}</option>`)}</select></label>
+    <label>Pants Color: <select id="pantsColor">${pantsColors.map(c=>`<option value="${c}" ${player.customization.pantsColor===c?'selected':''}>${c}</option>`)}</select></label>
+    <button id="saveCust" class="small">Save</button></div><div style="width:200px" id="preview"></div></div>`;
+  openMenuHtml('Character Customization', html);
+  function preview(){ const d=document.getElementById('preview'); d.innerHTML=''; const c=document.createElement('canvas'); c.width=64; c.height=64; const g=c.getContext('2d'); g.fillStyle=document.getElementById('shirtColor').value; g.fillRect(16,28,32,20); g.fillStyle=document.getElementById('pantsColor').value; g.fillRect(16,48,32,12); g.fillStyle=document.getElementById('hairColor').value; g.fillRect(20,8,24,12); d.appendChild(c); }
+  preview();
+  document.getElementById('hairColor').onchange = preview; document.getElementById('shirtColor').onchange = preview; document.getElementById('pantsColor').onchange = preview;
+  document.getElementById('saveCust').onclick = ()=>{
+    player.name = document.getElementById('custName').value || player.name;
+    player.customization.hairColor = document.getElementById('hairColor').value;
+    player.customization.shirtColor = document.getElementById('shirtColor').value;
+    player.customization.pantsColor = document.getElementById('pantsColor').value;
+    playerSprites = genPlayerSprites(player.customization);
+    log('Saved customization');
+    closeMenu();
+  };
+}
+
+/* ----------------------
+   Save / Load
+   ---------------------- */
+function saveGameLocal(){
+  try{
+    localStorage.setItem('realmforge_save', JSON.stringify({ player, inventory:player.inventory, quests:player.quests }));
+    log('Saved locally');
+    if (USE_SUPABASE && player.isLoggedIn){
+      supabase.from('players').upsert([{ id:player.id, x:player.x, y:player.y, name:player.name, data:JSON.stringify({player,inventory:player.inventory,quests:player.quests}), lastActive:new Date().toISOString() }]).then(r=>{ if(r.error) console.warn(r.error); else log('Saved to Supabase'); });
+    }
+  }catch(e){ log('Save failed'); }
+}
+function loadGameLocal(){
+  const s = localStorage.getItem('realmforge_save');
+  if (!s){ log('No save'); return; }
+  const obj = JSON.parse(s);
+  Object.assign(player, obj.player || {});
+  if (obj.inventory) player.inventory = obj.inventory; if (obj.quests) player.quests = obj.quests;
+  playerSprites = genPlayerSprites(player.customization);
+  log('Loaded save');
+}
+
+/* ----------------------
+   Multiplayer: players table sync
+   ---------------------- */
+let OTHER_PLAYERS = {};
+async function setupMultiplayer(){
+  if (!USE_SUPABASE) return;
+  try {
+    // Subscribe to players table changes
+    await supabase.channel('players-channel')
+      .on('postgres_changes', { event:'*', schema:'public', table:'players' }, payload=>{
+        const rec = payload.new || payload.old;
+        if (!rec || !rec.id) return;
+        if (payload.eventType === 'DELETE'){
+          delete OTHER_PLAYERS[rec.id];
+          return;
+        }
+        if (rec.id === player.id) return;
+        OTHER_PLAYERS[rec.id] = { id:rec.id, x:rec.x, y:rec.y, name:rec.name, customization:rec.customization || {} };
+      }).subscribe();
+    // initial fetch
+    const { data } = await supabase.from('players').select('*');
+    if (data) for (const p of data) if (p.id !== player.id) OTHER_PLAYERS[p.id] = { id:p.id, x:p.x, y:p.y, name:p.name, customization:p.customization || {} };
+    // periodic upsert of our position
+    setInterval(()=>{ if (!player.isLoggedIn) return; if (Date.now() - player.lastPosUpdate < 300) return; player.lastPosUpdate = Date.now(); supabase.from('players').upsert([{ id:player.id, x:player.x, y:player.y, name:player.name, customization:player.customization, lastActive:new Date().toISOString() }]).then(r=>{ if (r.error) console.warn(r.error); }); }, 400);
+    log('Supabase multiplayer connected (players presence).');
+  } catch(e){ console.warn('multiplayer error', e); log('Supabase multiplayer error'); }
+}
+
+/* ----------------------
+   Chat (simple)
+   ---------------------- */
+let chatOpen = false;
+document.getElementById('chatSend').onclick = sendChat;
+async function sendChat(){
+  const txt = document.getElementById('chatInput').value.trim(); if (!txt) return; document.getElementById('chatInput').value='';
+  log(`[CHAT] ${player.name}: ${txt}`);
+  if (USE_SUPABASE) await supabase.from('chat').insert([{ user:player.name, msg:txt }]);
+}
+function toggleChat(){ chatOpen = !chatOpen; document.getElementById('chatWindow').style.display = chatOpen ? 'block' : 'none'; document.getElementById('chatInputWrap').style.display = chatOpen ? 'block' : 'none'; }
+
+/* ----------------------
+   Input handling
+   ---------------------- */
+const keys = {};
+window.addEventListener('keydown', e=>{ keys[e.key.toLowerCase()] = true; if (e.key.toLowerCase()==='i') openInventory(); if (e.key.toLowerCase()==='q') openQuests(); if (e.key.toLowerCase()==='s') openShop(); if (e.key.toLowerCase()==='c') openCraft(); if (e.key.toLowerCase()==='a') openAuction(); if (e.key.toLowerCase()==='f') playerAttack(); if (e.key.toLowerCase()==='g') tryGather(); if (e.key.toLowerCase()==='e') tryInteract(); if (e.key==='Escape') closeMenu(); });
+window.addEventListener('keyup', e=>{ keys[e.key.toLowerCase()] = false; });
+
+/* ----------------------
+   Attach UI buttons
+   ---------------------- */
+document.getElementById('btnCustomize').onclick = ()=>openCustomization();
+document.getElementById('btnInventory').onclick = ()=>openInventory();
+document.getElementById('btnQuests').onclick = ()=>openQuestList();
+document.getElementById('btnShop').onclick = ()=>openShop();
+document.getElementById('btnCraft').onclick = ()=>openCraft();
+document.getElementById('btnAuction').onclick = ()=>openAuction();
+document.getElementById('btnSave').onclick = ()=>saveGameLocal();
+document.getElementById('btnLoad').onclick = ()=>loadGameLocal();
+document.getElementById('btnChat').onclick = ()=>toggleChat();
+document.getElementById('btnLogout').onclick = ()=>{ player.isLoggedIn=false; if (USE_SUPABASE) supabase.from('players').delete().eq('id',player.id); log('Logged out'); };
+
+/* ----------------------
+   Quest list UI
+   ---------------------- */
+function openQuestList(){
+  let html = `<h3>Quests</h3><div style="display:flex;gap:12px"><div style="flex:1"><h4>Available/Active (sample)</h4><table><thead><tr><th>Title</th><th>Status</th><th>Action</th></tr></thead><tbody>`;
+  for (const q of QUESTS.slice(0,180)){ const st = player.quests[q.id]?.status || 'available'; html += `<tr><td>${q.title}</td><td>${st}</td><td>${st==='available'? `<button class="accQ" data-id="${q.id}">Accept</button>` : st==='active'? `<button class="turnQ" data-id="${q.id}">Turn In</button>` : 'Done'}</td></tr>`; }
+  html += `</tbody></table></div><div style="width:320px"><h4>Details</h4><div id="qDetails">Select a quest</div></div></div>`;
+  openMenuHtml('Quests', html);
+  menuOverlay.querySelectorAll('.accQ').forEach(b=>b.onclick = e=>{ acceptQuest(e.target.dataset.id); openQuestList(); });
+  menuOverlay.querySelectorAll('.turnQ').forEach(b=>b.onclick = e=>{ turnInQuest(e.target.dataset.id); openQuestList(); });
+}
+
+/* ----------------------
+   Game loop bootstrap
+   ---------------------- */
+let lastTs = performance.now();
+function loop(ts){ const dt = Math.min(0.05,(ts-lastTs)/1000); lastTs = ts; update(dt); draw(); requestAnimationFrame(loop); }
+log('Game system initialized. Starting game loop...');
+
+/* ----------------------
+   Multiplayer login & init
+   ---------------------- */
+async function initMultiplayer(){
+  if (!USE_SUPABASE){ log('Supabase disabled'); return; }
+  // create or upsert our player row
+  player.isLoggedIn = true;
+  await supabase.from('players').upsert([{ id:player.id, x:player.x, y:player.y, name:player.name, customization:player.customization, lastActive:new Date().toISOString() }]);
+  await setupMultiplayer();
+  await loadAuctions();
+}
+
+/* ----------------------
+   Start everything
+   ---------------------- */
+requestAnimationFrame(loop);
+initMultiplayer();
+
+/* ----------------------
+   Helpers used earlier but declared lower (avoid hoisting issues)
+   ---------------------- */
+function randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+function shuffleArray(a){ for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return a; }
+
+// Player attack bound to key 'f'
+window.addEventListener('keydown', e=>{ if (e.key.toLowerCase()==='f') playerAttack(); });
+
+lastTs = performance.now();
+log('Realm Forge ready — controls: WASD/arrows to move, F attack, G gather, E interact. Shortcuts: I/Q/S/C/A for menus.');
+</script>
+
+</body>
+</html>
