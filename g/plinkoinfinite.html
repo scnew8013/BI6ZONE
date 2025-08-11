@@ -3,272 +3,731 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Plinko Balanced Drop Sides</title>
+<title>Ultimate Plinko Experience</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+  /* Reset & base */
+  * {
+    box-sizing: border-box;
+  }
   body {
-    background: #222;
-    color: #eee;
-    font-family: Arial, sans-serif;
-    text-align: center;
     margin: 0; padding: 20px;
+    background: linear-gradient(135deg, #0d0f15 0%, #20262f 100%);
+    color: #eee;
+    font-family: 'Montserrat', sans-serif;
+    text-align: center;
+    user-select: none;
+  }
+  h1 {
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #f5c518;
+    text-shadow: 0 0 8px #f5c518bb;
   }
   canvas {
-    background: #444;
-    border-radius: 10px;
+    background: #12161f;
+    border-radius: 12px;
+    box-shadow: 0 0 20px #f5c518aa;
     display: block;
-    margin: 0 auto;
+    margin: 12px auto 0 auto;
   }
-  #message {
-    margin-top: 15px;
-    font-size: 18px;
-    min-height: 28px;
-    max-width: 320px;
-    margin-left: auto;
-    margin-right: auto;
+
+  /* UI */
+  #ui {
+    max-width: 360px;
+    margin: 14px auto 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
   }
-  #totalWinnings {
-    margin-top: 10px;
-    font-size: 20px;
-    font-weight: bold;
-    color: #f5c518;
-  }
-  button {
-    margin-top: 15px 10px 0 10px;
-    font-size: 16px;
-    padding: 10px 20px;
-    background: #f5c518;
+  button, input[type=range], select {
+    font-family: inherit;
+    font-weight: 600;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    font-weight: bold;
+    background: #f5c518;
+    color: #222;
+    padding: 10px 14px;
+    min-width: 100px;
+    transition: background 0.25s;
   }
-  button:hover {
+  button:hover, input[type=range]:hover, select:hover {
     background: #ddb610;
   }
-  #buttonsContainer {
-    margin-top: 10px;
+  button:disabled {
+    background: #888;
+    cursor: default;
+  }
+  label {
+    font-size: 14px;
+    margin: 0 6px 0 0;
+    color: #f5c518dd;
+  }
+  .control-group {
+    display: flex;
+    align-items: center;
+  }
+  input[type=range] {
+    -webkit-appearance: none;
+    height: 8px;
+    background: #333;
+    outline: none;
+    border-radius: 4px;
+    flex-grow: 1;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #f5c518;
+    cursor: pointer;
+    border-radius: 50%;
+    border: 1px solid #ddb610;
+    transition: background 0.3s;
+  }
+  input[type=range]:hover::-webkit-slider-thumb {
+    background: #ddb610;
+  }
+  #stats {
+    margin-top: 18px;
+    font-size: 14px;
+    color: #aaa;
+    text-align: left;
+    max-width: 360px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.4;
+    font-family: monospace;
+    user-select: text;
+  }
+  #historyLog {
+    max-height: 100px;
+    overflow-y: auto;
+    margin-top: 8px;
+    background: #222a3a;
+    padding: 6px 12px;
+    border-radius: 8px;
+    color: #ccc;
+    font-size: 12px;
+    font-family: monospace;
+  }
+  #graphContainer {
+    max-width: 360px;
+    margin: 14px auto 0 auto;
+  }
+  #graph {
+    width: 100%;
+    height: 100px;
+    background: #222a3a;
+    border-radius: 8px;
+  }
+  #soundControls {
+    margin-top: 12px;
+  }
+  #soundControls label {
+    margin-right: 16px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  #soundControls input[type=checkbox] {
+    margin-right: 6px;
+    cursor: pointer;
+  }
+
+  /* Animations */
+  .popup {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #f5c518dd;
+    padding: 12px 24px;
+    border-radius: 24px;
+    font-weight: 700;
+    font-size: 22px;
+    color: #222;
+    text-shadow: 0 0 4px #ddb610bb;
+    animation: popupFade 3s forwards;
+    pointer-events: none;
+    z-index: 999;
+  }
+  @keyframes popupFade {
+    0% {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-40px);
+    }
   }
 </style>
 </head>
 <body>
 
-<h1>Plinko Balanced Drop Sides</h1>
-<canvas id="board" width="320" height="480"></canvas>
-<div id="message"></div>
-<div id="totalWinnings">Total Winnings: $0</div>
-<div id="buttonsContainer">
-  <button id="dropBtn">Drop Ball</button>
-  <button id="clearBtn">Clear Balls</button>
+<h1>Ultimate Plinko Experience</h1>
+<canvas id="board" width="360" height="520" aria-label="Plinko game board"></canvas>
+
+<div id="ui">
+  <button id="dropBtn" aria-label="Drop a ball">Drop Ball</button>
+  <button id="autoDropBtn" aria-pressed="false" aria-label="Toggle auto dropping balls">Auto Drop: OFF</button>
+  <button id="clearBtn" aria-label="Clear all balls">Clear Balls</button>
+  <button id="resetBtn" aria-label="Reset game and total winnings">Reset Game</button>
+</div>
+
+<div id="controls">
+  <div class="control-group" style="max-width:360px; margin: 12px auto; justify-content: space-between;">
+    <label for="gravityRange">Gravity:</label>
+    <input id="gravityRange" type="range" min="0.1" max="1" step="0.05" value="0.45" />
+  </div>
+  <div class="control-group" style="max-width:360px; margin: 12px auto; justify-content: space-between;">
+    <label for="pegSizeRange">Peg Size:</label>
+    <input id="pegSizeRange" type="range" min="2" max="10" step="0.5" value="4" />
+  </div>
+  <div class="control-group" style="max-width:360px; margin: 12px auto; justify-content: space-between;">
+    <label for="autoDropSpeedRange">Auto Drop Speed (ms):</label>
+    <input id="autoDropSpeedRange" type="range" min="100" max="2000" step="100" value="500" />
+  </div>
+  <div class="control-group" style="max-width:360px; margin: 12px auto; justify-content: space-between;">
+    <label for="stakeSelect">Stake Set:</label>
+    <select id="stakeSelect" aria-label="Select stake set">
+      <option value="classic" selected>Classic Stakes</option>
+      <option value="high">High Stakes</option>
+      <option value="low">Low Stakes</option>
+      <option value="random">Random Stakes</option>
+    </select>
+  </div>
+  <div id="soundControls">
+    <label><input type="checkbox" id="soundToggle" checked /> Sound</label>
+    <label><input type="checkbox" id="musicToggle" checked /> Music</label>
+  </div>
+</div>
+
+<div id="message" role="alert" aria-live="polite" style="min-height:28px; margin-top:12px; font-weight:700; font-size:18px; color:#f5c518;"></div>
+<div id="totalWinnings" aria-live="polite" style="font-size:20px; font-weight:bold; margin-top:6px; color:#f5c518;">Total Winnings: $0</div>
+
+<div id="stats">
+  <div>Balls Dropped: <span id="ballsDropped">0</span></div>
+  <div>Average Winnings per Ball: $<span id="avgWinnings">0.00</span></div>
+  <div>History (latest 20):</div>
+  <div id="historyLog" aria-live="polite"></div>
+</div>
+
+<div id="graphContainer" aria-label="Winnings graph">
+  <canvas id="graph" width="360" height="100" role="img"></canvas>
 </div>
 
 <script>
-(() => {
-  const canvas = document.getElementById('board');
-  const ctx = canvas.getContext('2d');
-  const message = document.getElementById('message');
-  const totalWinningsDisplay = document.getElementById('totalWinnings');
-  const dropBtn = document.getElementById('dropBtn');
-  const clearBtn = document.getElementById('clearBtn');
+// -- Audio setup --
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+const audioCtx = new AudioContext();
 
-  const width = canvas.width;
-  const height = canvas.height;
+function playSound(freq, duration = 0.12, type = 'sine', volume = 0.3) {
+  if (!soundOn) return;
+  const oscillator = audioCtx.createOscillator();
+  const gainNode = audioCtx.createGain();
 
-  const gravity = 0.45;
-  const friction = 0.98;
-  const pegRadius = 4;
-  const ballRadius = 6;
+  oscillator.type = type;
+  oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+  gainNode.gain.setValueAtTime(volume, audioCtx.currentTime);
 
-  const rows = 14;
-  const cols = 11;
+  oscillator.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
 
-  const pegSpacingX = width / cols;
-  const pegSpacingY = 30;
-  // Removed pegGridShiftX so grid is centered
-  // const pegGridShiftX = pegSpacingX * 0.25;
+  oscillator.start();
+  oscillator.stop(audioCtx.currentTime + duration);
 
-  const slotHeight = 70;
-  const slotWidth = pegSpacingX;
-  const slotsY = height - slotHeight;
+  gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+}
 
-  const stakes = [2, 5, 10, 20, 50, 100, 50, 20, 10, 5, 2];
+// -- Background music (simple loop) --
+let musicOscillator;
+let musicGainNode;
+function startMusic() {
+  if (!musicOn) return;
+  if (musicOscillator) return;
+  musicOscillator = audioCtx.createOscillator();
+  musicGainNode = audioCtx.createGain();
+  musicOscillator.type = 'triangle';
+  musicOscillator.frequency.setValueAtTime(110, audioCtx.currentTime);
+  musicGainNode.gain.setValueAtTime(0.04, audioCtx.currentTime);
+  musicOscillator.connect(musicGainNode);
+  musicGainNode.connect(audioCtx.destination);
+  musicOscillator.start();
+}
+function stopMusic() {
+  if (musicOscillator) {
+    musicOscillator.stop();
+    musicOscillator.disconnect();
+    musicGainNode.disconnect();
+    musicOscillator = null;
+    musicGainNode = null;
+  }
+}
 
-  const pegs = [];
-  const balls = [];
-  let totalWinnings = 0;
+// -- Game variables --
+const canvas = document.getElementById('board');
+const ctx = canvas.getContext('2d');
 
-  function buildPegs() {
-    pegs.length = 0;
-    for (let row = 0; row < rows; row++) {
-      const y = 70 + row * pegSpacingY;
-      for (let col = 0; col < cols; col++) {
-        // Centered peg grid: offset every other row by half peg spacing only
-        let xBase = col * pegSpacingX + (row % 2 === 0 ? pegSpacingX / 2 : 0);
-        let x = xBase;
-        if (x < pegRadius) continue;
-        if (x > width - pegRadius) continue;
-        pegs.push({ x, y });
-      }
+const graphCanvas = document.getElementById('graph');
+const graphCtx = graphCanvas.getContext('2d');
+
+const dropBtn = document.getElementById('dropBtn');
+const autoDropBtn = document.getElementById('autoDropBtn');
+const clearBtn = document.getElementById('clearBtn');
+const resetBtn = document.getElementById('resetBtn');
+
+const gravityRange = document.getElementById('gravityRange');
+const pegSizeRange = document.getElementById('pegSizeRange');
+const autoDropSpeedRange = document.getElementById('autoDropSpeedRange');
+const stakeSelect = document.getElementById('stakeSelect');
+
+const messageEl = document.getElementById('message');
+const totalWinningsEl = document.getElementById('totalWinnings');
+const ballsDroppedEl = document.getElementById('ballsDropped');
+const avgWinningsEl = document.getElementById('avgWinnings');
+const historyLog = document.getElementById('historyLog');
+
+const soundToggle = document.getElementById('soundToggle');
+const musicToggle = document.getElementById('musicToggle');
+
+const width = canvas.width;
+const height = canvas.height;
+
+let gravity = parseFloat(gravityRange.value);
+let pegRadius = parseFloat(pegSizeRange.value);
+const ballRadiusBase = 6;
+
+const rows = 14;
+const cols = 11;
+
+const pegSpacingX = width / cols;
+const pegSpacingY = 30;
+
+const slotHeight = 80;
+const slotWidth = pegSpacingX;
+const slotsY = height - slotHeight;
+
+let stakes = [2, 5, 10, 20, 50, 100, 50, 20, 10, 5, 2]; // classic default
+
+const pegs = [];
+const balls = [];
+const particles = [];
+const winningsHistory = [];
+
+let totalWinnings = 0;
+let ballsDropped = 0;
+let autoDrop = false;
+let autoDropIntervalId = null;
+
+let soundOn = true;
+let musicOn = true;
+
+function updateStakesSet(setName) {
+  switch (setName) {
+    case 'classic':
+      stakes = [2, 5, 10, 20, 50, 100, 50, 20, 10, 5, 2];
+      break;
+    case 'high':
+      stakes = [10, 20, 50, 100, 200, 500, 200, 100, 50, 20, 10];
+      break;
+    case 'low':
+      stakes = [1, 1, 2, 3, 5, 10, 5, 3, 2, 1, 1];
+      break;
+    case 'random':
+      stakes = Array.from({length: cols}, () => Math.floor(Math.random()*100)+1);
+      break;
+  }
+}
+
+// -- Setup pegs based on current pegRadius --
+function buildPegs() {
+  pegs.length = 0;
+  for (let row = 0; row < rows; row++) {
+    const y = 70 + row * pegSpacingY;
+    for (let col = 0; col < cols; col++) {
+      // Centered grid: staggered
+      let xBase = col * pegSpacingX + (row % 2 === 0 ? pegSpacingX / 2 : 0);
+      let x = xBase;
+      if (x < pegRadius) continue;
+      if (x > width - pegRadius) continue;
+      pegs.push({ x, y });
     }
   }
+}
 
-  function drawPegs() {
-    ctx.fillStyle = '#f5c518';
-    for (const peg of pegs) {
-      ctx.beginPath();
-      ctx.arc(peg.x, peg.y, pegRadius, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-
-  function drawSlots() {
-    ctx.fillStyle = '#333';
-    ctx.strokeStyle = '#666';
-    ctx.font = 'bold 14px Arial';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-
-    for (let i = 0; i < cols; i++) {
-      let x = i * slotWidth;
-      ctx.fillRect(x, slotsY, slotWidth, slotHeight);
-      ctx.strokeRect(x, slotsY, slotWidth, slotHeight);
-      ctx.fillStyle = '#f5c518';
-      ctx.fillText('$' + stakes[i], x + slotWidth / 2, slotsY + slotHeight / 2);
-      ctx.fillStyle = '#333';
-    }
-  }
-
-  function drawBall(ball) {
+// -- Drawing helpers --
+function drawPegs() {
+  ctx.fillStyle = '#f5c518';
+  for (const peg of pegs) {
     ctx.beginPath();
-    ctx.fillStyle = '#f54242';
-    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+    ctx.arc(peg.x, peg.y, pegRadius, 0, Math.PI * 2);
     ctx.fill();
   }
+}
 
-  function collideBallPeg(ball, peg) {
-    const dx = ball.x - peg.x;
-    const dy = ball.y - peg.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist < ball.radius + pegRadius) {
-      const nx = dx / dist;
-      const ny = dy / dist;
-      const dot = ball.vx * nx + ball.vy * ny;
-      ball.vx = ball.vx - 2 * dot * nx;
-      ball.vy = ball.vy - 2 * dot * ny;
-      const overlap = ball.radius + pegRadius - dist;
-      ball.x += nx * overlap;
-      ball.y += ny * overlap;
-      ball.vx *= 0.85;
-      ball.vy *= 0.85;
+function drawSlots() {
+  ctx.fillStyle = '#222a3a';
+  ctx.strokeStyle = '#444d5c';
+  ctx.lineWidth = 2;
+  ctx.font = 'bold 14px Montserrat, Arial, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  for (let i = 0; i < cols; i++) {
+    let x = i * slotWidth;
+    // Draw slot base rectangle
+    ctx.fillRect(x, slotsY, slotWidth, slotHeight);
+    ctx.strokeRect(x, slotsY, slotWidth, slotHeight);
+
+    // Highlight jackpot slot (middle one) if stake >= 100
+    if (stakes[i] >= 100) {
+      ctx.strokeStyle = '#ffcc00';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(x+4, slotsY+4, slotWidth-8, slotHeight-8);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#444d5c';
     }
+
+    ctx.fillStyle = '#f5c518';
+    ctx.fillText(`$${stakes[i]}`, x + slotWidth / 2, slotsY + slotHeight / 2);
+    ctx.fillStyle = '#222a3a';
   }
+}
 
-  function collideWalls(ball) {
-    if (ball.x - ball.radius < 0) {
-      ball.x = ball.radius;
-      ball.vx = -ball.vx * 0.8;
-    }
-    if (ball.x + ball.radius > width) {
-      ball.x = width - ball.radius;
-      ball.vx = -ball.vx * 0.8;
-    }
-    if (ball.y - ball.radius < 0) {
-      ball.y = ball.radius;
-      ball.vy = -ball.vy * 0.8;
-    }
+function drawBall(ball) {
+  ctx.beginPath();
+  ctx.fillStyle = ball.color;
+  ctx.shadowColor = ball.color;
+  ctx.shadowBlur = 6;
+  ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+}
+
+function drawParticle(p) {
+  ctx.beginPath();
+  ctx.fillStyle = `rgba(${p.color.r},${p.color.g},${p.color.b},${p.alpha})`;
+  ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+// -- Physics & collision --
+function collideBallPeg(ball, peg) {
+  const dx = ball.x - peg.x;
+  const dy = ball.y - peg.y;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  if (dist < ball.radius + pegRadius) {
+    const nx = dx / dist;
+    const ny = dy / dist;
+    const dot = ball.vx * nx + ball.vy * ny;
+    ball.vx = ball.vx - 2 * dot * nx;
+    ball.vy = ball.vy - 2 * dot * ny;
+    const overlap = ball.radius + pegRadius - dist;
+    ball.x += nx * overlap;
+    ball.y += ny * overlap;
+    ball.vx *= 0.85;
+    ball.vy *= 0.85;
+
+    // Particle effect on peg hit
+    createParticles(ball.x, ball.y, 8, ball.color);
+
+    // Play bounce sound with pitch depending on peg row
+    playSound(440 + peg.y * 1.5, 0.08, 'triangle', 0.2);
   }
+}
 
-  function collideSlotsBase(ball) {
-    if (ball.y + ball.radius >= slotsY) {
-      ball.y = slotsY - ball.radius;
-      ball.vy = 0;
-      ball.vx *= friction;
-      if (Math.abs(ball.vx) < 0.2) {
-        ball.vx = 0;
-        if (!ball.stopped) {
-          ball.stopped = true;
-          settleBallInSlot(ball);
-          return true;
-        }
-      }
-    }
-    return false;
+function collideWalls(ball) {
+  let bounced = false;
+  if (ball.x - ball.radius < 0) {
+    ball.x = ball.radius;
+    ball.vx = -ball.vx * 0.8;
+    bounced = true;
   }
-
-  function settleBallInSlot(ball) {
-    const slotIndex = Math.floor(ball.x / slotWidth);
-    const winAmount = stakes[slotIndex] || 0;
-    totalWinnings += winAmount;
-    totalWinningsDisplay.textContent = `Total Winnings: $${totalWinnings}`;
-    message.textContent = `Ball landed in slot ${slotIndex + 1} and won $${winAmount}!`;
-    setTimeout(() => {
-      if (message.textContent === `Ball landed in slot ${slotIndex + 1} and won $${winAmount}!`) {
-        message.textContent = '';
-      }
-    }, 3500);
+  if (ball.x + ball.radius > width) {
+    ball.x = width - ball.radius;
+    ball.vx = -ball.vx * 0.8;
+    bounced = true;
   }
-
-  function createNewBall() {
-    // Randomly drop near left quarter or right quarter of canvas width
-    const leftDropX = width * 0.25;
-    const rightDropX = width * 0.75;
-    const startX = Math.random() < 0.5 
-      ? leftDropX + (Math.random() - 0.5) * pegSpacingX * 0.8  // small jitter around left quarter
-      : rightDropX + (Math.random() - 0.5) * pegSpacingX * 0.8; // jitter around right quarter
-
-    return {
-      x: startX,
-      y: 50,
-      vx: (Math.random() * 0.6) - 0.3,
-      vy: 2,
-      radius: ballRadius,
-      stopped: false,
-    };
+  if (ball.y - ball.radius < 0) {
+    ball.y = ball.radius;
+    ball.vy = -ball.vy * 0.8;
+    bounced = true;
   }
+  if (bounced) playSound(320, 0.07, 'square', 0.15);
+}
 
-  function animate() {
-    ctx.clearRect(0, 0, width, height);
-    drawPegs();
-    drawSlots();
+function collideSlotsBase(ball) {
+  if (ball.y + ball.radius >= slotsY) {
+    ball.y = slotsY - ball.radius;
+    ball.vy = 0;
+    ball.vx *= 0.92; // friction on floor
 
-    for (let i = balls.length - 1; i >= 0; i--) {
-      const ball = balls[i];
+    if (Math.abs(ball.vx) < 0.15) {
+      ball.vx = 0;
       if (!ball.stopped) {
-        ball.vy += gravity;
-        ball.vx *= friction;
-        ball.vy *= friction;
-
-        ball.x += ball.vx;
-        ball.y += ball.vy;
-
-        collideWalls(ball);
-
-        for (const peg of pegs) {
-          collideBallPeg(ball, peg);
-        }
-
-        if (collideSlotsBase(ball)) {
-          balls.splice(i, 1);
-          continue;
-        }
+        ball.stopped = true;
+        settleBallInSlot(ball);
+        return true;
       }
-      drawBall(ball);
     }
+  }
+  return false;
+}
 
-    requestAnimationFrame(animate);
+// -- Particles system --
+function createParticles(x, y, count, color) {
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: x + (Math.random() - 0.5) * 6,
+      y: y + (Math.random() - 0.5) * 6,
+      vx: (Math.random() - 0.5) * 2.5,
+      vy: (Math.random() - 0.5) * 2.5,
+      radius: Math.random() * 2 + 1,
+      alpha: 1,
+      decay: 0.02 + Math.random() * 0.03,
+      color: hexToRgb(color),
+    });
+  }
+}
+
+// Helper to convert hex color string to rgb object
+function hexToRgb(hex) {
+  // Simple hex to rgb converter
+  if (hex.startsWith('#')) {
+    hex = hex.slice(1);
+  }
+  if (hex.length === 3) {
+    hex = hex.split('').map(c => c+c).join('');
+  }
+  const bigint = parseInt(hex, 16);
+  return {
+    r: (bigint >> 16) & 255,
+    g: (bigint >> 8) & 255,
+    b: bigint & 255,
+  };
+}
+
+// -- Settle ball in slot and update winnings --
+function settleBallInSlot(ball) {
+  const slotIndex = Math.min(cols - 1, Math.max(0, Math.floor(ball.x / slotWidth)));
+  const winAmount = stakes[slotIndex] || 0;
+
+  totalWinnings += winAmount;
+  ballsDropped++;
+  winningsHistory.push(winAmount);
+  if (winningsHistory.length > 20) winningsHistory.shift();
+
+  totalWinningsEl.textContent = `Total Winnings: $${totalWinnings}`;
+  ballsDroppedEl.textContent = ballsDropped;
+  avgWinningsEl.textContent = (totalWinnings / ballsDropped).toFixed(2);
+
+  updateHistoryLog();
+  updateGraph();
+
+  showPopup(`+ $${winAmount}`);
+
+  // Play win sound based on prize amount
+  playSound(220 + winAmount * 3, 0.3, 'square', 0.3);
+
+  // Particle burst of gold
+  createParticles(ball.x, ball.y, 25, '#f5c518');
+
+  // Remove ball from balls array handled by caller
+}
+
+// -- History Log UI --
+function updateHistoryLog() {
+  historyLog.innerHTML = winningsHistory
+    .slice()
+    .reverse()
+    .map((win, i) => {
+      const time = new Date().toLocaleTimeString();
+      return `<div>Ball ${ballsDropped - i}: $${win} at ${time}</div>`;
+    })
+    .join('');
+}
+
+// -- Winnings graph --
+function updateGraph() {
+  graphCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
+  const maxWin = Math.max(...winningsHistory, 100);
+  const barWidth = graphCanvas.width / winningsHistory.length;
+
+  winningsHistory.forEach((win, i) => {
+    const barHeight = (win / maxWin) * graphCanvas.height;
+    graphCtx.fillStyle = '#f5c518';
+    graphCtx.fillRect(i * barWidth, graphCanvas.height - barHeight, barWidth * 0.8, barHeight);
+  });
+}
+
+// -- Ball factory with varied size and random color --
+function createNewBall() {
+  // Decide drop side left or right (random)
+  const leftDropX = width * 0.25;
+  const rightDropX = width * 0.75;
+
+  const side = Math.random() < 0.5 ? 'left' : 'right';
+  const startX = side === 'left'
+    ? leftDropX + (Math.random() - 0.5) * pegSpacingX * 0.8
+    : rightDropX + (Math.random() - 0.5) * pegSpacingX * 0.8;
+
+  // Vary ball size (between 4 and 8) and color based on side
+  const radius = 4 + Math.random() * 4;
+  const color = side === 'left' ? '#f54242' : '#42aaf5'; // red or blue
+
+  return {
+    x: startX,
+    y: 50,
+    vx: (Math.random() * 0.6) - 0.3,
+    vy: 2,
+    radius,
+    color,
+    stopped: false,
+  };
+}
+
+// -- Drop ball button --
+dropBtn.addEventListener('click', () => {
+  balls.push(createNewBall());
+  if (audioCtx.state === 'suspended') audioCtx.resume(); // Resume audio on user interaction
+});
+
+// -- Clear balls button --
+clearBtn.addEventListener('click', () => {
+  balls.length = 0;
+  messageEl.textContent = '';
+});
+
+// -- Reset game button --
+resetBtn.addEventListener('click', () => {
+  balls.length = 0;
+  totalWinnings = 0;
+  ballsDropped = 0;
+  winningsHistory.length = 0;
+  messageEl.textContent = '';
+  totalWinningsEl.textContent = `Total Winnings: $0`;
+  ballsDroppedEl.textContent = `0`;
+  avgWinningsEl.textContent = `0.00`;
+  updateHistoryLog();
+  updateGraph();
+});
+
+// -- Auto drop toggle button --
+autoDropBtn.addEventListener('click', () => {
+  autoDrop = !autoDrop;
+  autoDropBtn.textContent = autoDrop ? 'Auto Drop: ON' : 'Auto Drop: OFF';
+  autoDropBtn.setAttribute('aria-pressed', autoDrop ? 'true' : 'false');
+  if (autoDrop) {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    autoDropIntervalId = setInterval(() => {
+      balls.push(createNewBall());
+    }, parseInt(autoDropSpeedRange.value));
+  } else {
+    clearInterval(autoDropIntervalId);
+  }
+});
+
+// -- Sound toggle --
+soundToggle.addEventListener('change', () => {
+  soundOn = soundToggle.checked;
+});
+
+// -- Music toggle --
+musicToggle.addEventListener('change', () => {
+  musicOn = musicToggle.checked;
+  if (musicOn) startMusic();
+  else stopMusic();
+});
+
+// -- Difficulty controls --
+gravityRange.addEventListener('input', () => {
+  gravity = parseFloat(gravityRange.value);
+});
+pegSizeRange.addEventListener('input', () => {
+  pegRadius = parseFloat(pegSizeRange.value);
+  buildPegs();
+});
+autoDropSpeedRange.addEventListener('input', () => {
+  if (autoDrop) {
+    clearInterval(autoDropIntervalId);
+    autoDropIntervalId = setInterval(() => {
+      balls.push(createNewBall());
+    }, parseInt(autoDropSpeedRange.value));
+  }
+});
+
+// -- Stake set select --
+stakeSelect.addEventListener('change', () => {
+  updateStakesSet(stakeSelect.value);
+});
+
+// -- Show winnings popup animation --
+function showPopup(text) {
+  const popup = document.createElement('div');
+  popup.className = 'popup';
+  popup.textContent = text;
+  document.body.appendChild(popup);
+  setTimeout(() => popup.remove(), 3000);
+}
+
+// -- Animate loop --
+function animate() {
+  ctx.clearRect(0, 0, width, height);
+  drawPegs();
+  drawSlots();
+
+  // Update and draw balls
+  for (let i = balls.length - 1; i >= 0; i--) {
+    const ball = balls[i];
+    if (!ball.stopped) {
+      ball.vy += gravity;
+      ball.vx *= 0.98;
+      ball.vy *= 0.98;
+
+      ball.x += ball.vx;
+      ball.y += ball.vy;
+
+      collideWalls(ball);
+
+      for (const peg of pegs) {
+        collideBallPeg(ball, peg);
+      }
+
+      if (collideSlotsBase(ball)) {
+        balls.splice(i, 1);
+        continue;
+      }
+    }
+    drawBall(ball);
   }
 
-  dropBtn.addEventListener('click', () => {
-    balls.push(createNewBall());
-  });
+  // Update and draw particles
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.alpha -= p.decay;
+    if (p.alpha <= 0) {
+      particles.splice(i, 1);
+      continue;
+    }
+    drawParticle(p);
+  }
 
-  clearBtn.addEventListener('click', () => {
-    balls.length = 0;
-  });
+  requestAnimationFrame(animate);
+}
 
-  buildPegs();
-  animate();
+// -- Initialize game --
+updateStakesSet('classic');
+buildPegs();
+animate();
+startMusic();
 
-})();
 </script>
 
 </body>
