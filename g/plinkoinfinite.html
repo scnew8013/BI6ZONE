@@ -3,197 +3,253 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Simple Stakes Plinko</title>
+<title>Physics Plinko</title>
 <style>
   body {
-    font-family: Arial, sans-serif;
     background: #222;
     color: #eee;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    font-family: Arial, sans-serif;
+    text-align: center;
     margin: 0; padding: 20px;
-    user-select: none;
   }
-  #board {
-    position: relative;
-    width: 400px;
-    height: 480px;
+  canvas {
     background: #444;
     border-radius: 10px;
-    margin-bottom: 20px;
-  }
-  .peg {
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    background: #f5c518;
-    border-radius: 50%;
-  }
-  .chip {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background: #f54242;
-    border-radius: 50%;
-    transition: top 0.3s ease, left 0.3s ease;
-    pointer-events: none;
-    z-index: 10;
-  }
-  #slots {
-    display: flex;
-    justify-content: space-between;
-    width: 400px;
-  }
-  .slot {
-    width: 50px;
-    height: 50px;
-    background: #333;
-    border: 2px solid #666;
-    border-radius: 6px;
-    text-align: center;
-    line-height: 50px;
-    font-weight: bold;
-    user-select: none;
+    display: block;
+    margin: 0 auto;
   }
   #message {
     margin-top: 15px;
     font-size: 18px;
+    height: 28px;
   }
-  #instructions {
-    margin-bottom: 10px;
-    font-size: 14px;
-    color: #aaa;
+  button {
+    margin-top: 15px;
+    font-size: 16px;
+    padding: 10px 20px;
+    background: #f5c518;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  button:hover {
+    background: #ddb610;
   }
 </style>
 </head>
 <body>
 
-<h1>Simple Stakes Plinko</h1>
-<div id="instructions">Click at the top to drop the chip</div>
-<div id="board"></div>
-<div id="slots"></div>
+<h1>Physics Plinko</h1>
+<canvas id="board" width="420" height="600"></canvas>
 <div id="message"></div>
+<button id="dropBtn">Drop Ball</button>
 
 <script>
-  const board = document.getElementById('board');
-  const slotsDiv = document.getElementById('slots');
+(() => {
+  const canvas = document.getElementById('board');
+  const ctx = canvas.getContext('2d');
   const message = document.getElementById('message');
+  const dropBtn = document.getElementById('dropBtn');
 
-  const cols = 9;  // Number of columns for pegs and slots
-  const rows = 12; // Number of rows of pegs
-  const pegSpacingX = 44; // horizontal spacing of pegs
-  const pegSpacingY = 36; // vertical spacing of pegs
-  const pegRadius = 6;
+  // Board and physics settings
+  const width = canvas.width;
+  const height = canvas.height;
+  const gravity = 0.5;
+  const friction = 0.99; // air resistance
+  const pegRadius = 8;
+  const ballRadius = 12;
+  const rows = 10;
+  const cols = 9;
+  const pegSpacingX = width / cols; 
+  const pegSpacingY = 50;
 
-  // Stakes for each slot - example values
-  const stakes = [10, 20, 50, 100, 500, 100, 50, 20, 10];
+  // Slots positions and sizes
+  const slotHeight = 80;
+  const slotWidth = pegSpacingX;
+  const slotsY = height - slotHeight;
 
-  // Store pegs positions to draw pegs
+  // Adjust stakes to make big wins rarer and small wins common
+  const stakes = [5, 10, 20, 50, 200, 50, 20, 10, 5];
+
+  // Pegs data - each peg is {x,y}
   const pegs = [];
 
-  // Draw pegs in a triangular offset pattern
-  function setupPegs() {
-    for(let row=0; row<rows; row++) {
-      let offsetX = (row % 2 === 0) ? pegSpacingX/2 : 0;
-      for(let col=0; col<cols; col++) {
-        // skip pegs that go outside board width
-        let x = col * pegSpacingX + offsetX;
-        if (x < 10 || x > board.clientWidth - 10) continue;
+  // Ball state
+  let ball = null; // {x, y, vx, vy, radius, stopped}
 
-        let y = row * pegSpacingY + 30;
-        pegs.push({x, y});
-        const pegEl = document.createElement('div');
-        pegEl.classList.add('peg');
-        pegEl.style.left = (x - pegRadius) + 'px';
-        pegEl.style.top = (y - pegRadius) + 'px';
-        board.appendChild(pegEl);
+  // Build pegs in a classic Plinko offset pattern
+  function buildPegs() {
+    pegs.length = 0;
+    for (let row = 0; row < rows; row++) {
+      const y = 100 + row * pegSpacingY;
+      for (let col = 0; col < cols; col++) {
+        // Offset every other row by half pegSpacingX
+        let x = col * pegSpacingX + (row % 2 === 0 ? pegSpacingX / 2 : 0);
+        // Avoid pegs too close to edges
+        if (x < pegRadius || x > width - pegRadius) continue;
+        pegs.push({ x, y });
       }
     }
   }
 
-  // Setup slots at the bottom with stakes labels
-  function setupSlots() {
-    for(let i=0; i<cols; i++) {
-      const slot = document.createElement('div');
-      slot.classList.add('slot');
-      slot.textContent = stakes[i] ? '$' + stakes[i] : '$0';
-      slotsDiv.appendChild(slot);
+  // Draw pegs
+  function drawPegs() {
+    ctx.fillStyle = '#f5c518';
+    for (const peg of pegs) {
+      ctx.beginPath();
+      ctx.arc(peg.x, peg.y, pegRadius, 0, Math.PI * 2);
+      ctx.fill();
     }
   }
 
-  // Chip drop and animation logic
-  function dropChip(startX) {
+  // Draw slots with stakes
+  function drawSlots() {
+    ctx.fillStyle = '#333';
+    ctx.strokeStyle = '#666';
+    ctx.font = 'bold 18px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    for (let i = 0; i < cols; i++) {
+      let x = i * slotWidth;
+      // Slot base
+      ctx.fillRect(x, slotsY, slotWidth, slotHeight);
+      ctx.strokeRect(x, slotsY, slotWidth, slotHeight);
+      // Stake text
+      ctx.fillStyle = '#f5c518';
+      ctx.fillText('$' + stakes[i], x + slotWidth / 2, slotsY + slotHeight / 2);
+      ctx.fillStyle = '#333';
+    }
+  }
+
+  // Draw ball
+  function drawBall() {
+    if (!ball) return;
+    ctx.beginPath();
+    ctx.fillStyle = '#f54242';
+    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Detect collision between ball and a peg, respond with bounce
+  function collideBallPeg(peg) {
+    const dx = ball.x - peg.x;
+    const dy = ball.y - peg.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < ball.radius + pegRadius) {
+      // Calculate normal vector
+      const nx = dx / dist;
+      const ny = dy / dist;
+      // Reflect velocity over normal
+      const dot = ball.vx * nx + ball.vy * ny;
+      ball.vx = ball.vx - 2 * dot * nx;
+      ball.vy = ball.vy - 2 * dot * ny;
+      // Slightly push ball outside peg to prevent sticking
+      const overlap = ball.radius + pegRadius - dist;
+      ball.x += nx * overlap;
+      ball.y += ny * overlap;
+      // Damp velocity a bit for realistic bounce
+      ball.vx *= 0.8;
+      ball.vy *= 0.8;
+    }
+  }
+
+  // Detect collision with walls and reflect
+  function collideWalls() {
+    if (ball.x - ball.radius < 0) {
+      ball.x = ball.radius;
+      ball.vx = -ball.vx * 0.8;
+    }
+    if (ball.x + ball.radius > width) {
+      ball.x = width - ball.radius;
+      ball.vx = -ball.vx * 0.8;
+    }
+    if (ball.y - ball.radius < 0) {
+      ball.y = ball.radius;
+      ball.vy = -ball.vy * 0.8;
+    }
+  }
+
+  // Detect collision with bottom slots base and stop ball
+  function collideSlotsBase() {
+    if (ball.y + ball.radius >= slotsY) {
+      ball.y = slotsY - ball.radius;
+      ball.vy = 0;
+      ball.vx *= friction;
+      // Stop ball if velocity low
+      if (Math.abs(ball.vx) < 0.2) {
+        ball.vx = 0;
+        ball.stopped = true;
+        settleBallInSlot();
+      }
+    }
+  }
+
+  // Find which slot ball landed in and display message
+  function settleBallInSlot() {
+    const slotIndex = Math.floor(ball.x / slotWidth);
+    const winAmount = stakes[slotIndex] || 0;
+    message.textContent = `You landed in slot ${slotIndex + 1} and won $${winAmount}!`;
+    dropBtn.disabled = false;
+  }
+
+  // Reset game for next drop
+  function resetBall() {
+    ball = {
+      x: width / 2,
+      y: 30,
+      vx: 0,
+      vy: 0,
+      radius: ballRadius,
+      stopped: false,
+    };
     message.textContent = '';
-    // Create chip element
-    let chip = document.createElement('div');
-    chip.classList.add('chip');
-    board.appendChild(chip);
-
-    // Calculate initial position (top of board)
-    let chipX = startX;
-    let chipY = 10;
-
-    chip.style.left = (chipX - 10) + 'px'; // center chip (width/2=10)
-    chip.style.top = chipY + 'px';
-
-    // Simulate chip path down the rows
-    let path = [chipX];
-    let currentCol = Math.round(chipX / pegSpacingX);
-    if (currentCol < 0) currentCol = 0;
-    if (currentCol >= cols) currentCol = cols - 1;
-
-    // Move chip row by row, randomly bouncing left or right
-    let steps = [];
-    let delay = 0;
-    for(let row=0; row<rows; row++) {
-      // On even rows, peg is offset, so alternate
-      let moveRight = Math.random() < 0.5;
-      if(row % 2 === 0) {
-        currentCol += moveRight ? 1 : 0;
-      } else {
-        currentCol += moveRight ? 0 : -1;
-      }
-      // Clamp column
-      currentCol = Math.max(0, Math.min(cols - 1, currentCol));
-      let x = currentCol * pegSpacingX + ((row % 2 === 0) ? pegSpacingX/2 : 0);
-      let y = (row + 1) * pegSpacingY + 30;
-
-      steps.push({x, y});
-    }
-
-    // Animate chip moving down through steps
-    function animateStep(i) {
-      if(i >= steps.length) {
-        // Landed in slot
-        let slotIndex = currentCol;
-        let winAmount = stakes[slotIndex] || 0;
-        message.textContent = `You landed in slot ${slotIndex + 1} and won $${winAmount}!`;
-        // Remove chip after a delay
-        setTimeout(() => chip.remove(), 3000);
-        return;
-      }
-      let step = steps[i];
-      chip.style.left = (step.x - 10) + 'px';
-      chip.style.top = step.y + 'px';
-
-      setTimeout(() => animateStep(i + 1), 300);
-    }
-
-    animateStep(0);
   }
 
-  // On click at the top of the board, drop chip at that horizontal position
-  board.addEventListener('click', e => {
-    let rect = board.getBoundingClientRect();
-    let x = e.clientX - rect.left;
-    if (x < 20) x = 20;
-    if (x > rect.width - 20) x = rect.width - 20;
-    dropChip(x);
+  // Main animation loop
+  function animate() {
+    ctx.clearRect(0, 0, width, height);
+    drawPegs();
+    drawSlots();
+    if (ball) {
+      if (!ball.stopped) {
+        // Apply gravity
+        ball.vy += gravity;
+        ball.vx *= friction;
+        ball.vy *= friction;
+
+        // Update position
+        ball.x += ball.vx;
+        ball.y += ball.vy;
+
+        // Collisions
+        collideWalls();
+
+        for (const peg of pegs) {
+          collideBallPeg(peg);
+        }
+
+        collideSlotsBase();
+      }
+      drawBall();
+    }
+    requestAnimationFrame(animate);
+  }
+
+  dropBtn.addEventListener('click', () => {
+    if (ball && !ball.stopped) return; // ball in motion
+
+    resetBall();
+    dropBtn.disabled = true;
   });
 
-  setupPegs();
-  setupSlots();
+  // Init
+  buildPegs();
+  resetBall();
+  animate();
+
+})();
 </script>
 
 </body>
