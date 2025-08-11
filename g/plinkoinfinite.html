@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Plinko with Winnings & Clear</title>
+<title>Plinko Balanced Drop Sides</title>
 <style>
   body {
     background: #222;
@@ -52,7 +52,7 @@
 </head>
 <body>
 
-<h1>Plinko with Winnings & Clear</h1>
+<h1>Plinko Balanced Drop Sides</h1>
 <canvas id="board" width="320" height="480"></canvas>
 <div id="message"></div>
 <div id="totalWinnings">Total Winnings: $0</div>
@@ -83,7 +83,8 @@
 
   const pegSpacingX = width / cols;
   const pegSpacingY = 30;
-  const pegGridShiftX = pegSpacingX * 0.25;
+  // Removed pegGridShiftX so grid is centered
+  // const pegGridShiftX = pegSpacingX * 0.25;
 
   const slotHeight = 70;
   const slotWidth = pegSpacingX;
@@ -100,8 +101,9 @@
     for (let row = 0; row < rows; row++) {
       const y = 70 + row * pegSpacingY;
       for (let col = 0; col < cols; col++) {
+        // Centered peg grid: offset every other row by half peg spacing only
         let xBase = col * pegSpacingX + (row % 2 === 0 ? pegSpacingX / 2 : 0);
-        let x = xBase + pegGridShiftX;
+        let x = xBase;
         if (x < pegRadius) continue;
         if (x > width - pegRadius) continue;
         pegs.push({ x, y });
@@ -206,8 +208,15 @@
   }
 
   function createNewBall() {
+    // Randomly drop near left quarter or right quarter of canvas width
+    const leftDropX = width * 0.25;
+    const rightDropX = width * 0.75;
+    const startX = Math.random() < 0.5 
+      ? leftDropX + (Math.random() - 0.5) * pegSpacingX * 0.8  // small jitter around left quarter
+      : rightDropX + (Math.random() - 0.5) * pegSpacingX * 0.8; // jitter around right quarter
+
     return {
-      x: width / 2,
+      x: startX,
       y: 50,
       vx: (Math.random() * 0.6) - 0.3,
       vy: 2,
