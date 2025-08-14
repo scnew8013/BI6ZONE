@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Devil Level - Eng Qiyin O'yin</title>
+    <title>Levil Devil Remake</title>
     <style>
         body {
             margin: 0;
@@ -99,41 +99,41 @@
     </style>
 </head>
 <body>
-    <h1>👹 DEVIL LEVEL 👹</h1>
+    <h1>👹 LEVEL DEVIL 👹</h1>
     
     <div class="warning">
-        <strong>⚠️ OGOHLANTIRISH ⚠️</strong><br>
-        Bu o'yin juda qiyin va asabni buzishi mumkin!
+        <strong>⚠️ WARNING ⚠️</strong><br>
+        This game is very difficult and can be nerve-wracking!
     </div>
     
     <div class="info">
-        <span>Daraja: <span id="level">1</span></span> | 
-        <span>Ball: <span id="score">0</span></span> | 
-        <span>Hayot: <span id="lives">1</span></span>
+        <span>Level: <span id="level">1</span></span> | 
+        <span>Score: <span id="score">0</span></span> | 
+        <span>Lives: <span id="lives">1</span></span>
     </div>
     
     <div class="death-count">
-        O'limlar soni: <span id="deaths">0</span> 💀
+        Death Count: <span id="deaths">0</span> 💀
     </div>
     
     <canvas id="gameCanvas" width="900" height="500"></canvas>
     
     <div class="instructions">
-        <strong>Boshqaruv:</strong> WASD yoki strelkalar, SPACE - sakrash<br>
-        <strong>Maqsad:</strong> Qizil portalgacha yeting... Agar ilojingiz bo'lsa! 😈<br>
-        <strong>Qoida:</strong> Bitta hayot, cheksiz qayta urinish!
+        <strong>Controls:</strong> WASD or arrows, SPACE - jump<br>
+        <strong>Objective:</strong> Reach the red portal... If you can! 😈<br>
+        <strong>Rules:</strong> One life, unlimited retries!
     </div>
     
     <div class="controls">
-        <button onclick="startGame()">Jahannamga Kirish</button>
-        <button onclick="pauseGame()">Pauza</button>
-        <button onclick="resetGame()">Qayta Boshlash</button>
+        <button onclick="startGame()">Start</button>
+        <button onclick="pauseGame()">Pause</button>
+        <button onclick="resetGame()">Reset</button>
     </div>
     
     <div class="game-over" id="gameOver">
         <h2>💀 O'LDINGIZ! 💀</h2>
-        <p>Sizning ballingiz: <span id="finalScore">0</span></p>
-        <p>O'limlar soni: <span id="finalDeaths">0</span></p>
+        <p>Final Score: <span id="finalScore">0</span></p>
+        <p>Final Death: <span id="finalDeaths">0</span></p>
         <button onclick="resetGame()">Qayta Urinish</button>
     </div>
 
