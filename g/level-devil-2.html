@@ -1,154 +1,599 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <link rel="icon" href="/images/favicon.png" sizes="32x32">
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <title>Level Devil - Challenging Platformer Game</title>
-    <meta name="description" content="Level Devil is a challenging platformer where players navigate through tricky levels filled with obstacles to reach the door and win.">
-    <meta name="keywords" content="Level Devil, platformer game, obstacles, jump, challenging levels, gaming"/>
-    <meta name="news_keywords" content="Geometry Game, Poki, Game Unblocked, Game Free"/>
-    <meta property="og:url" content="https://geometrygame.github.io/play/Level-Devil.html" />
-    <meta property="og:image:width" content="200 px" />
-    <meta property="og:image:height" content="200 px" />
-    <meta property="og:title" content="Geometry Games" />
-    <meta property="og:site_name" content="Geometry Games" />
-    <meta property="og:description" content="Level Devil is a challenging platformer where players navigate through tricky levels filled with obstacles to reach the door and win." />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="/images/icon/Level-Devil.jpg">
-    <!-- META FOR Twitter -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:site" content="@gameunblock" />
-    <meta name="twitter:title" content="Level Devil - Challenging Platformer Game" />
-    <meta name="twitter:description" content="Play Drive Mad - the racing game where you drive silly cars on dangerous terrain. Enjoy the original game and tons of variations! Bored? Start racing now!" />
-    <meta name="twitter:image" content="/images/icon/Level-Devil.jpg" />
-    <script type="application/ld+json">
-        {
-            "@context": "https://schema.org",
-            "@type": "VideoGame",
-            "name": "Level Devil - Challenging Platformer Game",
-            "description": "Level Devil is a challenging platformer where players navigate through tricky levels filled with obstacles to reach the door and win.",
-            "image": "/images/icon/Level-Devil.jpg",
-            "url": "https://geometrygame.github.io/play/Level-Devil.html",
-            "applicationCategory": "Game",
-            "operatingSystem": "Windows, macOS, Linux",
-            "author": {
-                "@type": "Person",
-                "name": "Geometry"
-            },
-            "datePublished": "2024-01-01",
-            "genre": "Platformer, Rhythm, Children's Game, Action, Exploration",
-            "gamePlatform": "PC, Mobile"
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devil Level - Eng Qiyin O'yin</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(45deg, #000000, #4A0000, #8B0000);
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
         }
-    </script>
-
-    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="/css/jquery-comments.css" />
-    <link rel="stylesheet" type="text/css" href="/css/user.css" />
-    <link rel="stylesheet" type="text/css" href="/css/style.css" />
-    <link rel="stylesheet" type="text/css" href="/css/custom.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css" />
-    <!-- Font Awesome icons (free version)-->
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-    <!-- Google fonts-->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N3FPFKSHSJ"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-
-        gtag('config', 'G-N3FPFKSHSJ');
-    </script>
-    <!-- ads -->
-
+        canvas {
+            border: 3px solid #FF0000;
+            background: linear-gradient(to bottom, #1a0000, #000000);
+            box-shadow: 0 0 30px rgba(255,0,0,0.5);
+        }
+        .controls {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .info {
+            margin: 10px 0;
+            font-size: 18px;
+            font-weight: bold;
+            color: #FF6666;
+            text-shadow: 0 0 10px #FF0000;
+        }
+        .instructions {
+            margin: 10px 0;
+            font-size: 14px;
+            color: #FFB6C1;
+            max-width: 600px;
+            text-align: center;
+            background: rgba(139,0,0,0.3);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #FF0000;
+        }
+        button {
+            padding: 12px 25px;
+            font-size: 16px;
+            margin: 5px;
+            border: 2px solid #FF0000;
+            border-radius: 5px;
+            background: linear-gradient(45deg, #8B0000, #FF0000);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-shadow: 0 0 5px #000;
+        }
+        button:hover {
+            background: linear-gradient(45deg, #FF0000, #FF6666);
+            box-shadow: 0 0 15px #FF0000;
+        }
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(139,0,0,0.9);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+            border: 2px solid #FF0000;
+            box-shadow: 0 0 30px #FF0000;
+        }
+        h1 {
+            color: #FF0000;
+            text-shadow: 0 0 20px #FF0000;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .death-count {
+            color: #FF4444;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        .warning {
+            background: rgba(255,0,0,0.2);
+            border: 1px solid #FF0000;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 5px #FF0000; }
+            50% { box-shadow: 0 0 20px #FF0000; }
+            100% { box-shadow: 0 0 5px #FF0000; }
+        }
+    </style>
 </head>
-<body id="page-top" style="background: url('/images/background1.png'); background-size: cover;">
-    <!-- Navigation-->
-    <nav class="navbar navbar-expand-lg navbar-dark top-nav" id="mainNav"></nav>
-    <div class="container">
-        <!-- ads_ng -->
-        <div style="text-align:left; font-size: small; font-style: italic;">Advertisement</div>
-        <hr>
-        <hr>
-        <div class="row">
-            <div class="col-md-9">
-                <!-- game play -->
-                <div class="game-container">
-                    <div class="game-content" data-id="169">
-                        <div id="allow_mobile_version"></div>
-                        <div class="game-iframe-container" id="game-player">
-                        <div id="mobile-back-button" draggable="true">
-                            <i class="bi bi-x-circle-fill"></i>
-                        </div>
-                        <iframe class="game-iframe" id="game-area" src="https://html5.gamedistribution.com/rvvASMiM/acc82d001dfa4471bde0818db2b7c1c4/index.html?gd_zone_config=eyJwYXJlbnRVUkwiOiJodHRwczovL2xldmVsZGV2aWxkYXNoLmNvbS8iLCJwYXJlbnREb21haW4iOiJsZXZlbGRldmlsZGFzaC5jb20iLCJ0b3BEb21haW4iOiJsZXZlbGRldmlsZGFzaC5jb20iLCJoYXNJbXByZXNzaW9uIjp0cnVlLCJsb2FkZXJFbmFibGVkIjp0cnVlLCJob3N0IjoiaHRtbDUuZ2FtZWRpc3RyaWJ1dGlvbi5jb20iLCJ2ZXJzaW9uIjoiMS41LjE3In0%253D" width="480" height="800" scrolling="none" frameborder="0" allowfullscreen=""></iframe>
-                        </div>
-                    </div>
-                    <div class="game-info">
-                        <div class="header-left">
-                            <label class="h1 single-title">Level Devil</label>
-                        </div>
-                        <div class="header-right">
-                            <div class="b-action2">
-                                <a href="#" onclick="open_fullscreen()" class="btn btn-capsule"><i class="bi bi-arrows-fullscreen b-icon"></i>Fullscreen</a>
-                            </div>
-                        </div>
-                  </div>
-                </div>
-                <!-- game details -->
-                <div class="vex_x">
-                    <div style="text-align: justify; margin: 10px 10px 10px 10px;" >
-                        <div class="post-intro" id="about-game">
-                            
-                        </div>
-                    </div>
-                </div>
-            </div><!-- end col-9 -->
-            <!-- hot game -->
-            <div class="col-md-3">
-                <div align="center" id="load_hot_games"> 
-                    <div style="color: white;"><h3>Hot Game</h3></div>
-                    <hr>
-                    <!-- ads_d -->
-                </div>
-            </div>
-            <!-- and hot game -->
-        </div> <!-- and row -->
-
-        <!-- ads -->
-        <div class="banner-ad-wrapper">
-            <div style="text-align:left; font-size: small; font-style: italic;">Advertisement</div>
-            <hr>
-        </div>
-
-        <!-- New games section -->
-        <div class="vex_x">
-            <div style="text-align: justify; margin: 10px 10px 10px 10px;" >
-                <h3 class="section-title">New games</h3>
-                <div class="row grid-container" style="margin-left: 6px; margin-right: 6px;" id="load_new_games">
-                </div>
-            </div>
-        </div> <!-- end New -->
-
-    </div> <!-- end container -->
-
-    <div class="footer-copyright py-4" id="load_footer"></div>
-</body>
-    <script type="text/javascript" src="/js/jquery-3.6.2.min.js"></script>
-    <script type="text/javascript" src="/js/lazysizes.min.js"></script>
-    <script type="text/javascript" src="/js/popper.min.js"></script>
-    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/js/script.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
-    <script type="text/javascript" src="/js/custom.js"></script>
+<body>
+    <h1>👹 DEVIL LEVEL 👹</h1>
+    
+    <div class="warning">
+        <strong>⚠️ OGOHLANTIRISH ⚠️</strong><br>
+        Bu o'yin juda qiyin va asabni buzishi mumkin!
+    </div>
+    
+    <div class="info">
+        <span>Daraja: <span id="level">1</span></span> | 
+        <span>Ball: <span id="score">0</span></span> | 
+        <span>Hayot: <span id="lives">1</span></span>
+    </div>
+    
+    <div class="death-count">
+        O'limlar soni: <span id="deaths">0</span> 💀
+    </div>
+    
+    <canvas id="gameCanvas" width="900" height="500"></canvas>
+    
+    <div class="instructions">
+        <strong>Boshqaruv:</strong> WASD yoki strelkalar, SPACE - sakrash<br>
+        <strong>Maqsad:</strong> Qizil portalgacha yeting... Agar ilojingiz bo'lsa! 😈<br>
+        <strong>Qoida:</strong> Bitta hayot, cheksiz qayta urinish!
+    </div>
+    
+    <div class="controls">
+        <button onclick="startGame()">Jahannamga Kirish</button>
+        <button onclick="pauseGame()">Pauza</button>
+        <button onclick="resetGame()">Qayta Boshlash</button>
+    </div>
+    
+    <div class="game-over" id="gameOver">
+        <h2>💀 O'LDINGIZ! 💀</h2>
+        <p>Sizning ballingiz: <span id="finalScore">0</span></p>
+        <p>O'limlar soni: <span id="finalDeaths">0</span></p>
+        <button onclick="resetGame()">Qayta Urinish</button>
+    </div>
 
     <script>
-        window.addEventListener('load', function() {
-        $("#about-game").load("/about-game/Level-Devil.html");
-    });
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let gameState = {
+            running: false,
+            paused: false,
+            level: 1,
+            score: 0,
+            lives: 1,
+            deaths: 0
+        };
+        
+        // Player obyekti
+        let player = {
+            x: 50,
+            y: 400,
+            width: 25,
+            height: 25,
+            velX: 0,
+            velY: 0,
+            speed: 4,
+            jumpPower: 12,
+            onGround: false,
+            color: '#00FF00'
+        };
+        
+        // O'yin elementlari
+        let platforms = [];
+        let spikes = [];
+        let movingPlatforms = [];
+        let enemies = [];
+        let lava = [];
+        let teleporters = [];
+        let goal = {};
+        
+        // Klaviatura
+        let keys = {};
+        
+        document.addEventListener('keydown', (e) => {
+            keys[e.key.toLowerCase()] = true;
+            keys[e.key] = true;
+            if (e.key === ' ') e.preventDefault();
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            keys[e.key.toLowerCase()] = false;
+            keys[e.key] = false;
+        });
+        
+        // Juda qiyin darajalarni yuklash
+        function loadLevel(level) {
+            platforms = [];
+            spikes = [];
+            movingPlatforms = [];
+            enemies = [];
+            lava = [];
+            teleporters = [];
+            
+            // Pol va poydevor
+            platforms.push({x: 0, y: 450, width: 200, height: 50, color: '#444'});
+            platforms.push({x: 800, y: 450, width: 100, height: 50, color: '#444'});
+            
+            // Maqsad
+            goal = {x: 850, y: 410, width: 30, height: 40, color: '#FF0000'};
+            
+            if (level === 1) {
+                // "Oson" devil daraja
+                // Kichik platformalar
+                platforms.push({x: 250, y: 400, width: 40, height: 15, color: '#666'});
+                platforms.push({x: 350, y: 350, width: 35, height: 15, color: '#666'});
+                platforms.push({x: 450, y: 300, width: 30, height: 15, color: '#666'});
+                platforms.push({x: 550, y: 250, width: 35, height: 15, color: '#666'});
+                platforms.push({x: 650, y: 300, width: 40, height: 15, color: '#666'});
+                platforms.push({x: 750, y: 350, width: 35, height: 15, color: '#666'});
+                
+                // Tikenlar
+                spikes.push({x: 200, y: 435, width: 50, height: 15});
+                spikes.push({x: 290, y: 435, width: 60, height: 15});
+                spikes.push({x: 385, y: 435, width: 65, height: 15});
+                spikes.push({x: 480, y: 435, width: 70, height: 15});
+                spikes.push({x: 585, y: 435, width: 65, height: 15});
+                spikes.push({x: 690, y: 435, width: 60, height: 15});
+                
+                // Harakat qiladigan dushmanlar
+                enemies.push({x: 270, y: 360, width: 15, height: 15, velX: 2, color: '#FF4444', range: 80, startX: 270});
+                enemies.push({x: 470, y: 260, width: 15, height: 15, velX: -1.5, color: '#FF4444', range: 60, startX: 470});
+                enemies.push({x: 670, y: 260, width: 15, height: 15, velX: 2.5, color: '#FF4444', range: 100, startX: 670});
+                
+            } else if (level === 2) {
+                // Juda qiyin daraja
+                platforms.push({x: 220, y: 420, width: 25, height: 10, color: '#666'});
+                platforms.push({x: 300, y: 380, width: 20, height: 10, color: '#666'});
+                platforms.push({x: 380, y: 340, width: 25, height: 10, color: '#666'});
+                platforms.push({x: 460, y: 280, width: 20, height: 10, color: '#666'});
+                platforms.push({x: 540, y: 240, width: 25, height: 10, color: '#666'});
+                platforms.push({x: 620, y: 200, width: 20, height: 10, color: '#666'});
+                platforms.push({x: 700, y: 280, width: 25, height: 10, color: '#666'});
+                platforms.push({x: 780, y: 350, width: 20, height: 10, color: '#666'});
+                
+                // Ko'proq tikenlar
+                for (let i = 200; i < 800; i += 30) {
+                    if (Math.random() > 0.3) {
+                        spikes.push({x: i, y: 435, width: 25, height: 15});
+                    }
+                }
+                
+                // Harakat qiladigan platformalar
+                movingPlatforms.push({x: 340, y: 300, width: 40, height: 10, velY: 2, color: '#888', range: 100, startY: 300});
+                movingPlatforms.push({x: 500, y: 150, width: 30, height: 10, velX: 3, color: '#888', range: 120, startX: 500});
+                
+                // Tezroq dushmanlar
+                enemies.push({x: 240, y: 380, width: 12, height: 12, velX: 3, color: '#FF0000', range: 60, startX: 240});
+                enemies.push({x: 400, y: 300, width: 12, height: 12, velX: -4, color: '#FF0000', range: 80, startX: 400});
+                enemies.push({x: 560, y: 200, width: 12, height: 12, velX: 3.5, color: '#FF0000', range: 100, startX: 560});
+                enemies.push({x: 720, y: 240, width: 12, height: 12, velX: -3, color: '#FF0000', range: 70, startX: 720});
+                
+                // Lava hovuzlari
+                lava.push({x: 270, y: 435, width: 110, height: 15});
+                lava.push({x: 420, y: 435, width: 90, height: 15});
+                lava.push({x: 580, y: 435, width: 100, height: 15});
+                
+            } else if (level === 3) {
+                // SHAYTONGA O'XSHASH QIYIN!
+                platforms.push({x: 210, y: 430, width: 15, height: 8, color: '#666'});
+                platforms.push({x: 270, y: 400, width: 12, height: 8, color: '#666'});
+                platforms.push({x: 330, y: 370, width: 15, height: 8, color: '#666'});
+                platforms.push({x: 390, y: 320, width: 12, height: 8, color: '#666'});
+                platforms.push({x: 450, y: 280, width: 15, height: 8, color: '#666'});
+                platforms.push({x: 510, y: 240, width: 12, height: 8, color: '#666'});
+                platforms.push({x: 570, y: 200, width: 15, height: 8, color: '#666'});
+                platforms.push({x: 630, y: 160, width: 12, height: 8, color: '#666'});
+                platforms.push({x: 690, y: 200, width: 15, height: 8, color: '#666'});
+                platforms.push({x: 750, y: 280, width: 12, height: 8, color: '#666'});
+                platforms.push({x: 790, y: 380, width: 15, height: 8, color: '#666'});
+                
+                // Har yerda tikenlar
+                for (let i = 200; i < 850; i += 20) {
+                    spikes.push({x: i, y: 435, width: 15, height: 15});
+                }
+                
+                // Juda tez harakat qiladigan platformalar
+                movingPlatforms.push({x: 240, y: 350, width: 30, height: 8, velY: 4, color: '#888', range: 150, startY: 350});
+                movingPlatforms.push({x: 420, y: 180, width: 25, height: 8, velX: 5, color: '#888', range: 180, startX: 420});
+                movingPlatforms.push({x: 650, y: 120, width: 30, height: 8, velY: -3, color: '#888', range: 120, startY: 120});
+                
+                // Shaytonga o'xshash dushmanlar
+                enemies.push({x: 230, y: 390, width: 10, height: 10, velX: 4, color: '#8B0000', range: 50, startX: 230});
+                enemies.push({x: 350, y: 330, width: 10, height: 10, velX: -5, color: '#8B0000', range: 60, startX: 350});
+                enemies.push({x: 470, y: 240, width: 10, height: 10, velX: 4.5, color: '#8B0000', range: 70, startX: 470});
+                enemies.push({x: 590, y: 160, width: 10, height: 10, velX: -4, color: '#8B0000', range: 80, startX: 590});
+                enemies.push({x: 710, y: 160, width: 10, height: 10, velX: 5, color: '#8B0000', range: 90, startX: 710});
+                
+                // Katta lava zonalari
+                lava.push({x: 225, y: 435, width: 45, height: 15});
+                lava.push({x: 285, y: 435, width: 45, height: 15});
+                lava.push({x: 345, y: 435, width: 45, height: 15});
+                lava.push({x: 405, y: 435, width: 45, height: 15});
+                lava.push({x: 465, y: 435, width: 45, height: 15});
+                lava.push({x: 525, y: 435, width: 45, height: 15});
+                lava.push({x: 585, y: 435, width: 45, height: 15});
+                lava.push({x: 645, y: 435, width: 45, height: 15});
+                lava.push({x: 705, y: 435, width: 45, height: 15});
+                
+                // Teleporterlar (aldaydi!)
+                teleporters.push({x: 300, y: 350, width: 20, height: 20, targetX: 50, targetY: 400});
+                teleporters.push({x: 500, y: 200, width: 20, height: 20, targetX: 250, targetY: 400});
+            }
+            
+            player.x = 50;
+            player.y = 400;
+            player.velX = 0;
+            player.velY = 0;
+        }
+        
+        // Collision detection
+        function checkCollision(rect1, rect2) {
+            return rect1.x < rect2.x + rect2.width &&
+                   rect1.x + rect1.width > rect2.x &&
+                   rect1.y < rect2.y + rect2.height &&
+                   rect1.y + rect1.height > rect2.y;
+        }
+        
+        // Player yangilash
+        function updatePlayer() {
+            // Harakat (WASD va strelkalar)
+            if (keys['a'] || keys['arrowleft']) {
+                player.velX = -player.speed;
+            } else if (keys['d'] || keys['arrowright']) {
+                player.velX = player.speed;
+            } else {
+                player.velX *= 0.7;
+            }
+            
+            // Sakrash
+            if ((keys['w'] || keys['arrowup'] || keys[' ']) && player.onGround) {
+                player.velY = -player.jumpPower;
+                player.onGround = false;
+            }
+            
+            // Gravitatsiya
+            player.velY += 0.6;
+            if (player.velY > 15) player.velY = 15;
+            
+            // Pozitsiya yangilash
+            player.x += player.velX;
+            player.y += player.velY;
+            
+            // Chegaralar
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+            
+            // Platformalar bilan collision
+            player.onGround = false;
+            for (let platform of [...platforms, ...movingPlatforms]) {
+                if (checkCollision(player, platform)) {
+                    if (player.velY > 0 && player.y < platform.y) {
+                        player.y = platform.y - player.height;
+                        player.velY = 0;
+                        player.onGround = true;
+                    }
+                }
+            }
+            
+            // O'limga olib keladigan narsalar
+            let died = false;
+            
+            // Tikenlar
+            for (let spike of spikes) {
+                if (checkCollision(player, spike)) {
+                    died = true;
+                    break;
+                }
+            }
+            
+            // Lava
+            for (let lavaPool of lava) {
+                if (checkCollision(player, lavaPool)) {
+                    died = true;
+                    break;
+                }
+            }
+            
+            // Dushmanlar
+            for (let enemy of enemies) {
+                if (checkCollision(player, enemy)) {
+                    died = true;
+                    break;
+                }
+            }
+            
+            // Teleporterlar
+            for (let teleporter of teleporters) {
+                if (checkCollision(player, teleporter)) {
+                    player.x = teleporter.targetX;
+                    player.y = teleporter.targetY;
+                    player.velX = 0;
+                    player.velY = 0;
+                }
+            }
+            
+            // Pastga tushib ketish
+            if (player.y > canvas.height) {
+                died = true;
+            }
+            
+            if (died) {
+                gameState.deaths++;
+                loadLevel(gameState.level);
+                document.getElementById('deaths').textContent = gameState.deaths;
+            }
+        }
+        
+        // Harakat qiladigan elementlarni yangilash
+        function updateMovingElements() {
+            // Harakat qiladigan platformalar
+            for (let platform of movingPlatforms) {
+                if (platform.velX) {
+                    platform.x += platform.velX;
+                    if (platform.x <= platform.startX - platform.range || platform.x >= platform.startX + platform.range) {
+                        platform.velX *= -1;
+                    }
+                }
+                if (platform.velY) {
+                    platform.y += platform.velY;
+                    if (platform.y <= platform.startY - platform.range || platform.y >= platform.startY + platform.range) {
+                        platform.velY *= -1;
+                    }
+                }
+            }
+            
+            // Dushmanlar
+            for (let enemy of enemies) {
+                enemy.x += enemy.velX;
+                if (enemy.x <= enemy.startX - enemy.range || enemy.x >= enemy.startX + enemy.range) {
+                    enemy.velX *= -1;
+                }
+            }
+        }
+        
+        // Maqsadni tekshirish
+        function checkGoal() {
+            if (checkCollision(player, goal)) {
+                gameState.level++;
+                gameState.score += 1000;
+                
+                if (gameState.level > 3) {
+                    alert('🎉 TABRIKLAYMIZ! Siz shaytonga galaba qildingiz! 🎉\\nO\'limlar soni: ' + gameState.deaths);
+                    resetGame();
+                } else {
+                    loadLevel(gameState.level);
+                }
+            }
+        }
+        
+        // Chizish
+        function draw() {
+            // Qora fon
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Platformalar
+            for (let platform of [...platforms, ...movingPlatforms]) {
+                ctx.fillStyle = platform.color;
+                ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+                
+                // Platform chekkalarini yorqinroq qilish
+                ctx.fillStyle = '#999';
+                ctx.fillRect(platform.x, platform.y, platform.width, 2);
+            }
+            
+            // Tikenlar
+            ctx.fillStyle = '#666';
+            for (let spike of spikes) {
+                ctx.fillRect(spike.x, spike.y, spike.width, spike.height);
+                
+                // Tiken ko'rinishi
+                ctx.fillStyle = '#999';
+                for (let i = 0; i < spike.width; i += 5) {
+                    ctx.beginPath();
+                    ctx.moveTo(spike.x + i, spike.y + spike.height);
+                    ctx.lineTo(spike.x + i + 2.5, spike.y);
+                    ctx.lineTo(spike.x + i + 5, spike.y + spike.height);
+                    ctx.fill();
+                }
+                ctx.fillStyle = '#666';
+            }
+            
+            // Lava
+            for (let lavaPool of lava) {
+                let gradient = ctx.createLinearGradient(0, lavaPool.y, 0, lavaPool.y + lavaPool.height);
+                gradient.addColorStop(0, '#FF4500');
+                gradient.addColorStop(1, '#FF0000');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(lavaPool.x, lavaPool.y, lavaPool.width, lavaPool.height);
+            }
+            
+            // Teleporterlar
+            for (let teleporter of teleporters) {
+                ctx.fillStyle = '#800080';
+                ctx.fillRect(teleporter.x, teleporter.y, teleporter.width, teleporter.height);
+                
+                // Teleporter effekti
+                ctx.fillStyle = '#FF00FF';
+                ctx.fillRect(teleporter.x + 2, teleporter.y + 2, teleporter.width - 4, teleporter.height - 4);
+            }
+            
+            // Dushmanlar
+            for (let enemy of enemies) {
+                ctx.fillStyle = enemy.color;
+                ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+                
+                // Dushman ko'zlari
+                ctx.fillStyle = '#FFFF00';
+                ctx.fillRect(enemy.x + 2, enemy.y + 2, 3, 3);
+                ctx.fillRect(enemy.x + enemy.width - 5, enemy.y + 2, 3, 3);
+            }
+            
+            // Player
+            ctx.fillStyle = player.color;
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+            
+            // Player ko'zlari
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(player.x + 3, player.y + 3, 4, 4);
+            ctx.fillRect(player.x + player.width - 7, player.y + 3, 4, 4);
+            
+            // Maqsad (portal)
+            let gradient = ctx.createRadialGradient(goal.x + goal.width/2, goal.y + goal.height/2, 0, goal.x + goal.width/2, goal.y + goal.height/2, goal.width);
+            gradient.addColorStop(0, '#FF0000');
+            gradient.addColorStop(1, '#8B0000');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(goal.x, goal.y, goal.width, goal.height);
+        }
+        
+        // Asosiy o'yin loop
+        function gameLoop() {
+            if (gameState.running && !gameState.paused) {
+                updatePlayer();
+                updateMovingElements();
+                checkGoal();
+                draw();
+                
+                // UI yangilash
+                document.getElementById('level').textContent = gameState.level;
+                document.getElementById('score').textContent = gameState.score;
+                document.getElementById('lives').textContent = gameState.lives;
+            }
+            
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // O'yin funksiyalari
+        function startGame() {
+            gameState.running = true;
+            gameState.paused = false;
+            loadLevel(gameState.level);
+            document.getElementById('gameOver').style.display = 'none';
+        }
+        
+        function pauseGame() {
+            gameState.paused = !gameState.paused;
+        }
+        
+        function resetGame() {
+            gameState = {
+                running: false,
+                paused: false,
+                level: 1,
+                score: 0,
+                lives: 1,
+                deaths: 0
+            };
+            loadLevel(1);
+            document.getElementById('gameOver').style.display = 'none';
+            document.getElementById('deaths').textContent = '0';
+        }
+        
+        // O'yin tugashi
+        function gameOver() {
+            gameState.running = false;
+            document.getElementById('finalScore').textContent = gameState.score;
+            document.getElementById('finalDeaths').textContent = gameState.deaths;
+            document.getElementById('gameOver').style.display = 'block';
+        }
+        
+        // Klaviatura shortcutlari
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'r' || e.key === 'R') {
+                resetGame();
+                startGame();
+            }
+        });
+        
+        // O'yinni ishga tushirish
+        loadLevel(1);
+        gameLoop();
     </script>
+</body>
 </html>
