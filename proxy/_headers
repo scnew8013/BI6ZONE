@@ -1,7 +1,0 @@
-/games/*
-  Cache-Control: public, max-age=31536000, immutable
-  CDN-Cache-Control: public, max-age=31536000, immutable
-  Cloudflare-CDN-Cache-Control: public, max-age=31536000, immutable
-  Edge-Cache-Tag: games
-  Cache-Tag: games
-  Vary: Accept-Encoding
