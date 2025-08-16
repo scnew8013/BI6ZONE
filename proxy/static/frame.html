@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1346.lol - The Web</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../matrix-rain/style.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="../favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon/favicon-16x16.png">
+    <link rel="manifest" href="../favicon/site.webmanifest">
+    <style>
+        body {
+            overflow: hidden;
+        }
+        
+        .proxy-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .toolbar {
+            background: rgba(0, 20, 0, 0.95);
+            height: 70px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #004400;
+            padding: 0 10px;
+            gap: 15px;
+            position: relative;
+        }
+
+        .toolbar > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .nav-back {
+            width: 40px;
+            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            text-decoration: none;
+            color: #00ff00;
+            border: 1px solid #004400;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            background: none;
+            position: static;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-back:hover {
+            background: rgba(0, 255, 0, 0.1);
+            border-color: #00ff00;
+        }
+
+        .reload-button {
+            width: 40px;
+            height: 40px;
+            background: none;
+            border: 1px solid #004400;
+            border-radius: 4px;
+            color: #00ff00;
+            font-size: 24px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            padding: 0;
+            margin: 0;
+            flex-shrink: 0;
+            position: relative;
+            left: 0;
+        }
+
+        .reload-button:hover {
+            background: rgba(0, 255, 0, 0.1);
+            border-color: #00ff00;
+        }
+
+        .url-bar {
+            flex: 1;
+            background: rgba(0, 40, 0, 0.5);
+            border: 1px solid #004400;
+            color: #00ff00;
+            font-family: monospace;
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .url-bar::placeholder {
+            color: rgba(0, 255, 0, 0.3);
+            font-style: italic;
+        }
+
+        .url-bar:focus {
+            border-color: #00ff00;
+            background: rgba(0, 40, 0, 0.7);
+        }
+
+        .url-bar:focus::placeholder {
+            color: transparent;
+        }
+
+        .url-bar.error {
+            border-color: #ff0000;
+            color: #ff0000;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .error-tooltip {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 0, 0, 0.9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .url-bar.error + .error-tooltip {
+            opacity: 1;
+        }
+
+        #proxy-frame {
+            flex: 1;
+            width: 100%;
+            height: calc(100vh - 70px);
+            border: none;
+            background: #000;
+        }
+
+        @media (max-width: 480px) {
+            .toolbar {
+                height: 60px;
+            }
+
+            .nav-back,
+            .reload-button {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+
+            #proxy-frame {
+                height: calc(100vh - 60px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="proxy-container">
+        <div class="toolbar">
+            <button class="nav-back" title="Go back">←</button>
+            <button class="reload-button" title="Reload page">↻</button>
+            <input type="text" class="url-bar" placeholder="Enter URL or search term">
+            <div class="error-tooltip"></div>
+        </div>
+        <iframe id="proxy-frame" src="about:blank"></iframe>
+    </div>
+    <script src="../matrix-rain/matrix.js"></script>
+    <script src="uv/uv.bundle.js"></script>
+    <script src="uv/uv.config.js"></script>
+    <script src="register-sw.js"></script>
+    <script>
+        class URLManager {
+            constructor() {
+                this.proxyFrame = document.getElementById('proxy-frame');
+                this.urlBar = document.querySelector('.url-bar');
+                this.reloadButton = document.querySelector('.reload-button');
+                this.errorTooltip = document.querySelector('.error-tooltip');
+                this.lastKnownUrl = '';
+                this.navigationInProgress = false;
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                // URL bar input handling
+                this.urlBar.addEventListener('keydown', this.handleUrlBarKeydown.bind(this));
+                this.urlBar.addEventListener('focus', () => this.urlBar.select());
+
+                // Reload button
+                this.reloadButton.addEventListener('click', this.handleReload.bind(this));
+
+                // Frame events
+                this.proxyFrame.addEventListener('load', this.handleFrameLoad.bind(this));
+                this.proxyFrame.addEventListener('error', () => this.showError('Failed to load content'));
+
+                // Clear URL bar when iframe is interacted with
+                this.proxyFrame.addEventListener('mouseover', () => {
+                    if (!this.navigationInProgress) {
+                        this.urlBar.value = '';
+                    }
+                });
+
+                // Navigation and window events
+                const backButton = document.querySelector('.nav-back');
+                backButton.addEventListener('click', () => window.history.back());
+                window.addEventListener('message', this.handleMessage.bind(this));
+                window.addEventListener('popstate', this.handlePopState.bind(this));
+                window.addEventListener('unhandledrejection', this.handleUnhandledRejection.bind(this));
+                window.addEventListener('load', this.handleInitialLoad.bind(this));
+
+                // URL validation events
+                this.urlBar.addEventListener('input', () => {
+                    this.clearError();
+                    this.validateUrlFormat(this.urlBar.value);
+                });
+            }
+
+            async handleUrlBarKeydown(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const input = this.urlBar.value.trim();
+                    if (!input) return;
+
+                    try {
+                        const url = this.formatUrl(input);
+                        await this.navigateToUrl(url);
+                    } catch (err) {
+                        this.showError(err.message);
+                    }
+                }
+            }
+
+            formatUrl(input) {
+                // Handle special URLs
+                if (input.startsWith('about:') || input.startsWith('chrome:') || 
+                    input.startsWith('edge:') || input.startsWith('firefox:')) {
+                    throw new Error('Browser-specific URLs are not supported');
+                }
+
+                // Handle search queries
+                if (!input.includes('.') || input.includes(' ')) {
+                    return `https://www.duckduckgo.com/search?q=${encodeURIComponent(input)}`;
+                }
+
+                // Add protocol if missing
+                if (!input.match(/^[a-zA-Z]+:\/\//)) {
+                    input = input.startsWith('//') ? `https:${input}` : `https://${input}`;
+                }
+
+                // Validate URL
+                try {
+                    return new URL(input).href;
+                } catch {
+                    throw new Error('Invalid URL format');
+                }
+            }
+
+            validateUrlFormat(input) {
+                if (!input) return;
+                
+                try {
+                    this.formatUrl(input);
+                    this.urlBar.classList.remove('invalid');
+                } catch {
+                    this.urlBar.classList.add('invalid');
+                }
+            }
+
+            async navigateToUrl(url, pushHistory = true) {
+                if (this.navigationInProgress) return;
+                this.navigationInProgress = true;
+
+                try {
+                    await registerSW();
+                    const encodedUrl = __uv$config.prefix + __uv$config.encodeUrl(url);
+                    this.proxyFrame.src = encodedUrl;
+                    
+                    if (url !== this.lastKnownUrl) {
+                        this.updateUrlDisplay(url, pushHistory);
+                    }
+                    this.clearError();
+                } catch (err) {
+                    this.showError(err.message);
+                    console.error('Navigation failed:', err);
+                } finally {
+                    this.navigationInProgress = false;
+                }
+            }
+
+            updateUrlDisplay(url, pushHistory = true) {
+                if (url === this.lastKnownUrl) return;
+                
+                this.lastKnownUrl = url;
+                this.urlBar.value = url;
+                
+                const newUrl = new URL(window.location.href);
+                newUrl.searchParams.set('url', url);
+                
+                if (pushHistory) {
+                    window.history.pushState({ url }, '', newUrl);
+                } else {
+                    window.history.replaceState({ url }, '', newUrl);
+                }
+            }
+
+            showError(message) {
+                this.urlBar.classList.add('error');
+                this.errorTooltip.textContent = message;
+                setTimeout(() => this.clearError(), 3000);
+            }
+
+            clearError() {
+                this.urlBar.classList.remove('error');
+                this.errorTooltip.textContent = '';
+            }
+
+            handleFrameLoad() {
+                this.clearError();
+                
+                if (this.proxyFrame.src && !this.proxyFrame.src.startsWith('about:')) {
+                    const decodedUrl = this.decodeProxyUrl(this.proxyFrame.src);
+                    if (decodedUrl) {
+                        this.updateUrlDisplay(decodedUrl, false);
+                    }
+                }
+
+                // Try to update page title
+                try {
+                    const pageTitle = this.proxyFrame.contentDocument?.title;
+                    if (pageTitle) {
+                        document.title = `${pageTitle} - 1346.lol`;
+                    }
+                } catch {}
+            }
+
+            decodeProxyUrl(encodedUrl) {
+                try {
+                    if (!encodedUrl || typeof encodedUrl !== 'string') return '';
+                    const match = encodedUrl.match(/(?:https?:\/\/)?[^@]+@(.+)$/);
+                    return match ? match[1] : '';
+                } catch (err) {
+                    console.error('Error decoding URL:', err);
+                    return '';
+                }
+            }
+
+            handleMessage(event) {
+                if (event.data?.type === 'uv_update' && typeof event.data.url === 'string') {
+                    this.updateUrlDisplay(event.data.url, true);
+                }
+            }
+
+            handlePopState(event) {
+                const params = new URLSearchParams(window.location.search);
+                const url = params.get('url');
+                
+                if (url) {
+                    this.navigateToUrl(url, false);
+                }
+            }
+
+            handleUnhandledRejection(event) {
+                if (event.reason.toString().includes('CORS')) {
+                    this.showError('CORS Error - Reconnecting...');
+                    setTimeout(() => window.location.reload(), 2000);
+                }
+            }
+
+            async handleInitialLoad() {
+                const params = new URLSearchParams(window.location.search);
+                const url = params.get('url');
+                
+                if (url) {
+                    this.urlBar.value = url;
+                    await this.navigateToUrl(url, false);
+                }
+            }
+
+            handleReload() {
+                const currentUrl = new URLSearchParams(window.location.search).get('url');
+                if (currentUrl) {
+                    this.navigateToUrl(currentUrl, false);
+                }
+            }
+        }
+
+        // Initialize URL manager
+        const urlManager = new URLManager();
+    </script>
+
+<script src="//instant.page/5.2.0" type="module" integrity="sha384-jnZyxPjiipYXnSU0ygqeac2q7CVYMbh84q0uHVRRxEtvFPiQYbXWUorga2aqZJ0z"></script>
+</body>
+</html>
