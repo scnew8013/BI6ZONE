@@ -367,9 +367,14 @@
             proxyFrame.className = 'proxy-frame';
             
             const proxyServices = [
-                `https://web.archive.org/web/${url}`,
+                `https://www.croxyproxy.com/go#url=${encodeURIComponent(url)}&b=0`,
+                `https://www.proxysite.com/process.php?d=${encodeURIComponent(btoa(url))}&b=1`,
+                `https://hide.me/en/proxy?u=${encodeURIComponent(url)}`,
+                `https://www.filterbypass.me/process.php?d=${encodeURIComponent(btoa(url))}&b=1`,
+                `https://www.vpnbook.com/webproxy?q=${encodeURIComponent(url)}`,
+                `https://kproxy.com/servlet/redirect.srv/sruj/shhzdcy/s7iwolzo/p1/${encodeURIComponent(url)}`,
                 `https://translate.google.com/translate?sl=auto&tl=en&u=${encodeURIComponent(url)}`,
-                `https://webcache.googleusercontent.com/search?q=cache:${encodeURIComponent(url)}`,
+                `https://www.google.com/search?q=site:${encodeURIComponent(url)}`, // Google search as fallback
                 url // Direct access as final fallback
             ];
             
@@ -378,14 +383,14 @@
             function tryNextProxy() {
                 if (currentProxyIndex >= proxyServices.length) {
                     addTerminalLine('All proxy methods failed.', 'error');
-                    addTerminalLine('Opening in new window...', 'info');
-                    window.open(url, '_blank');
+                    addTerminalLine('Network restrictions may be blocking access.', 'error');
+                    addTerminalLine('Try using the Direct button or contact your network administrator.', 'info');
                     closeProxy();
                     return;
                 }
                 
                 const proxyUrl = proxyServices[currentProxyIndex];
-                addTerminalLine(`Trying method ${currentProxyIndex + 1}...`, 'info');
+                addTerminalLine(`Trying method ${currentProxyIndex + 1}/${proxyServices.length}...`, 'info');
                 
                 proxyFrame.src = proxyUrl;
                 
@@ -393,7 +398,7 @@
                     addTerminalLine(`Method ${currentProxyIndex + 1} timeout, trying next...`, 'error');
                     currentProxyIndex++;
                     tryNextProxy();
-                }, 10000);
+                }, 8000); // Reduced timeout for faster fallback
                 
                 proxyFrame.onload = () => {
                     clearTimeout(timeout);
@@ -402,7 +407,7 @@
                     // Update method indicator
                     const methodDiv = proxyControls.querySelector('div:last-child');
                     if (methodDiv) {
-                        const methods = ['Archive.org', 'Google Translate', 'Google Cache', 'Direct'];
+                        const methods = ['CroxyProxy', 'Proxysite', 'Hide.me', 'FilterBypass', 'VPNBook', 'KProxy', 'Google Translate', 'Google Search', 'Direct'];
                         methodDiv.textContent = `Method: ${methods[currentProxyIndex]}`;
                     }
                 };
@@ -418,9 +423,10 @@
             const proxyControls = document.createElement('div');
             proxyControls.className = 'proxy-controls';
             proxyControls.innerHTML = `
-                <button onclick="closeProxy()">✕ Close Proxy</button>
+                <button onclick="closeProxy()" style="background: #ff4444;">✕ Close Proxy</button>
                 <button onclick="refreshProxy('${url}')" style="background: #4444ff; margin-left: 10px;">🔄 Refresh</button>
                 <button onclick="openDirect('${url}')" style="background: #44ff44; margin-left: 10px;">🔗 Direct</button>
+                <button onclick="tryBypass('${url}')" style="background: #ff8800; margin-left: 10px;">🚀 Bypass</button>
                 <div style="color: #00ff00; font-size: 12px; margin-top: 5px;">
                     Proxying: ${url}
                 </div>
@@ -504,6 +510,22 @@
                 input.focus();
             }, 500);
         });
+
+        function tryBypass(url) {
+            addTerminalLine('Attempting advanced bypass methods...', 'info');
+            closeProxy();
+            
+            // Try alternative bypass methods
+            const bypassMethods = [
+                `https://www.croxyproxy.rocks/go#url=${encodeURIComponent(url)}`,
+                `https://plainproxies.com/browse.php?u=${encodeURIComponent(url)}`,
+                `https://www.4everproxy.com/process.php?d=${encodeURIComponent(btoa(url))}`,
+                `data:text/html,<iframe src="${url}" width="100%" height="100%" frameborder="0"></iframe>`
+            ];
+            
+            const randomMethod = bypassMethods[Math.floor(Math.random() * bypassMethods.length)];
+            window.open(randomMethod, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+        }
     </script>
 </body>
 </html>
