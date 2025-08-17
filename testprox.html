@@ -368,13 +368,12 @@
             
             const proxyServices = [
                 `https://www.croxyproxy.com/go#url=${encodeURIComponent(url)}&b=0`,
-                `https://www.proxysite.com/process.php?d=${encodeURIComponent(btoa(url))}&b=1`,
-                `https://hide.me/en/proxy?u=${encodeURIComponent(url)}`,
-                `https://www.filterbypass.me/process.php?d=${encodeURIComponent(btoa(url))}&b=1`,
-                `https://www.vpnbook.com/webproxy?q=${encodeURIComponent(url)}`,
-                `https://kproxy.com/servlet/redirect.srv/sruj/shhzdcy/s7iwolzo/p1/${encodeURIComponent(url)}`,
+                `https://www.croxyproxy.rocks/go#url=${encodeURIComponent(url)}&b=0`,
+                `https://croxyproxy.net/go#url=${encodeURIComponent(url)}&b=0`,
+                `https://www.croxy.network/go#url=${encodeURIComponent(url)}&b=0`,
+                `https://www.croxy.org/go#url=${encodeURIComponent(url)}&b=0`,
                 `https://translate.google.com/translate?sl=auto&tl=en&u=${encodeURIComponent(url)}`,
-                `https://www.google.com/search?q=site:${encodeURIComponent(url)}`, // Google search as fallback
+                `https://www.proxysite.com/process.php?d=${encodeURIComponent(btoa(url))}&b=1`,
                 url // Direct access as final fallback
             ];
             
@@ -398,7 +397,7 @@
                     addTerminalLine(`Method ${currentProxyIndex + 1} timeout, trying next...`, 'error');
                     currentProxyIndex++;
                     tryNextProxy();
-                }, 8000); // Reduced timeout for faster fallback
+                }, 5000); // Reduced timeout for faster fallback on school networks
                 
                 proxyFrame.onload = () => {
                     clearTimeout(timeout);
@@ -407,7 +406,7 @@
                     // Update method indicator
                     const methodDiv = proxyControls.querySelector('div:last-child');
                     if (methodDiv) {
-                        const methods = ['CroxyProxy', 'Proxysite', 'Hide.me', 'FilterBypass', 'VPNBook', 'KProxy', 'Google Translate', 'Google Search', 'Direct'];
+                        const methods = ['CroxyProxy', 'CroxyProxy Rocks', 'CroxyProxy Net', 'Croxy Network', 'Croxy Org', 'Google Translate', 'ProxySite', 'Direct'];
                         methodDiv.textContent = `Method: ${methods[currentProxyIndex]}`;
                     }
                 };
@@ -416,7 +415,7 @@
                     clearTimeout(timeout);
                     addTerminalLine(`Method ${currentProxyIndex + 1} failed, trying next...`, 'error');
                     currentProxyIndex++;
-                    setTimeout(tryNextProxy, 1000);
+                    setTimeout(tryNextProxy, 500); // Faster retry for better user experience
                 };
             }
             
@@ -515,12 +514,11 @@
             addTerminalLine('Attempting advanced bypass methods...', 'info');
             closeProxy();
             
-            // Try alternative bypass methods
             const bypassMethods = [
-                `https://www.croxyproxy.rocks/go#url=${encodeURIComponent(url)}`,
-                `https://plainproxies.com/browse.php?u=${encodeURIComponent(url)}`,
-                `https://www.4everproxy.com/process.php?d=${encodeURIComponent(btoa(url))}`,
-                `data:text/html,<iframe src="${url}" width="100%" height="100%" frameborder="0"></iframe>`
+                `https://www.croxyproxy.com/go#url=${encodeURIComponent(url)}&b=1&f=norefer`,
+                `https://www.croxyproxy.rocks/go#url=${encodeURIComponent(url)}&b=1`,
+                `https://croxyproxy.net/go#url=${encodeURIComponent(url)}&b=1`,
+                `https://translate.google.com/translate?sl=ja&tl=en&u=${encodeURIComponent(url)}`
             ];
             
             const randomMethod = bypassMethods[Math.floor(Math.random() * bypassMethods.length)];
