@@ -211,6 +211,7 @@
         const terminal = document.getElementById('terminal');
         let commandHistory = [];
         let historyIndex = -1;
+        let currentBaseUrl = '';
 
         // Focus input on load
         window.addEventListener('load', () => {
@@ -362,21 +363,54 @@
         function createProxyView(url) {
             addTerminalLine(`Establishing proxy connection to ${url}...`, 'info');
             
-            // Create proxy iframe with working proxy service
             const proxyFrame = document.createElement('iframe');
             proxyFrame.className = 'proxy-frame';
             
-            // Use a working CORS proxy service
-            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-            proxyFrame.src = proxyUrl;
+            const proxyServices = [
+                `https://cors-anywhere.herokuapp.com/${url}`,
+                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+                `https://thingproxy.freeboard.io/fetch/${encodeURIComponent(url)}`,
+                `https://corsproxy.io/?${encodeURIComponent(url)}`,
+                url // Direct access as last resort
+            ];
             
-            // Create close button controls
+            let currentProxyIndex = 0;
+            
+            function tryNextProxy() {
+                if (currentProxyIndex < proxyServices.length) {
+                    const proxyUrl = proxyServices[currentProxyIndex];
+                    addTerminalLine(`Trying proxy method ${currentProxyIndex + 1}...`, 'info');
+                    
+                    if (currentProxyIndex === proxyServices.length - 1) {
+                        // Direct access - open in new window instead of iframe
+                        addTerminalLine('Opening direct access in new window...', 'info');
+                        window.open(url, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+                        closeProxy();
+                        return;
+                    } else {
+                        proxyFrame.src = proxyUrl;
+                        currentBaseUrl = proxyServices[currentProxyIndex].split(url)[0];
+                    }
+                    
+                    currentProxyIndex++;
+                } else {
+                    addTerminalLine('All proxy methods exhausted.', 'error');
+                    addTerminalLine('Some sites have strict security policies that prevent proxying.', 'info');
+                    closeProxy();
+                }
+            }
+            
             const proxyControls = document.createElement('div');
             proxyControls.className = 'proxy-controls';
             proxyControls.innerHTML = `
                 <button onclick="closeProxy()">✕ Close Proxy</button>
+                <button onclick="refreshProxy('${url}')" style="background: #4444ff; margin-left: 10px;">🔄 Refresh</button>
+                <button onclick="openDirect('${url}')" style="background: #44ff44; margin-left: 10px;">🔗 Direct</button>
                 <div style="color: #00ff00; font-size: 12px; margin-top: 5px;">
                     Proxying: ${url}
+                </div>
+                <div style="color: #888; font-size: 10px;">
+                    Method ${currentProxyIndex}: Proxy Service
                 </div>
             `;
             
@@ -385,18 +419,173 @@
             document.body.appendChild(proxyFrame);
             document.body.appendChild(proxyControls);
             
-            // Handle iframe load events
+            let loadTimeout = setTimeout(() => {
+                addTerminalLine(`Proxy method ${currentProxyIndex} timed out. Trying next...`, 'error');
+                tryNextProxy();
+            }, 15000); // 15 second timeout
+            
             proxyFrame.onload = () => {
-                addTerminalLine('Proxy connection established successfully.', 'success');
+                clearTimeout(loadTimeout);
+                
+                setTimeout(() => {
+                    try {
+                        const iframeDoc = proxyFrame.contentDocument || proxyFrame.contentWindow.document;
+                        
+                        if (iframeDoc && iframeDoc.body) {
+                            const content = iframeDoc.body.innerHTML;
+                            
+                            // Check for common error indicators
+                            if (content.includes('refused to connect') || 
+                                content.includes('ERR_') || 
+                                content.includes('This site can') ||
+                                content.includes('blocked') ||
+                                content.length < 100) {
+                                throw new Error('Error page detected');
+                            }
+                            
+                            addTerminalLine('Proxy connection established successfully.', 'success');
+                            addTerminalLine('Injecting navigation handler...', 'info');
+                            
+                            try {
+                                const script = iframeDoc.createElement('script');
+                                script.textContent = `
+                                    console.log('[v0] Navigation handler loaded');
+                                    
+                                    // Get the original domain for URL rewriting
+                                    const originalDomain = '${new URL(url).origin}';
+                                    const proxyBase = '${currentBaseUrl}';
+                                    
+                                    // Function to rewrite URLs to go through proxy
+                                    function rewriteUrl(targetUrl) {
+                                        try {
+                                            if (targetUrl.startsWith('http')) {
+                                                return proxyBase + targetUrl;
+                                            } else if (targetUrl.startsWith('/')) {
+                                                return proxyBase + originalDomain + targetUrl;
+                                            } else if (targetUrl.startsWith('#')) {
+                                                return targetUrl; // Keep anchors as-is
+                                            } else {
+                                                return proxyBase + originalDomain + '/' + targetUrl;
+                                            }
+                                        } catch (e) {
+                                            return targetUrl;
+                                        }
+                                    }
+                                    
+                                    // Intercept all clicks
+                                    document.addEventListener('click', function(e) {
+                                        console.log('[v0] Click intercepted:', e.target);
+                                        
+                                        if (e.target.tagName === 'A' && e.target.href) {
+                                            e.preventDefault();
+                                            const newUrl = rewriteUrl(e.target.href);
+                                            console.log('[v0] Rewriting URL:', e.target.href, '->', newUrl);
+                                            window.location.href = newUrl;
+                                        }
+                                    }, true);
+                                    
+                                    // Intercept form submissions
+                                    document.addEventListener('submit', function(e) {
+                                        console.log('[v0] Form submission intercepted:', e.target);
+                                        
+                                        if (e.target.action) {
+                                            const newAction = rewriteUrl(e.target.action);
+                                            console.log('[v0] Rewriting form action:', e.target.action, '->', newAction);
+                                            e.target.action = newAction;
+                                        }
+                                    }, true);
+                                    
+                                    // Rewrite existing links on page load
+                                    function rewriteExistingLinks() {
+                                        const links = document.querySelectorAll('a[href]');
+                                        links.forEach(link => {
+                                            if (link.href && !link.href.includes(proxyBase)) {
+                                                const originalHref = link.href;
+                                                link.href = rewriteUrl(originalHref);
+                                                console.log('[v0] Rewrote link:', originalHref, '->', link.href);
+                                            }
+                                        });
+                                        
+                                        const forms = document.querySelectorAll('form[action]');
+                                        forms.forEach(form => {
+                                            if (form.action && !form.action.includes(proxyBase)) {
+                                                const originalAction = form.action;
+                                                form.action = rewriteUrl(originalAction);
+                                                console.log('[v0] Rewrote form action:', originalAction, '->', form.action);
+                                            }
+                                        });
+                                    }
+                                    
+                                    // Run rewriting on load and when DOM changes
+                                    rewriteExistingLinks();
+                                    
+                                    // Watch for dynamically added content
+                                    const observer = new MutationObserver(function(mutations) {
+                                        mutations.forEach(function(mutation) {
+                                            if (mutation.addedNodes.length > 0) {
+                                                setTimeout(rewriteExistingLinks, 100);
+                                            }
+                                        });
+                                    });
+                                    
+                                    observer.observe(document.body, {
+                                        childList: true,
+                                        subtree: true
+                                    });
+                                    
+                                    console.log('[v0] Navigation handler fully initialized');
+                                `;
+                                iframeDoc.head.appendChild(script);
+                                addTerminalLine('Navigation handler injected successfully.', 'success');
+                                addTerminalLine('Internal links should now work through proxy.', 'info');
+                            } catch (e) {
+                                addTerminalLine('Limited navigation support due to security restrictions.', 'info');
+                                addTerminalLine('Try using the refresh button if links don\'t work.', 'info');
+                            }
+                            
+                        } else {
+                            throw new Error('No content loaded');
+                        }
+                    } catch (e) {
+                        addTerminalLine(`Proxy method ${currentProxyIndex} failed: ${e.message}`, 'error');
+                        tryNextProxy();
+                    }
+                }, 3000);
             };
             
             proxyFrame.onerror = () => {
-                addTerminalLine('Proxy connection failed. Trying alternative method...', 'error');
-                // Fallback to direct iframe if proxy fails
-                proxyFrame.src = url;
+                clearTimeout(loadTimeout);
+                addTerminalLine(`Proxy method ${currentProxyIndex} failed to load.`, 'error');
+                tryNextProxy();
             };
             
-            addTerminalLine('Proxy view loaded. Use Ctrl+L or the close button to return.', 'info');
+            // Start with first proxy
+            tryNextProxy();
+            
+            addTerminalLine('Proxy view loading... Please wait.', 'info');
+            addTerminalLine('Internal navigation will be automatically handled.', 'info');
+        }
+
+        function openDirect(url) {
+            addTerminalLine('Opening direct access...', 'info');
+            window.open(url, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+        }
+
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'navigate') {
+                addTerminalLine(`Internal navigation to: ${event.data.url}`, 'info');
+                const proxyFrame = document.querySelector('.proxy-frame');
+                if (proxyFrame && currentBaseUrl) {
+                    proxyFrame.src = currentBaseUrl + event.data.url;
+                }
+            }
+        });
+
+        function refreshProxy(url) {
+            closeProxy();
+            setTimeout(() => {
+                proxyUrl(url);
+            }, 500);
         }
 
         function closeProxy() {
