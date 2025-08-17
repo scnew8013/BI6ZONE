@@ -367,109 +367,52 @@
             proxyFrame.className = 'proxy-frame';
             
             const proxyServices = [
-                `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-                `https://corsproxy.io/?${encodeURIComponent(url)}`,
-                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
-                `https://thingproxy.freeboard.io/fetch/${encodeURIComponent(url)}`
+                `https://web.archive.org/web/${url}`,
+                `https://translate.google.com/translate?sl=auto&tl=en&u=${encodeURIComponent(url)}`,
+                `https://webcache.googleusercontent.com/search?q=cache:${encodeURIComponent(url)}`,
+                url // Direct access as final fallback
             ];
             
             let currentProxyIndex = 0;
             
-            async function tryNextProxy() {
+            function tryNextProxy() {
                 if (currentProxyIndex >= proxyServices.length) {
-                    addTerminalLine('All proxy methods exhausted.', 'error');
-                    addTerminalLine('Opening direct access in new window...', 'info');
-                    window.open(url, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+                    addTerminalLine('All proxy methods failed.', 'error');
+                    addTerminalLine('Opening in new window...', 'info');
+                    window.open(url, '_blank');
                     closeProxy();
                     return;
                 }
                 
                 const proxyUrl = proxyServices[currentProxyIndex];
-                addTerminalLine(`Trying proxy method ${currentProxyIndex + 1}...`, 'info');
+                addTerminalLine(`Trying method ${currentProxyIndex + 1}...`, 'info');
                 
-                try {
-                    console.log('[v0] Fetching from proxy:', proxyUrl);
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 10000);
-                    
-                    const response = await fetch(proxyUrl, {
-                        signal: controller.signal,
-                        headers: {
-                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-                        }
-                    });
-                    clearTimeout(timeoutId);
-                    
-                    console.log('[v0] Response status:', response.status);
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                    }
-                    
-                    let htmlContent;
-                    
-                    if (proxyUrl.includes('allorigins.win')) {
-                        const data = await response.json();
-                        htmlContent = data.contents;
-                        console.log('[v0] AllOrigins response:', data.status);
-                    } else {
-                        htmlContent = await response.text();
-                    }
-                    
-                    console.log('[v0] Content length:', htmlContent ? htmlContent.length : 0);
-                    console.log('[v0] Content preview:', htmlContent ? htmlContent.substring(0, 200) : 'No content');
-                    
-                    if (!htmlContent || htmlContent.length < 100) {
-                        throw new Error('Content too short or empty');
-                    }
-                    
-                    if (htmlContent.includes('refused to connect') ||
-                        htmlContent.includes('ERR_') ||
-                        htmlContent.includes('blocked') ||
-                        htmlContent.includes('Access denied') ||
-                        htmlContent.includes('403 Forbidden')) {
-                        throw new Error('Content blocked or access denied');
-                    }
-                    
-                    if (currentProxyIndex === 0) {
-                        // Try direct iframe approach first
-                        console.log('[v0] Trying direct iframe approach');
-                        proxyFrame.src = proxyUrl;
-                        addTerminalLine('Using direct iframe method...', 'info');
-                    } else {
-                        console.log('[v0] Using HTML injection method');
-                        
-                        // Basic content validation
-                        if (!htmlContent.includes('<html') && !htmlContent.includes('<HTML')) {
-                            // Wrap plain content in basic HTML structure
-                            htmlContent = `
-                                <!DOCTYPE html>
-                                <html>
-                                <head>
-                                    <meta charset="UTF-8">
-                                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                                    <title>Proxied Content</title>
-                                </head>
-                                <body>
-                                    <pre style="white-space: pre-wrap; font-family: monospace;">${htmlContent}</pre>
-                                </body>
-                                </html>
-                            `;
-                        }
-                        
-                        proxyFrame.srcdoc = htmlContent;
-                        addTerminalLine('Using HTML injection method...', 'info');
-                    }
-                    
+                proxyFrame.src = proxyUrl;
+                
+                const timeout = setTimeout(() => {
+                    addTerminalLine(`Method ${currentProxyIndex + 1} timeout, trying next...`, 'error');
+                    currentProxyIndex++;
+                    tryNextProxy();
+                }, 10000);
+                
+                proxyFrame.onload = () => {
+                    clearTimeout(timeout);
                     addTerminalLine('Proxy connection established successfully.', 'success');
                     
-                } catch (error) {
-                    console.log('[v0] Proxy error:', error.message);
-                    addTerminalLine(`Proxy method ${currentProxyIndex + 1} failed: ${error.message}`, 'error');
+                    // Update method indicator
+                    const methodDiv = proxyControls.querySelector('div:last-child');
+                    if (methodDiv) {
+                        const methods = ['Archive.org', 'Google Translate', 'Google Cache', 'Direct'];
+                        methodDiv.textContent = `Method: ${methods[currentProxyIndex]}`;
+                    }
+                };
+                
+                proxyFrame.onerror = () => {
+                    clearTimeout(timeout);
+                    addTerminalLine(`Method ${currentProxyIndex + 1} failed, trying next...`, 'error');
                     currentProxyIndex++;
                     setTimeout(tryNextProxy, 1000);
-                    return;
-                }
+                };
             }
             
             const proxyControls = document.createElement('div');
@@ -482,7 +425,7 @@
                     Proxying: ${url}
                 </div>
                 <div style="color: #888; font-size: 10px;">
-                    Method: Auto-detect
+                    Method: Loading...
                 </div>
             `;
             
@@ -491,37 +434,8 @@
             document.body.appendChild(proxyFrame);
             document.body.appendChild(proxyControls);
             
-            proxyFrame.onload = () => {
-                console.log('[v0] Iframe loaded successfully');
-                addTerminalLine('Content loaded successfully.', 'success');
-                
-                // Update method indicator
-                const methodDiv = proxyControls.querySelector('div:last-child');
-                if (methodDiv) {
-                    methodDiv.textContent = proxyFrame.src ? 'Method: Direct iframe' : 'Method: HTML injection';
-                }
-            };
-            
-            proxyFrame.onerror = (error) => {
-                console.log('[v0] Iframe error:', error);
-                addTerminalLine('Content loading failed, trying next method...', 'error');
-                currentProxyIndex++;
-                setTimeout(tryNextProxy, 1000);
-            };
-            
-            setTimeout(() => {
-                if (proxyFrame.src && !proxyFrame.contentDocument) {
-                    console.log('[v0] Iframe timeout, trying next method');
-                    addTerminalLine('Loading timeout, trying next method...', 'error');
-                    currentProxyIndex++;
-                    tryNextProxy();
-                }
-            }, 15000);
-            
             // Start trying proxies
             tryNextProxy();
-            
-            addTerminalLine('Fetching and rendering content...', 'info');
         }
 
         function openDirect(url) {
