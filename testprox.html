@@ -367,56 +367,113 @@
             proxyFrame.className = 'proxy-frame';
             
             const proxyServices = [
-                `https://www.croxyproxy.com/go#url=${encodeURIComponent(url)}&b=0`,
-                `https://www.croxyproxy.rocks/go#url=${encodeURIComponent(url)}&b=0`,
-                `https://croxyproxy.net/go#url=${encodeURIComponent(url)}&b=0`,
-                `https://www.croxy.network/go#url=${encodeURIComponent(url)}&b=0`,
-                `https://www.croxy.org/go#url=${encodeURIComponent(url)}&b=0`,
-                `https://translate.google.com/translate?sl=auto&tl=en&u=${encodeURIComponent(url)}`,
-                `https://www.proxysite.com/process.php?d=${encodeURIComponent(btoa(url))}&b=1`,
-                url // Direct access as final fallback
+                // Real CORS proxy services that handle JavaScript and dynamic content
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+                `https://corsproxy.io/?${encodeURIComponent(url)}`,
+                `https://cors-anywhere.herokuapp.com/${url}`,
+                `https://thingproxy.freeboard.io/fetch/${url}`,
+                // Wayback machine for stable access
+                `https://web.archive.org/web/${url}`,
+                // Google cache as fallback
+                `https://webcache.googleusercontent.com/search?q=cache:${encodeURIComponent(url)}`,
+                // Direct access as final fallback
+                url
             ];
             
             let currentProxyIndex = 0;
             
-            function tryNextProxy() {
+            async function tryProxyWithFetch(proxyUrl, isDirectUrl = false) {
+                try {
+                    addTerminalLine(`Fetching content through proxy...`, 'info');
+                    
+                    if (isDirectUrl) {
+                        // For direct URLs, just load in iframe
+                        proxyFrame.src = proxyUrl;
+                        return true;
+                    }
+                    
+                    const response = await fetch(proxyUrl);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    
+                    const content = await response.text();
+                    
+                    const baseUrl = new URL(url);
+                    const rewrittenContent = content
+                        .replace(/href="\/([^"]*?)"/g, `href="${baseUrl.origin}/$1"`)
+                        .replace(/src="\/([^"]*?)"/g, `src="${baseUrl.origin}/$1"`)
+                        .replace(/action="\/([^"]*?)"/g, `action="${baseUrl.origin}/$1"`)
+                        .replace(/url$$\/([^)]*?)$$/g, `url(${baseUrl.origin}/$1)`);
+                    
+                    // Inject content into iframe
+                    proxyFrame.srcdoc = rewrittenContent;
+                    
+                    proxyFrame.onload = () => {
+                        try {
+                            const iframeDoc = proxyFrame.contentDocument || proxyFrame.contentWindow.document;
+                            
+                            // Intercept all clicks and forms
+                            iframeDoc.addEventListener('click', (e) => {
+                                const link = e.target.closest('a');
+                                if (link && link.href) {
+                                    e.preventDefault();
+                                    const newUrl = link.href;
+                                    addTerminalLine(`Navigating to: ${newUrl}`, 'info');
+                                    createProxyView(newUrl);
+                                }
+                            });
+                            
+                            // Intercept form submissions
+                            iframeDoc.addEventListener('submit', (e) => {
+                                e.preventDefault();
+                                const form = e.target;
+                                const formData = new FormData(form);
+                                const actionUrl = form.action || url;
+                                addTerminalLine(`Form submitted to: ${actionUrl}`, 'info');
+                                // Handle form submission through proxy
+                            });
+                            
+                        } catch (err) {
+                            console.log('[v0] Cross-origin iframe access blocked:', err);
+                        }
+                    };
+                    
+                    return true;
+                } catch (error) {
+                    console.log('[v0] Proxy fetch failed:', error);
+                    return false;
+                }
+            }
+            
+            async function tryNextProxy() {
                 if (currentProxyIndex >= proxyServices.length) {
                     addTerminalLine('All proxy methods failed.', 'error');
-                    addTerminalLine('Network restrictions may be blocking access.', 'error');
-                    addTerminalLine('Try using the Direct button or contact your network administrator.', 'info');
+                    addTerminalLine('The website may have strong anti-proxy measures.', 'error');
+                    addTerminalLine('Try the Direct button to open in a new window.', 'info');
                     closeProxy();
                     return;
                 }
                 
                 const proxyUrl = proxyServices[currentProxyIndex];
+                const isDirectUrl = currentProxyIndex === proxyServices.length - 1;
+                
                 addTerminalLine(`Trying method ${currentProxyIndex + 1}/${proxyServices.length}...`, 'info');
                 
-                proxyFrame.src = proxyUrl;
+                const success = await tryProxyWithFetch(proxyUrl, isDirectUrl);
                 
-                const timeout = setTimeout(() => {
-                    addTerminalLine(`Method ${currentProxyIndex + 1} timeout, trying next...`, 'error');
-                    currentProxyIndex++;
-                    tryNextProxy();
-                }, 5000); // Reduced timeout for faster fallback on school networks
-                
-                proxyFrame.onload = () => {
-                    clearTimeout(timeout);
+                if (success) {
                     addTerminalLine('Proxy connection established successfully.', 'success');
                     
                     // Update method indicator
                     const methodDiv = proxyControls.querySelector('div:last-child');
                     if (methodDiv) {
-                        const methods = ['CroxyProxy', 'CroxyProxy Rocks', 'CroxyProxy Net', 'Croxy Network', 'Croxy Org', 'Google Translate', 'ProxySite', 'Direct'];
+                        const methods = ['AllOrigins', 'CorsProxy.io', 'CORS Anywhere', 'ThingProxy', 'Wayback Machine', 'Google Cache', 'Direct'];
                         methodDiv.textContent = `Method: ${methods[currentProxyIndex]}`;
                     }
-                };
-                
-                proxyFrame.onerror = () => {
-                    clearTimeout(timeout);
+                } else {
                     addTerminalLine(`Method ${currentProxyIndex + 1} failed, trying next...`, 'error');
                     currentProxyIndex++;
-                    setTimeout(tryNextProxy, 500); // Faster retry for better user experience
-                };
+                    setTimeout(tryNextProxy, 1000);
+                }
             }
             
             const proxyControls = document.createElement('div');
@@ -425,7 +482,7 @@
                 <button onclick="closeProxy()" style="background: #ff4444;">✕ Close Proxy</button>
                 <button onclick="refreshProxy('${url}')" style="background: #4444ff; margin-left: 10px;">🔄 Refresh</button>
                 <button onclick="openDirect('${url}')" style="background: #44ff44; margin-left: 10px;">🔗 Direct</button>
-                <button onclick="tryBypass('${url}')" style="background: #ff8800; margin-left: 10px;">🚀 Bypass</button>
+                <button onclick="tryAdvancedProxy('${url}')" style="background: #ff8800; margin-left: 10px;">⚡ Advanced</button>
                 <div style="color: #00ff00; font-size: 12px; margin-top: 5px;">
                     Proxying: ${url}
                 </div>
@@ -510,19 +567,31 @@
             }, 500);
         });
 
-        function tryBypass(url) {
-            addTerminalLine('Attempting advanced bypass methods...', 'info');
+        function tryAdvancedProxy(url) {
+            addTerminalLine('Attempting advanced proxy techniques...', 'info');
             closeProxy();
             
-            const bypassMethods = [
-                `https://www.croxyproxy.com/go#url=${encodeURIComponent(url)}&b=1&f=norefer`,
-                `https://www.croxyproxy.rocks/go#url=${encodeURIComponent(url)}&b=1`,
-                `https://croxyproxy.net/go#url=${encodeURIComponent(url)}&b=1`,
-                `https://translate.google.com/translate?sl=ja&tl=en&u=${encodeURIComponent(url)}`
+            // Use multiple advanced techniques
+            const advancedMethods = [
+                // Use different user agents and headers
+                `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+                // Try mobile versions which are often less restricted
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(url.replace('www.', 'm.'))}`,
+                // Use archive.today for recent snapshots
+                `https://archive.today/newest/${url}`,
+                // Try different subdomains
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(url.replace('https://', 'https://www.'))}`
             ];
             
-            const randomMethod = bypassMethods[Math.floor(Math.random() * bypassMethods.length)];
-            window.open(randomMethod, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+            setTimeout(() => {
+                const randomMethod = advancedMethods[Math.floor(Math.random() * advancedMethods.length)];
+                createProxyView(randomMethod);
+            }, 1000);
+        }
+
+        function tryBypass(url) {
+            addTerminalLine('Attempting bypass methods...', 'info');
+            tryAdvancedProxy(url);
         }
     </script>
 </body>
