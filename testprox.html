@@ -388,52 +388,83 @@
                 addTerminalLine(`Trying proxy method ${currentProxyIndex + 1}...`, 'info');
                 
                 try {
-                    const response = await fetch(proxyUrl);
+                    console.log('[v0] Fetching from proxy:', proxyUrl);
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 10000);
+                    
+                    const response = await fetch(proxyUrl, {
+                        signal: controller.signal,
+                        headers: {
+                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                        }
+                    });
+                    clearTimeout(timeoutId);
+                    
+                    console.log('[v0] Response status:', response.status);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
                     let htmlContent;
                     
                     if (proxyUrl.includes('allorigins.win')) {
                         const data = await response.json();
                         htmlContent = data.contents;
+                        console.log('[v0] AllOrigins response:', data.status);
                     } else {
                         htmlContent = await response.text();
                     }
                     
-                    if (!htmlContent || htmlContent.length < 100 || 
-                        htmlContent.includes('refused to connect') ||
-                        htmlContent.includes('ERR_') ||
-                        htmlContent.includes('blocked')) {
-                        throw new Error('Invalid or blocked content');
+                    console.log('[v0] Content length:', htmlContent ? htmlContent.length : 0);
+                    console.log('[v0] Content preview:', htmlContent ? htmlContent.substring(0, 200) : 'No content');
+                    
+                    if (!htmlContent || htmlContent.length < 100) {
+                        throw new Error('Content too short or empty');
                     }
                     
-                    const baseUrl = new URL(url).origin;
-                    const currentProxy = proxyServices[currentProxyIndex];
+                    if (htmlContent.includes('refused to connect') ||
+                        htmlContent.includes('ERR_') ||
+                        htmlContent.includes('blocked') ||
+                        htmlContent.includes('Access denied') ||
+                        htmlContent.includes('403 Forbidden')) {
+                        throw new Error('Content blocked or access denied');
+                    }
                     
-                    // Rewrite relative URLs to absolute URLs through proxy
-                    htmlContent = htmlContent.replace(
-                        /href=["']\/([^"']*?)["']/g, 
-                        `href="${currentProxy.replace(encodeURIComponent(url), encodeURIComponent(baseUrl + '/$1'))}"`
-                    );
-                    
-                    htmlContent = htmlContent.replace(
-                        /src=["']\/([^"']*?)["']/g, 
-                        `src="${currentProxy.replace(encodeURIComponent(url), encodeURIComponent(baseUrl + '/$1'))}"`
-                    );
-                    
-                    htmlContent = htmlContent.replace(
-                        /action=["']\/([^"']*?)["']/g, 
-                        `action="${currentProxy.replace(encodeURIComponent(url), encodeURIComponent(baseUrl + '/$1'))}"`
-                    );
-                    
-                    // Add base tag to handle relative URLs
-                    const baseTag = `<base href="${baseUrl}/">`;
-                    htmlContent = htmlContent.replace('<head>', '<head>' + baseTag);
-                    
-                    proxyFrame.srcdoc = htmlContent;
+                    if (currentProxyIndex === 0) {
+                        // Try direct iframe approach first
+                        console.log('[v0] Trying direct iframe approach');
+                        proxyFrame.src = proxyUrl;
+                        addTerminalLine('Using direct iframe method...', 'info');
+                    } else {
+                        console.log('[v0] Using HTML injection method');
+                        
+                        // Basic content validation
+                        if (!htmlContent.includes('<html') && !htmlContent.includes('<HTML')) {
+                            // Wrap plain content in basic HTML structure
+                            htmlContent = `
+                                <!DOCTYPE html>
+                                <html>
+                                <head>
+                                    <meta charset="UTF-8">
+                                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                    <title>Proxied Content</title>
+                                </head>
+                                <body>
+                                    <pre style="white-space: pre-wrap; font-family: monospace;">${htmlContent}</pre>
+                                </body>
+                                </html>
+                            `;
+                        }
+                        
+                        proxyFrame.srcdoc = htmlContent;
+                        addTerminalLine('Using HTML injection method...', 'info');
+                    }
                     
                     addTerminalLine('Proxy connection established successfully.', 'success');
-                    addTerminalLine('Content loaded and rendered.', 'info');
                     
                 } catch (error) {
+                    console.log('[v0] Proxy error:', error.message);
                     addTerminalLine(`Proxy method ${currentProxyIndex + 1} failed: ${error.message}`, 'error');
                     currentProxyIndex++;
                     setTimeout(tryNextProxy, 1000);
@@ -451,7 +482,7 @@
                     Proxying: ${url}
                 </div>
                 <div style="color: #888; font-size: 10px;">
-                    Method: HTML Injection
+                    Method: Auto-detect
                 </div>
             `;
             
@@ -461,39 +492,31 @@
             document.body.appendChild(proxyControls);
             
             proxyFrame.onload = () => {
-                try {
-                    const iframeDoc = proxyFrame.contentDocument || proxyFrame.contentWindow.document;
-                    
-                    if (iframeDoc) {
-                        const script = iframeDoc.createElement('script');
-                        script.textContent = `
-                            console.log('[v0] Navigation handler loaded');
-                            
-                            // Intercept all clicks on links
-                            document.addEventListener('click', function(e) {
-                                if (e.target.tagName === 'A' && e.target.href) {
-                                    console.log('[v0] Link clicked:', e.target.href);
-                                    // Let the rewritten URLs handle navigation
-                                }
-                            }, true);
-                            
-                            // Intercept form submissions
-                            document.addEventListener('submit', function(e) {
-                                console.log('[v0] Form submitted:', e.target.action);
-                                // Let the rewritten actions handle submission
-                            }, true);
-                        `;
-                        
-                        if (iframeDoc.head) {
-                            iframeDoc.head.appendChild(script);
-                        }
-                        
-                        addTerminalLine('Navigation handler injected.', 'success');
-                    }
-                } catch (e) {
-                    addTerminalLine('Limited navigation support due to security restrictions.', 'info');
+                console.log('[v0] Iframe loaded successfully');
+                addTerminalLine('Content loaded successfully.', 'success');
+                
+                // Update method indicator
+                const methodDiv = proxyControls.querySelector('div:last-child');
+                if (methodDiv) {
+                    methodDiv.textContent = proxyFrame.src ? 'Method: Direct iframe' : 'Method: HTML injection';
                 }
             };
+            
+            proxyFrame.onerror = (error) => {
+                console.log('[v0] Iframe error:', error);
+                addTerminalLine('Content loading failed, trying next method...', 'error');
+                currentProxyIndex++;
+                setTimeout(tryNextProxy, 1000);
+            };
+            
+            setTimeout(() => {
+                if (proxyFrame.src && !proxyFrame.contentDocument) {
+                    console.log('[v0] Iframe timeout, trying next method');
+                    addTerminalLine('Loading timeout, trying next method...', 'error');
+                    currentProxyIndex++;
+                    tryNextProxy();
+                }
+            }, 15000);
             
             // Start trying proxies
             tryNextProxy();
