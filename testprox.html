@@ -367,15 +367,14 @@
             proxyFrame.className = 'proxy-frame';
             
             const proxyServices = [
-                // Real CORS proxy services that handle JavaScript and dynamic content
-                `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-                `https://corsproxy.io/?${encodeURIComponent(url)}`,
-                `https://cors-anywhere.herokuapp.com/${url}`,
-                `https://thingproxy.freeboard.io/fetch/${url}`,
-                // Wayback machine for stable access
-                `https://web.archive.org/web/${url}`,
-                // Google cache as fallback
-                `https://webcache.googleusercontent.com/search?q=cache:${encodeURIComponent(url)}`,
+                // Working CORS proxies that handle modern websites
+                `https://cors.bridged.cc/${url}`,
+                `https://yacdn.org/proxy/${url}`,
+                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+                `https://crossorigin.me/${url}`,
+                // Alternative approaches
+                `https://translate.google.com/translate?sl=auto&tl=en&u=${encodeURIComponent(url)}`,
+                `https://proxy.cors.sh/${url}`,
                 // Direct access as final fallback
                 url
             ];
@@ -384,7 +383,7 @@
             
             async function tryProxyWithFetch(proxyUrl, isDirectUrl = false) {
                 try {
-                    addTerminalLine(`Fetching content through proxy...`, 'info');
+                    addTerminalLine(`Testing proxy service ${currentProxyIndex + 1}...`, 'info');
                     
                     if (isDirectUrl) {
                         // For direct URLs, just load in iframe
@@ -392,10 +391,32 @@
                         return true;
                     }
                     
-                    const response = await fetch(proxyUrl);
-                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+                    
+                    const response = await fetch(proxyUrl, {
+                        signal: controller.signal,
+                        headers: {
+                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                        }
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    if (proxyUrl.includes('translate.google.com') || proxyUrl.includes('cors.bridged.cc')) {
+                        proxyFrame.src = proxyUrl;
+                        return true;
+                    }
                     
                     const content = await response.text();
+                    
+                    if (!content || content.length < 100) {
+                        throw new Error('Empty or invalid response');
+                    }
                     
                     const baseUrl = new URL(url);
                     const rewrittenContent = content
@@ -440,14 +461,15 @@
                     return true;
                 } catch (error) {
                     console.log('[v0] Proxy fetch failed:', error);
+                    addTerminalLine(`Service ${currentProxyIndex + 1} failed: ${error.message}`, 'error');
                     return false;
                 }
             }
             
             async function tryNextProxy() {
                 if (currentProxyIndex >= proxyServices.length) {
-                    addTerminalLine('All proxy methods failed.', 'error');
-                    addTerminalLine('The website may have strong anti-proxy measures.', 'error');
+                    addTerminalLine('All proxy services failed or are blocked.', 'error');
+                    addTerminalLine('Your network may be blocking proxy services.', 'error');
                     addTerminalLine('Try the Direct button to open in a new window.', 'info');
                     closeProxy();
                     return;
@@ -456,7 +478,7 @@
                 const proxyUrl = proxyServices[currentProxyIndex];
                 const isDirectUrl = currentProxyIndex === proxyServices.length - 1;
                 
-                addTerminalLine(`Trying method ${currentProxyIndex + 1}/${proxyServices.length}...`, 'info');
+                addTerminalLine(`Trying proxy service ${currentProxyIndex + 1}/${proxyServices.length}...`, 'info');
                 
                 const success = await tryProxyWithFetch(proxyUrl, isDirectUrl);
                 
@@ -466,16 +488,15 @@
                     // Update method indicator
                     const methodDiv = proxyControls.querySelector('div:last-child');
                     if (methodDiv) {
-                        const methods = ['AllOrigins', 'CorsProxy.io', 'CORS Anywhere', 'ThingProxy', 'Wayback Machine', 'Google Cache', 'Direct'];
+                        const methods = ['CORS Bridged', 'YaCDN Proxy', 'CodeTabs', 'CrossOrigin.me', 'Google Translate', 'CORS.sh', 'Direct'];
                         methodDiv.textContent = `Method: ${methods[currentProxyIndex]}`;
                     }
                 } else {
-                    addTerminalLine(`Method ${currentProxyIndex + 1} failed, trying next...`, 'error');
                     currentProxyIndex++;
-                    setTimeout(tryNextProxy, 1000);
+                    setTimeout(tryNextProxy, 2000); // Increased delay between attempts
                 }
             }
-            
+
             const proxyControls = document.createElement('div');
             proxyControls.className = 'proxy-controls';
             proxyControls.innerHTML = `
@@ -596,3 +617,4 @@
     </script>
 </body>
 </html>
+ 
