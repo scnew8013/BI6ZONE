@@ -6,6 +6,8 @@ In this collection, you’ll find:
 
 - **Games Like No Other**: Start slow with a simple classic game like 2042 and jump up with the pros to COD Zombies, RL, & many other advanced favorites.
 - **Advanced Apps**: Dive into more complex applications, including a fully-featured unblocked Discord where you can chat with your friends, no matter where you are in school.
+- **Movies And Shows**: Ever feel like watching your favorite show or movie during class? Well now you can with our introduced streamer!
+- **Web Proxy**: Freely Search the web with our web proxy ran by Ultraviolet-Static to bypass strict browsing/site policys and restrictions such as linewize, securely, goguardian, etc.
 
 Whether you need a quick distraction or a way to communicate with classmates, **BI6ZONE** has you covered. Check it out, have fun, and let the good times roll!
 
