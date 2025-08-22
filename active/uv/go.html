@@ -1,21 +1,18 @@
 <!doctype html>
 <html lang="en">
 <meta charset="utf-8" />
-<title>UV loader</title>
+<title>Game Loader</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <script src="/active/uv/uv.bundle.js"></script>
 <script src="/active/uv/uv.config.js"></script>
 <script type="module">
   import { registerSW } from "/active/prxy/register-sw.mjs";
   (async () => {
-    try { await registerSW(); } catch (e) { console.error("SW register failed:", e); }
-    const raw = new URL(location.href).searchParams.get("u");
-    if (!raw) { document.body.textContent = "Missing ?u=..."; return; }
-    // Wait for SW to be ready, then send the user to the proxied URL
+    try { await registerSW(); } catch (e) { console.error("SW register failed", e); }
+    const target = "https://games.crazygames.com/en_US/fortzone-battle-royale-xkd/index.html?v=1.338";
     await navigator.serviceWorker.ready;
-    const encoded = __uv$config.prefix + __uv$config.encodeUrl(raw);
-    location.replace(encoded);
+    location.href = __uv$config.prefix + __uv$config.encodeUrl(target);
   })();
 </script>
-<body>Loading…</body>
+<body>Loading game…</body>
 </html>
