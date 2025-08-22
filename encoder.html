@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>UV Link Encoder</title>
+  <script src="./active/uv/uv.bundle.js"></script>
+  <script src="./active/uv/uv.config.js"></script>
+  <script src="./active/uv/uv.client.js"></script>
+</head>
+<body>
+  <h2>UV Proxy Link Encoder</h2>
+  <input id="url" type="text" placeholder="Enter game URL here" style="width:60%">
+  <button onclick="encodeLink()">Encode</button>
+  <p><strong>Encoded Proxy Link:</strong></p>
+  <textarea id="output" style="width:90%;height:80px"></textarea>
+
+  <script>
+    function encodeLink() {
+      const inputUrl = document.getElementById("url").value.trim();
+      if (!inputUrl) return alert("Enter a URL first!");
+      const encoded = __uv$config.prefix + __uv$config.encodeUrl(inputUrl);
+      document.getElementById("output").value = window.location.origin + encoded;
+    }
+  </script>
+</body>
+</html>
