@@ -15,7 +15,7 @@ By LupineVault.com
 All images and code are owned by LupineVault (lupinevault.com) and associated developers.
 © 2025 LupineVault and all associated developers.
 
-UV Static 2.0
+UV Static 2.0 - Revamped Layout
 -
 Developed by technonyte0
 -->
@@ -23,14 +23,13 @@ Developed by technonyte0
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>UV Static v2</title>
+    <title>UV Static v2 - Enhanced</title>
     <script src="check.js" defer></script>
     <script defer src="scripts/lstimer.js"></script>
 
     <link rel="stylesheet" href="style/global.css" />
     <link rel="stylesheet" href="style/browser.css" />
     
-
     <script
       type="text/javascript"
       src="https://cdn.jsdelivr.net/gh/vanjs-org/van/public/van-1.5.2.nomodule.min.js"
@@ -48,11 +47,367 @@ Developed by technonyte0
     <script src="uv/uv.bundle.js" defer></script>
     <script src="uv/uv.config.js" defer></script>
     <script src="scripts/tabs.mjs" type="module" defer></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script defer src="https://cdn.jsdelivr.net/gh/tf7software/Font-Awesome-pro-cdn@main/js/all.js"></script>
+    
     <style>
-      body {padding: 0;margin: 0;}
+      :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --glass-bg: rgba(255, 255, 255, 0.1);
+        --glass-border: rgba(255, 255, 255, 0.2);
+        --text-primary: #ffffff;
+        --text-secondary: rgba(255, 255, 255, 0.8);
+        --shadow-soft: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        --shadow-glow: 0 0 20px rgba(102, 126, 234, 0.4);
+        --border-radius: 16px;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--primary-gradient);
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+      }
+
+      body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: 
+          radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+          radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+        pointer-events: none;
+        z-index: -1;
+      }
+
+      #small-screen-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--primary-gradient);
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        font-weight: 500;
+        text-align: center;
+        padding: 2rem;
+        z-index: 9999;
+      }
+
+      @media (max-width: 768px) {
+        #small-screen-overlay {
+          display: flex !important;
+        }
+        .sidebar-container {
+          display: none !important;
+        }
+      }
+
+      #nav, #main-content, #tab-view {
+        position: relative;
+        z-index: 1;
+      }
+
+      .sidebar-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        background: var(--glass-bg);
+        border-bottom: 1px solid var(--glass-border);
+        box-shadow: var(--shadow-soft);
+      }
+
+      header {
+        padding: 1rem 1.5rem;
+      }
+
+      .page-data {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.75rem;
+      }
+
+      #controls {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      #controls > span {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        padding: 0.25rem;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+
+      button {
+        background: transparent;
+        border: none;
+        color: var(--text-primary);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem;
+        border-radius: 8px;
+        transition: var(--transition);
+        position: relative;
+        font-family: inherit;
+        font-weight: 500;
+      }
+
+      button:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-glow);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      button svg {
+        width: 24px;
+        height: 24px;
+        fill: currentColor;
+      }
+
+      .icon {
+        font-size: 1.25rem;
+      }
+
+      .tooltip {
+        position: absolute;
+        bottom: -2.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        opacity: 0;
+        pointer-events: none;
+        transition: var(--transition);
+        white-space: nowrap;
+        z-index: 1000;
+      }
+
+      button:hover .tooltip {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-4px);
+      }
+
+      #url-form {
+        flex: 1;
+        max-width: 600px;
+        margin: 0 1rem;
+      }
+
+      #url-input {
+        width: 100%;
+        padding: 1rem 1.5rem;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--border-radius);
+        color: var(--text-primary);
+        font-size: 1rem;
+        font-family: inherit;
+        font-weight: 400;
+        outline: none;
+        transition: var(--transition);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+
+      #url-input::placeholder {
+        color: var(--text-secondary);
+      }
+
+      #url-input:focus {
+        border-color: rgba(255, 255, 255, 0.4);
+        box-shadow: var(--shadow-glow);
+        transform: translateY(-1px);
+      }
+
+      #new-tab {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        padding: 0.75rem 1.25rem;
+        gap: 0.5rem;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        font-weight: 500;
+        min-width: auto;
+      }
+
+      #new-tab:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+
+      #tab-list {
+        display: flex;
+        gap: 0.5rem;
+        overflow-x: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+      }
+
+      #tab-list::-webkit-scrollbar {
+        height: 4px;
+      }
+
+      #tab-list::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      #tab-list::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 2px;
+      }
+
+      #menu-overlay {
+        position: fixed;
+        top: 5rem;
+        right: 1.5rem;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--border-radius);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: var(--shadow-soft);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: var(--transition);
+        z-index: 1000;
+        min-width: 200px;
+      }
+
+      #menu-overlay.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      .option {
+        padding: 1rem 1.25rem;
+        color: var(--text-primary);
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        border-bottom: 1px solid var(--glass-border);
+      }
+
+      .option:last-child {
+        border-bottom: none;
+      }
+
+      .option:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateX(4px);
+      }
+
+      .option:first-child {
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
+      }
+
+      .option:last-child {
+        border-radius: 0 0 var(--border-radius) var(--border-radius);
+      }
+
+      /* Animation keyframes */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .sidebar-container {
+        animation: fadeInUp 0.6s ease-out;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 1024px) {
+        .page-data {
+          flex-wrap: wrap;
+          gap: 0.75rem;
+        }
+        
+        #url-form {
+          order: 3;
+          width: 100%;
+          margin: 0;
+        }
+      }
+
+      @media (max-width: 640px) {
+        header {
+          padding: 0.75rem;
+        }
+        
+        #controls > span {
+          gap: 0.125rem;
+        }
+        
+        button {
+          padding: 0.5rem;
+        }
+        
+        #new-tab span {
+          display: none;
+        }
+      }
+
+      /* Enhanced focus states for accessibility */
+      button:focus-visible,
+      #url-input:focus-visible {
+        outline: 2px solid rgba(255, 255, 255, 0.6);
+        outline-offset: 2px;
+      }
+
+      /* Smooth scroll behavior */
+      html {
+        scroll-behavior: smooth;
+      }
     </style>
+
     <script>
       window.onload = function () {
         if (!localStorage.getItem("discordAlertShown")) {
@@ -65,79 +420,56 @@ Developed by technonyte0
 
   <body>
     <div id="small-screen-overlay">
-      UV Static 2.0 doesn't support smaller screens. Please use UV Static 2.0 on a larger screen.
+      <div>
+        <h2 style="margin-bottom: 1rem;">📱 UV Static 2.0</h2>
+        <p>This enhanced version is optimized for larger screens.<br>Please use a desktop or tablet for the best experience.</p>
+      </div>
     </div>
 
-
-  <div id="nav"></div>
-  <div id="main-content"></div>
-
+    <div id="nav"></div>
+    <div id="main-content"></div>
 
     <div id="tab-view" class=""></div>
     <div class="sidebar-container">
       <header>
         <div class="page-data">
           <span id="controls">
-            <button onclick="window.location.href='/'">
-              <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+            <button onclick="window.location.href='/'" aria-label="Home">
               <svg
-   width="38.454208mm"
-   height="24.726074mm"
-   viewBox="0 0 38.454208 24.726074"
-   version="1.1"
-   id="svg1"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg">
-  <defs
-     id="defs1" />
-  <g
-     id="layer1"
-     transform="translate(-145.0951,-136.5279)">
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32.9681px;font-family:'Dallas Print Shop';-inkscape-font-specification:'Dallas Print Shop';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#5a32e3;fill-opacity:1;stroke-width:2.74734"
-       x="142.33917"
-       y="161.25397"
-       id="text2"><tspan
-         id="tspan1"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Krungthep;-inkscape-font-specification:Krungthep;fill:#5a32e3;fill-opacity:1;stroke-width:2.74734"
-         x="142.33917"
-         y="161.25397">v2</tspan></text>
-  </g>
-</svg>
-
-           
-
+                width="24"
+                height="24"
+                viewBox="0 0 38.454208 24.726074"
+                version="1.1"
+                xmlns="http://www.w3.org/2000/svg">
+                <g transform="translate(-145.0951,-136.5279)">
+                  <text
+                    style="font-family:Krungthep;font-size:32.9681px;fill:currentColor;"
+                    x="142.33917"
+                    y="161.25397">
+                    <tspan
+                      style="font-family:Krungthep;fill:currentColor;"
+                      x="142.33917"
+                      y="161.25397">v2</tspan>
+                  </text>
+                </g>
+              </svg>
               <p class="tooltip">Home</p>
             </button>
-            <!-- <p class="logo-name">RED Browse</p> -->
             <span>
-              <button id="page-back">
-                <ion-icon
-                  name="arrow-back-outline"
-                  class="icon hover-focus1"
-                ></ion-icon>
+              <button id="page-back" aria-label="Go back">
+                <ion-icon name="arrow-back-outline" class="icon"></ion-icon>
                 <p class="tooltip">Back</p>
               </button>
-              <button id="page-forward">
-                <ion-icon
-                  name="arrow-forward-outline"
-                  class="icon hover-focus1"
-                ></ion-icon>
+              <button id="page-forward" aria-label="Go forward">
+                <ion-icon name="arrow-forward-outline" class="icon"></ion-icon>
                 <p class="tooltip">Forward</p>
               </button>
-              <button id="page-refresh">
-                <ion-icon
-                  name="refresh-outline"
-                  class="icon hover-focus1"
-                ></ion-icon>
+              <button id="page-refresh" aria-label="Refresh page">
+                <ion-icon name="refresh-outline" class="icon"></ion-icon>
                 <p class="tooltip">Refresh</p>
               </button>
-              <button id="options-btn">
-                <ion-icon
-                  name="menu-outline"
-                  class="icon hover-focus1"
-                ></ion-icon>
+              <button id="options-btn" aria-label="Open menu">
+                <ion-icon name="menu-outline" class="icon"></ion-icon>
                 <p class="tooltip">Menu</p>
               </button>
             </span>
@@ -147,14 +479,14 @@ Developed by technonyte0
               type="text"
               id="url-input"
               onfocus="this.setSelectionRange(0, this.value.length)"
-              class="hover-focus2"
-              placeholder="Search or enter URL"
+              placeholder="🔍 Search or enter URL"
               autocomplete="off"
               autocorrect="off"
               spellcheck="false"
+              aria-label="URL input"
             />
           </form>
-          <button id="new-tab" class="hover-focus2">
+          <button id="new-tab" aria-label="Open new tab">
             <ion-icon name="add-outline" class="icon"></ion-icon>
             <span>New Tab</span>
           </button>
@@ -164,15 +496,49 @@ Developed by technonyte0
     </div>
 
     <div id="menu-overlay">
-      <div class="option" id="devtools-option">Developer Tools</div>
-      <div class="option" id="abc-option">Open in about:blank</div>
-      <div class="option" id="git-option">GitHub</div>
+      <div class="option" id="devtools-option">
+        <span>🛠️</span> Developer Tools
+      </div>
+      <div class="option" id="abc-option">
+        <span>🔗</span> Open in about:blank
+      </div>
+      <div class="option" id="git-option">
+        <span>📚</span> GitHub
+      </div>
     </div>
+
     <script>
       const optionsBtn = document.getElementById("options-btn");
       const overlay = document.getElementById("menu-overlay");
-      optionsBtn.addEventListener("click", () => {
+      
+      // Enhanced menu toggle with outside click detection
+      optionsBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
         overlay.classList.toggle("active");
+      });
+
+      // Close menu when clicking outside
+      document.addEventListener("click", (e) => {
+        if (!overlay.contains(e.target) && !optionsBtn.contains(e.target)) {
+          overlay.classList.remove("active");
+        }
+      });
+
+      // Close menu with Escape key
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          overlay.classList.remove("active");
+        }
+      });
+
+      // Add smooth animations for better UX
+      document.addEventListener("DOMContentLoaded", () => {
+        // Add loading animation
+        document.body.style.opacity = "0";
+        setTimeout(() => {
+          document.body.style.transition = "opacity 0.5s ease";
+          document.body.style.opacity = "1";
+        }, 100);
       });
     </script>
   </body>
