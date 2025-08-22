@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proxy Game Loader</title>
+  <script type="module">
+    import { registerSW } from "/active/prxy/register-sw.mjs";
+    import __uv$config from "/active/uv/uv.config.js";
+    import { encodeUrl } from "/active/uv/uv.bundle.js";
+
+    (async () => {
+      try {
+        // Ensure SW is active
+        await registerSW();
+        await navigator.serviceWorker.ready;
+
+        // Your target game URL
+        const gameUrl = "https://games.crazygames.com/en_US/fortzone-battle-royale-xkd/index.html?v=1.338";
+
+        // Encode using UV
+        const encoded = __uv$config.prefix + encodeUrl(gameUrl);
+
+        // Redirect into the proxied page
+        location.href = encoded;
+      } catch (err) {
+        document.body.innerHTML = "<h2>❌ Error loading game</h2><pre>" + err + "</pre>";
+      }
+    })();
+  </script>
+</head>
+<body>
+  <h1>Loading Game...</h1>
+</body>
+</html>
