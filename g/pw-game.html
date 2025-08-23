@@ -1,101 +1,548 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>The Password Game.</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #fdbe0f;
-      padding: 30px;
-      text-align: center;
-    }
-    #pwdInput {
-      width: 300px;
-      padding: 10px;
-      font-size: 18px;
-    }
-    #rules {
-      margin-top: 20px;
-      text-align: left;
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .done { color: green; }
-    .active { color: orange; font-weight: bold; }
-    .pending { color: gray; }
-    #status {
-      margin-top: 20px;
-      font-weight: bold;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Builder - HackShield Academy</title>
+    <link rel="icon" type="image/jpeg" href="favicon/favicon.jpg">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="bg-gray-900 text-white">
+    <!-- Navigation -->
+    <nav class="bg-gray-800 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold text-cyan-400">🛡️ HackShield Academy</h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="index.html" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">🏠 Home</a>
+                    <a href="leaderboard.html" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">🏆 Leaderboard</a>
+                    <div class="bg-gray-700 text-yellow-400 px-3 py-2 rounded-md text-sm font-medium">
+                        💰 Score: <span id="totalScore">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-  <h1>The Password Game</h1>
+    <!-- Game Content -->
+    <div class="game-container py-8">
+        <div class="text-center mb-8">
+            <h2 class="text-4xl font-bold mb-4 text-cyan-400">🔐 Password Strength Builder</h2>
+            <p class="text-xl text-gray-300">Build a strong password by selecting different character types!</p>
+            <div class="mt-4">
+                <div class="bg-gray-800 inline-block px-6 py-3 rounded-lg">
+                    <span class="text-yellow-400 font-bold">Game Score: </span>
+                    <span id="gameScore" class="text-cyan-400 font-bold">0</span>
+                </div>
+            </div>
+        </div>
 
-  <input type="text" id="pwdInput" placeholder="your Password" oninput="check()">
+        <!-- Password Display -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8">
+            <h3 class="text-xl font-bold mb-4 text-cyan-400">Your Password:</h3>
+            <div class="bg-gray-700 rounded-lg p-4 mb-4">
+                <div id="passwordDisplay" class="text-2xl font-mono text-green-400 min-h-8 break-all">
+                    Click tiles below to build your password...
+                </div>
+            </div>
+            
+            <!-- Password Strength Indicator -->
+            <div class="mb-4">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-medium">Password Strength:</span>
+                    <span id="strengthText" class="text-sm font-bold">Not Set</span>
+                </div>
+                <div class="w-full bg-gray-600 rounded-full h-3">
+                    <div id="strengthBar" class="h-3 rounded-full transition-all duration-500 bg-gray-600" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <!-- Password Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div class="bg-gray-700 rounded p-3 text-center">
+                    <div class="text-cyan-400 font-bold" id="lengthCount">0</div>
+                    <div>Length</div>
+                </div>
+                <div class="bg-gray-700 rounded p-3 text-center">
+                    <div class="text-cyan-400 font-bold" id="uppercaseCount">0</div>
+                    <div>Uppercase</div>
+                </div>
+                <div class="bg-gray-700 rounded p-3 text-center">
+                    <div class="text-cyan-400 font-bold" id="numbersCount">0</div>
+                    <div>Numbers</div>
+                </div>
+                <div class="bg-gray-700 rounded p-3 text-center">
+                    <div class="text-cyan-400 font-bold" id="symbolsCount">0</div>
+                    <div>Symbols</div>
+                </div>
+            </div>
+        </div>
 
-  <div id="rules"></div>
-  <div id="status"></div>
+        <!-- Character Type Tiles -->
+        <div class="mb-8">
+            <h3 class="text-xl font-bold mb-4 text-cyan-400">Choose Characters (Keyboard Style):</h3>
+            
+            <!-- Row 1 - Numbers -->
+            <div class="mb-4">
+                <h4 class="text-lg font-semibold mb-2 text-yellow-400">Numbers</h4>
+                <div class="flex flex-wrap justify-center gap-2" id="numberRow">
+                    <!-- Generated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Row 2 - First Letter Row -->
+            <div class="mb-4">
+                <h4 class="text-lg font-semibold mb-2 text-green-400">Letters (Row 1)</h4>
+                <div class="flex flex-wrap justify-center gap-2" id="letterRow1">
+                    <!-- Generated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Row 3 - Second Letter Row -->
+            <div class="mb-4">
+                <h4 class="text-lg font-semibold mb-2 text-green-400">Letters (Row 2)</h4>
+                <div class="flex flex-wrap justify-center gap-2" id="letterRow2">
+                    <!-- Generated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Row 4 - Third Letter Row -->
+            <div class="mb-4">
+                <h4 class="text-lg font-semibold mb-2 text-green-400">Letters (Row 3)</h4>
+                <div class="flex flex-wrap justify-center gap-2" id="letterRow3">
+                    <!-- Generated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Row 5 - Special Characters -->
+            <div class="mb-4">
+                <h4 class="text-lg font-semibold mb-2 text-red-400">Special Characters</h4>
+                <div class="flex flex-wrap justify-center gap-2" id="symbolRow">
+                    <!-- Generated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Quick Add Buttons -->
+            <div class="mt-6 p-4 bg-gray-700 rounded-lg">
+                <h4 class="text-lg font-semibold mb-3 text-cyan-400">Quick Add:</h4>
+                <div class="flex flex-wrap justify-center gap-3">
+                    <button id="addUppercase" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">
+                        Add Random Uppercase
+                    </button>
+                    <button id="addLowercase" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm">
+                        Add Random Lowercase
+                    </button>
+                    <button id="addNumber" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg text-sm">
+                        Add Random Number
+                    </button>
+                    <button id="addSymbol" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm">
+                        Add Random Symbol
+                    </button>
+                </div>
+            </div>
+        </div>
 
-  <script>
-    let current = 0;
+        <!-- Game Controls -->
+        <div class="text-center mb-8">
+            <button id="clearPassword" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg mr-4">
+                Clear Password
+            </button>
+            <button id="generateRandom" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg mr-4">
+                Generate Random
+            </button>
+            <button id="checkPassword" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg">
+                Check & Save
+            </button>
+        </div>
 
-    const rules = [
-      {
-        check: pwd => pwd.length >= 5,
-        text: "the password have 5 caracters of large"
-      },
-      {
-        check: pwd => /[0-9]/.test(pwd),
-        text: "the password have 1 number"
-      },
-      {
-        check: pwd => /[A-Z]/.test(pwd),
-        text: "the password have 1 letter uppercase"
-      },
-      {
-        check: pwd => /[!@#\$%\^\&*\)\(+=._-]+/.test(pwd),
-        text: "The pasword have 1 special caracter"
-      },
-      {
-        check: pwd => {
-          const nums = pwd.match(/\d/g);
-          const sum = nums ? nums.map(n => parseInt(n)).reduce((a, b) => a + b, 0) : 0;
-          return sum === 25;
-        },
-        text: "password numbers must add 25"
-      }
-    ];
+        <!-- Password Tips -->
+        <div class="bg-gray-800 rounded-lg p-6">
+            <h3 class="text-xl font-bold mb-4 text-cyan-400">Password Security Tips:</h3>
+            <div class="grid md:grid-cols-2 gap-4 text-sm text-gray-300">
+                <div>
+                    <h4 class="font-semibold text-green-400 mb-2">✅ Good Practices:</h4>
+                    <ul class="space-y-1">
+                        <li>• Use at least 12 characters</li>
+                        <li>• Mix uppercase and lowercase</li>
+                        <li>• Include numbers and symbols</li>
+                        <li>• Avoid dictionary words</li>
+                        <li>• Use unique passwords for each account</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-red-400 mb-2">❌ Avoid:</h4>
+                    <ul class="space-y-1">
+                        <li>• Personal information (birthdays, names)</li>
+                        <li>• Common passwords (123456, password)</li>
+                        <li>• Keyboard patterns (qwerty, asdf)</li>
+                        <li>• Repeated characters (aaa, 111)</li>
+                        <li>• Sharing passwords</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    function renderRules(pwd) {
-      let html = "<ol>";
-      for (let i = 0; i < rules.length; i++) {
-        const passed = rules[i].check(pwd);
-        html += `<li class="${passed ? 'done' : i === current ? 'active' : 'pending'}">${rules[i].text}</li>`;
-      }
-      html += "</ol>";
-      document.getElementById("rules").innerHTML = html;
-    }
+    <script src="script.js"></script>
+    <script>
+        // Password Game Logic
+        let currentPassword = '';
+        let gameScore = 0;
+        let passwordHistory = [];
 
-    function check() {
-      const pwd = document.getElementById("pwdInput").value;
-      renderRules(pwd);
+        const characterSets = {
+            numbers: '1234567890',
+            row1: 'qwertyuiop',
+            row2: 'asdfghjkl',
+            row3: 'zxcvbnm',
+            symbols: '!@#$%^&*()_+-=[]{}|;:,.<>?'
+        };
 
-      if (current < rules.length && rules[current].check(pwd)) {
-        current++;
-        if (current === rules.length) {
-          document.getElementById("status").innerHTML = "🎉 You have complete all rules wow are you the best!";
-        } else {
-          document.getElementById("status").innerHTML = "Current rule complete continue...";
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePasswordGame();
+        });
+
+        function initializePasswordGame() {
+            // Update score display
+            if (window.HackShield) {
+                window.HackShield.updateScoreDisplay();
+            }
+            
+            generateKeyboardLayout();
+            setupEventListeners();
+            updatePasswordDisplay();
         }
-      } else if (current < rules.length) {
-        document.getElementById("status").innerHTML = "do not complete the current rule";
-      }
-    }
-  </script>
 
+        function generateKeyboardLayout() {
+            // Generate number row
+            const numberContainer = document.getElementById('numberRow');
+            for (let char of characterSets.numbers) {
+                const tile = createCharacterTile(char, 'number');
+                numberContainer.appendChild(tile);
+            }
+            
+            // Generate letter rows
+            const rows = [
+                { id: 'letterRow1', chars: characterSets.row1 },
+                { id: 'letterRow2', chars: characterSets.row2 },
+                { id: 'letterRow3', chars: characterSets.row3 }
+            ];
+            
+            rows.forEach(row => {
+                const container = document.getElementById(row.id);
+                for (let char of row.chars) {
+                    // Add both lowercase and uppercase
+                    const lowerTile = createCharacterTile(char, 'lowercase');
+                    const upperTile = createCharacterTile(char.toUpperCase(), 'uppercase');
+                    container.appendChild(lowerTile);
+                    container.appendChild(upperTile);
+                }
+            });
+            
+            // Generate symbol row
+            const symbolContainer = document.getElementById('symbolRow');
+            for (let char of characterSets.symbols) {
+                const tile = createCharacterTile(char, 'symbol');
+                symbolContainer.appendChild(tile);
+            }
+        }
+
+        function createCharacterTile(character, type) {
+            const tile = document.createElement('button');
+            tile.className = `password-tile ${getTypeClass(type)}`;
+            tile.textContent = character;
+            tile.dataset.char = character;
+            tile.dataset.type = type;
+            
+            tile.addEventListener('click', function() {
+                addCharacterToPassword(character);
+                
+                // Visual feedback
+                tile.classList.add('selected');
+                setTimeout(() => {
+                    tile.classList.remove('selected');
+                }, 300);
+            });
+            
+            return tile;
+        }
+
+        function getTypeClass(type) {
+            switch(type) {
+                case 'number': return 'border-yellow-400 hover:bg-yellow-600';
+                case 'lowercase': return 'border-green-400 hover:bg-green-600';
+                case 'uppercase': return 'border-blue-400 hover:bg-blue-600';
+                case 'symbol': return 'border-red-400 hover:bg-red-600';
+                default: return 'border-gray-400 hover:bg-gray-600';
+            }
+        }
+
+        function setupEventListeners() {
+            document.getElementById('clearPassword').addEventListener('click', clearPassword);
+            document.getElementById('generateRandom').addEventListener('click', generateRandomPassword);
+            document.getElementById('checkPassword').addEventListener('click', checkAndSavePassword);
+            
+            // Quick add buttons
+            document.getElementById('addUppercase').addEventListener('click', () => addRandomChar('uppercase'));
+            document.getElementById('addLowercase').addEventListener('click', () => addRandomChar('lowercase'));
+            document.getElementById('addNumber').addEventListener('click', () => addRandomChar('number'));
+            document.getElementById('addSymbol').addEventListener('click', () => addRandomChar('symbol'));
+        }
+
+        function addRandomChar(type) {
+            let chars;
+            switch(type) {
+                case 'uppercase':
+                    chars = (characterSets.row1 + characterSets.row2 + characterSets.row3).toUpperCase();
+                    break;
+                case 'lowercase':
+                    chars = characterSets.row1 + characterSets.row2 + characterSets.row3;
+                    break;
+                case 'number':
+                    chars = characterSets.numbers;
+                    break;
+                case 'symbol':
+                    chars = characterSets.symbols;
+                    break;
+            }
+            
+            const randomChar = chars[Math.floor(Math.random() * chars.length)];
+            addCharacterToPassword(randomChar);
+        }
+
+        function addCharacterToPassword(char) {
+            currentPassword += char;
+            updatePasswordDisplay();
+            
+            if (window.HackShield) {
+                window.HackShield.playSound('correct');
+            }
+        }
+
+        function clearPassword() {
+            currentPassword = '';
+            updatePasswordDisplay();
+        }
+
+        function generateRandomPassword() {
+            const length = 12 + Math.floor(Math.random() * 8); // 12-20 characters
+            currentPassword = '';
+            
+            const allLower = characterSets.row1 + characterSets.row2 + characterSets.row3;
+            const allUpper = allLower.toUpperCase();
+            const allNumbers = characterSets.numbers;
+            const allSymbols = characterSets.symbols;
+            
+            // Ensure at least one character from each type
+            currentPassword += getRandomChar(allLower);
+            currentPassword += getRandomChar(allUpper);
+            currentPassword += getRandomChar(allNumbers);
+            currentPassword += getRandomChar(allSymbols);
+            
+            // Fill the rest randomly
+            const allChars = allLower + allUpper + allNumbers + allSymbols;
+            for (let i = 4; i < length; i++) {
+                currentPassword += getRandomChar(allChars);
+            }
+            
+            // Shuffle the password
+            currentPassword = currentPassword.split('').sort(() => Math.random() - 0.5).join('');
+            
+            updatePasswordDisplay();
+        }
+
+        function getRandomChar(chars) {
+            return chars[Math.floor(Math.random() * chars.length)];
+        }
+
+        function updatePasswordDisplay() {
+            const display = document.getElementById('passwordDisplay');
+            
+            if (currentPassword) {
+                display.textContent = currentPassword;
+                display.style.color = '#10B981'; // green
+            } else {
+                display.textContent = 'Click tiles below to build your password...';
+                display.style.color = '#6B7280'; // gray
+            }
+            
+            updatePasswordStats();
+            updateStrengthIndicator();
+        }
+
+        function updatePasswordStats() {
+            const stats = analyzePassword(currentPassword);
+            
+            document.getElementById('lengthCount').textContent = stats.length;
+            document.getElementById('uppercaseCount').textContent = stats.uppercase;
+            document.getElementById('numbersCount').textContent = stats.numbers;
+            document.getElementById('symbolsCount').textContent = stats.symbols;
+        }
+
+        function analyzePassword(password) {
+            return {
+                length: password.length,
+                uppercase: (password.match(/[A-Z]/g) || []).length,
+                lowercase: (password.match(/[a-z]/g) || []).length,
+                numbers: (password.match(/[0-9]/g) || []).length,
+                symbols: (password.match(/[^A-Za-z0-9]/g) || []).length
+            };
+        }
+
+        function updateStrengthIndicator() {
+            const strength = calculatePasswordStrength(currentPassword);
+            const strengthBar = document.getElementById('strengthBar');
+            const strengthText = document.getElementById('strengthText');
+            
+            let color, text, width;
+            
+            if (strength.score < 3) {
+                color = '#EF4444'; // red
+                text = 'Weak';
+                width = '25%';
+            } else if (strength.score < 6) {
+                color = '#F59E0B'; // yellow
+                text = 'Medium';
+                width = '50%';
+            } else if (strength.score < 8) {
+                color = '#10B981'; // green
+                text = 'Strong';
+                width = '75%';
+            } else {
+                color = '#06B6D4'; // cyan
+                text = 'Very Strong';
+                width = '100%';
+            }
+            
+            strengthBar.style.backgroundColor = color;
+            strengthBar.style.width = width;
+            strengthText.textContent = text;
+            strengthText.style.color = color;
+        }
+
+        function calculatePasswordStrength(password) {
+            let score = 0;
+            const analysis = analyzePassword(password);
+            
+            // Length scoring
+            if (analysis.length >= 8) score += 1;
+            if (analysis.length >= 12) score += 1;
+            if (analysis.length >= 16) score += 1;
+            
+            // Character variety scoring
+            if (analysis.lowercase > 0) score += 1;
+            if (analysis.uppercase > 0) score += 1;
+            if (analysis.numbers > 0) score += 1;
+            if (analysis.symbols > 0) score += 2;
+            
+            // Complexity bonus
+            if (analysis.length > 0) {
+                const variety = (analysis.lowercase > 0 ? 1 : 0) +
+                               (analysis.uppercase > 0 ? 1 : 0) +
+                               (analysis.numbers > 0 ? 1 : 0) +
+                               (analysis.symbols > 0 ? 1 : 0);
+                
+                if (variety >= 3 && analysis.length >= 12) score += 1;
+            }
+            
+            return {
+                score: Math.min(score, 10),
+                analysis: analysis
+            };
+        }
+
+        function checkAndSavePassword() {
+            if (!currentPassword) {
+                alert('Please build a password first!');
+                return;
+            }
+            
+            const strength = calculatePasswordStrength(currentPassword);
+            let points = 0;
+            
+            // Award points based on strength
+            if (strength.score >= 8) {
+                points = 50; // Very Strong
+            } else if (strength.score >= 6) {
+                points = 30; // Strong
+            } else if (strength.score >= 3) {
+                points = 15; // Medium
+            } else {
+                points = 5; // Weak
+            }
+            
+            // Bonus for length
+            if (currentPassword.length >= 16) points += 10;
+            
+            gameScore += points;
+            
+            // Save to history
+            passwordHistory.push({
+                password: currentPassword,
+                strength: strength.score,
+                points: points,
+                timestamp: new Date().toISOString()
+            });
+            
+            // Update localStorage
+            if (window.HackShield) {
+                window.HackShield.updateScore('password', points);
+                window.HackShield.playSound('achievement');
+            }
+            
+            // Show results
+            showPasswordResults(strength, points);
+            
+            // Update game score display
+            document.getElementById('gameScore').textContent = gameScore;
+        }
+
+        function showPasswordResults(strength, points) {
+            const strengthText = strength.score >= 8 ? 'Very Strong' :
+                               strength.score >= 6 ? 'Strong' :
+                               strength.score >= 3 ? 'Medium' : 'Weak';
+            
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-gray-800 rounded-lg p-8 max-w-md mx-4">
+                    <div class="text-center">
+                        <div class="text-6xl mb-4">🔐</div>
+                        <h3 class="text-2xl font-bold mb-4 text-cyan-400">Password Analysis</h3>
+                        <div class="space-y-4">
+                            <div class="bg-gray-700 rounded-lg p-4">
+                                <div class="text-sm text-gray-300">Password Strength</div>
+                                <div class="text-2xl font-bold text-green-400">${strengthText}</div>
+                            </div>
+                            <div class="bg-gray-700 rounded-lg p-4">
+                                <div class="text-sm text-gray-300">Points Earned</div>
+                                <div class="text-2xl font-bold text-yellow-400">+${points}</div>
+                            </div>
+                            <div class="text-sm text-gray-300">
+                                Password Length: ${currentPassword.length} characters
+                            </div>
+                        </div>
+                        <div class="mt-6 space-y-3">
+                            <button onclick="this.parentElement.parentElement.parentElement.parentElement.remove(); clearPassword();" 
+                                    class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded">
+                                Build Another Password
+                            </button>
+                            <button onclick="window.location.href='index.html'" 
+                                    class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                                Back to Home
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+    </script>
 </body>
 </html>
