@@ -1,6 +1,6 @@
 function is_valid_password(password) {
     const specialCharacterRegex = /[!@#$%^&*(),.?":{}|<>]/;
-    const teacherNames = "kietikul"; //Dancethenight@kietikulCaZn9998neptuneVenezuela
+    const mexinames = "juan", "maria", "miguel", "antonio", "santiago", "diego", "jose", "luis", "francisco", "mateo", "daniel";
     const uppercaseRegex = /[A-Z]/;
     const planetNames = ["mercury", "venus", "earth", "mars", "jupiter", "saturn", "uranus", "neptune"];
     const automata = ["Finite", "Pushdown", "Turingmachine"];
@@ -45,8 +45,8 @@ function is_valid_password(password) {
         return "Password must include at least one special character."
       }
 
-      if (!(password.includes(teacherNames))) {
-        return "Password must include TOC's Teacher name (In lowercase)" // level 5
+      if (!(password.includes(mexinames))) {
+        return "Password must include a sterotypical mexican name (In lowercase)" // level 5
       }
     
       for (let i = 0; i < password.length - 1; i++) {
