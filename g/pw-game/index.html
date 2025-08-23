@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Pass Me If You Can | Game</title>
+        <link rel="stylesheet" href="./index.css"/>
+        <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+    </head>
+    <body class="body">
+        <div class="ears">
+            <div class="ear" style="margin-right: 200px;">
+                <img class="innerEar" src="asset/innerEar.png"></img>
+                <img class="borderEar" src="asset/borderEar.png"></img>
+            </div>
+            <div class="ear"style="margin-left: 200px;">
+                <img class="innerEar" src="asset/innerEar.png"></img>
+                <img class="borderEar" src="asset/borderEar.png"></img>
+            </div>
+        </div>
+        <div class="container">
+            <div class="content">
+                <div class="pop-container">
+                    <div class = "buzzers">
+                        <div class = "buzzer"></div>
+                        <div class = "buzzer" style="visibility: hidden;"></div>
+                        <div class = "buzzer"></div>
+                        <div class = "buzzer" style="visibility: hidden;" ></div>
+                        <div class = "buzzer"></div>
+                        <div class = "buzzer" style="visibility: hidden;"></div>
+                        <div class = "buzzer"></div>
+                        <div class = "buzzer" style="visibility: hidden;"></div>
+                        <div class = "buzzer"></div>
+                    </div>
+                    <div class="border-popup-list">
+                        <ul class="popup-list">
+                            <li id="r2" class="rule-correct">
+                                <header>
+                                    <h4 class="challenge" >Challenge</h4>
+                                </header>
+                                <div id="validation">Enter something
+                                </div>
+                                <div id="myModal" class="modal" style="display: none;">
+                                    <div class="modal-content">
+                                        <span class="close">&times;</span>
+                                        <div class="image-row">
+                                            <img src="https://i5.walmartimages.com/seo/Fresh-Personal-Watermelon-Each_14487aaf-d86a-4b46-acaf-7621b90286bb.fb737768267fcdc95c33f355b730ad15.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF" width="100px" height="100px">
+                                            <img src="https://media.discordapp.net/attachments/957655976075464744/1163872283467710534/jackfruit.jpg?ex=65412788&is=652eb288&hm=d890ba0e5d14e62b07cf3ab1ac4117797fde1aa8de148876e7bd90aa98f0a4d2&=&width=1466&height=1046" width="100px" height="100px">
+                                            <img src="https://media.discordapp.net/attachments/957655976075464744/1163872283731963934/kumquat.jpg?ex=65412788&is=652eb288&hm=fd8f912f2bdc1984195f07bd24f7de5d52f054bb040df56fdee9c8f6dc38dba1&=&width=1168&height=1046" width="100px" height="100px">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </li>
+                        </ul>
+                    </div>
+                    <div class = "buzzers">
+                        <div class = "buzzer"></div>
+                        <div class = "buzzer" style="visibility: hidden;"></div>
+                        <div class = "buzzer"></div>
+                        <div class = "buzzer" style="visibility: hidden;"></div>
+                        <div class = "buzzer"></div>
+                        <div class = "buzzer" style="visibility: hidden;"></div>
+                        <div class = "buzzer"></div>
+                        <div class = "buzzer" style="visibility: hidden;"></div>
+                        <div class = "buzzer"></div>
+                    </div>
+                </div>
+                <h3 class="title"><i class="fi fi-rr-chess-knight-alt"></i> Pass Me If You Can <i class="fi fi-rr-playing-cards"></i></h3>
+                <div class="input-container">
+                    <div class="left pane">
+                        <div class="joystick">
+
+                        </div>
+                        <div class="direction">
+                            <div class="cross-y"></div>
+                            <div class="cross-x"></div>
+                            <div class="cross-y" style="border: none;position: absolute; bottom: 500px; z-index: +1; width: 37px; height: 126px; margin-left:1px; margin-top:2px;"></div>
+                        </div>
+                    </div>
+                    <div class="border-input">
+                        
+                        <label for="password">Enter password:</label>
+                        <!-- <input type="text" class="input" id="password" oninput="checkPassword() " placeholder="Pass me pls!"> -->
+                        <textarea id="password"  type="text "class="input" placeholder="Pass me pls!" oninput="checkPassword() "></textarea>
+                        
+                    </div>
+                    <div class="right pane">
+                        <div class = "btns">
+                            <div class = "btn"></div>
+                            <div class = "btn"></div>
+                            <div class = "btn"></div>
+                            <div class = "btn"></div>
+                        </div>
+                        <div class = "link">
+                            <div style="display: flex; width: fit-content; align-items: center;">
+                                <a href="https://github.com/16sakuraa/PasswordGame" target="_blank">
+                                    <div id="source-code" class = "btn"></div>
+                                </a>
+                                <label for="source-code">Source code</label>
+                            </div>
+                            <div style="display: flex; width: fit-content; align-items: center;">
+                                <a href="./members.html">
+                                    <div id="members" class = "btn"></div>
+                                </a>
+                                <label for="members">Members</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script src="script.js"></script>
+        <!-- <script type="text/javascript">
+            // textarea resizing
+            let textarea = document.getElementById("textarea");
+            // initialize length of textarea value
+            let lenContainer = document.getElementById("len");
+            lenContainer.innerHTML = "Characters : " + textarea.value.length;
+            // textarea length changed
+            textarea.addEventListener('input', lengthChecker, false);
+
+            function lengthChecker(){
+                lenContainer.innerHTML =  "Characters : " + this.value.length;
+            }
+        </script> -->
+    </body>
+</html>

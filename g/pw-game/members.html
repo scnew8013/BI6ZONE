@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Pass Me If You Can | Members</title>
+        <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+        <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css'>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Mitr&family=Nunito&family=Orbitron&display=swap');
+            * {
+                letter-spacing: 2px;
+                font-family: 'Orbitron', sans-serif;
+                font-size: 16px;
+                color: #F7F7F7;
+            }
+            body{
+                background:linear-gradient(rgba(0, 0, 0, 0.4),rgba(0, 0, 0, 0.4)), url("./asset/bg.png") round fixed;
+                background-size: contain;
+                -webkit-background-size: contain;
+                -moz-background-size: contain;
+                -o-background-size: contain;
+                overflow-y: visible;
+            }
+            .title {
+                text-align: center;
+                font-size: 35px;
+                padding: 10px;
+            }
+            .container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 96px;
+                justify-content: center; 
+            }
+            .member-card {
+                display: grid;
+                grid-template-columns: auto;
+                width: 300px;
+                height: 400px;
+                background-color: #773396;
+                border: #0F0C0C 2px solid;
+                border-radius: 20px;
+            }
+            .img{
+                height: 300px;
+                border-radius: 16px 16px 0px 0px;
+                border-bottom: #0F0C0C 2px solid;
+            }
+            .info {
+                padding: 5px;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <a href="./index.html"><i class="fi fi-sr-arrow-circle-left" style="position: absolute; font-size: 45px; top: 35px; left: 20px;"></i></a>
+        <h1 class="title">Members</h1>
+        <div class="container">
+        </div>
+    </body>
+    <script>
+        const members = [
+            {
+                img: "./asset/member/por.jpg",
+                name: "PATIPAT KOEDDANG",
+                id: 64010475
+            },
+            {
+                img: "./asset/member/kong.jpg",
+                name: "PACHARAPONG SUPHA",
+                id: 64010546
+            },
+            {
+                img: "./asset/member/queen.png",
+                name: "PATTAMON PONGSAKORNPISIT",
+                id: 64010574
+            },
+            {
+                img: "./asset/member/arm.jpg",
+                name: "PHATCHARAPHON KAEWRIPORN",
+                id: 64010575
+            },
+            {
+                img: "./asset/member/may.jpg",
+                name: "PIMPRATHONG ROTPHOTCHANARAT",
+                id: 64010599
+            },
+            {
+                img: "./asset/member/james.jpg",
+                name: "PISITPONG PLONGKERD",
+                id: 64010609
+            },
+            {
+                img: "./asset/member/mew.jpg",
+                name: "RUNGNAPA PUESPUEK",
+                id: 64010736
+            },
+            {
+                img: "./asset/member/tan.jpg",
+                name: "WATTIKORN CHAROENKAN",
+                id: 64010801
+            },
+            {
+                img: "./asset/member/gig.jpg",
+                name: "VIPADA VARASAJJA",
+                id: 64010808
+            },
+            {
+                img: "./asset/member/tf.jpg",
+                name: "WIROON SOMPHAOTHONG",
+                id: 64010815
+            },
+            {
+                img: "./asset/member/pell.jpg",
+                name: "WEERAWAN VONGDAO",
+                id: 64010824
+            },
+            {
+                img: "./asset/member/ink.jpg",
+                name: "SARANTHORN PORNCHAIWATTANAKORN",
+                id: 64010827
+            },
+            {
+                img: "./asset/member/bell.png",
+                name: "SIRAPHATSON THONGTIM",
+                id: 64010842
+            },
+            {
+                img: "./asset/member/oat.png",
+                name: "SUPPAPHOL AREEWATTANAWONG",
+                id: 64010860
+            }
+        ]
+        for (i=0; i < members.length; i++) {
+            const container = document.querySelector(".container");
+            const member = members[i];
+            const memberNode = document.createElement("div");
+            memberNode.classList.add("member-card");
+            memberNode.innerHTML = `
+                <div class="img" style="background: url(${member.img}); background-size: cover; background-position: center;">
+                </div>
+                <div class="info">
+                    <p class="id">${member.id}</p>
+                    <p class="name" style="font-size: 13px;">${member.name}</p>
+                </div>
+            `;
+            container.appendChild(memberNode);
+        }
+    </script>
+</html>
