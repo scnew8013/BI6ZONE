@@ -1,30 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Password Game</title>
-
-    <!-- Favicon -->
-    <link rel="icon" href="https://files.catbox.moe/ao6qv3.png" type="image/x-icon">
-
-    <style>
-        /* Style for full-page embedding */
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        iframe {
-            border: none;
-            width: 100%;
-            height: 100%;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>The Password Game.</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fdbe0f;
+      padding: 30px;
+      text-align: center;
+    }
+    #pwdInput {
+      width: 300px;
+      padding: 10px;
+      font-size: 18px;
+    }
+    #rules {
+      margin-top: 20px;
+      text-align: left;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .done { color: green; }
+    .active { color: orange; font-weight: bold; }
+    .pending { color: gray; }
+    #status {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-    <iframe src="https://neal.fun/password-game/" title="The Password Game"></iframe>
+
+  <h1>The Password Game</h1>
+
+  <input type="text" id="pwdInput" placeholder="your Password" oninput="check()">
+
+  <div id="rules"></div>
+  <div id="status"></div>
+
+  <script>
+    let current = 0;
+
+    const rules = [
+      {
+        check: pwd => pwd.length >= 5,
+        text: "the password have 5 caracters of large"
+      },
+      {
+        check: pwd => /[0-9]/.test(pwd),
+        text: "the password have 1 number"
+      },
+      {
+        check: pwd => /[A-Z]/.test(pwd),
+        text: "the password have 1 letter uppercase"
+      },
+      {
+        check: pwd => /[!@#\$%\^\&*\)\(+=._-]+/.test(pwd),
+        text: "The pasword have 1 special caracter"
+      },
+      {
+        check: pwd => {
+          const nums = pwd.match(/\d/g);
+          const sum = nums ? nums.map(n => parseInt(n)).reduce((a, b) => a + b, 0) : 0;
+          return sum === 25;
+        },
+        text: "password numbers must add 25"
+      }
+    ];
+
+    function renderRules(pwd) {
+      let html = "<ol>";
+      for (let i = 0; i < rules.length; i++) {
+        const passed = rules[i].check(pwd);
+        html += `<li class="${passed ? 'done' : i === current ? 'active' : 'pending'}">${rules[i].text}</li>`;
+      }
+      html += "</ol>";
+      document.getElementById("rules").innerHTML = html;
+    }
+
+    function check() {
+      const pwd = document.getElementById("pwdInput").value;
+      renderRules(pwd);
+
+      if (current < rules.length && rules[current].check(pwd)) {
+        current++;
+        if (current === rules.length) {
+          document.getElementById("status").innerHTML = "🎉 You have complete all rules wow are you the best!";
+        } else {
+          document.getElementById("status").innerHTML = "Current rule complete continue...";
+        }
+      } else if (current < rules.length) {
+        document.getElementById("status").innerHTML = "do not complete the current rule";
+      }
+    }
+  </script>
+
 </body>
 </html>
