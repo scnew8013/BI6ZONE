@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bi6Vault - Beyond Blocks. Execute Play.</title>
+    <meta name="description" content="Bi6Vault - Innovative blockchain solutions and digital portfolio">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Section */
+        .header {
+            text-align: center;
+            padding: 80px 0;
+            background: radial-gradient(ellipse at center, rgba(255, 215, 0, 0.1) 0%, transparent 50%);
+        }
+
+        .company-name {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 
+                0 0 10px #ffd700,
+                0 0 20px #ffd700,
+                0 0 30px #ffd700,
+                0 0 40px #ffd700;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        .tagline {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            color: #cccccc;
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        .contact-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Projects Section */
+        .projects {
+            padding: 80px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .section-line {
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #ffd700, transparent);
+            margin: 0 auto;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .project-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2);
+            border-color: #ffd700;
+        }
+
+        .project-name {
+            font-size: 1.5rem;
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .project-name:hover {
+            color: #ffed4e;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .project-thumbnail {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-thumbnail::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .project-card:hover .project-thumbnail::before {
+            left: 100%;
+        }
+
+        .project-description {
+            color: #cccccc;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 40px 0;
+            text-align: center;
+            border-top: 1px solid rgba(255, 215, 0, 0.3);
+            margin-top: 80px;
+        }
+
+        .footer-text {
+            color: #888;
+            font-size: 14px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header {
+                padding: 60px 0;
+            }
+
+            .contact-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+
+            .projects {
+                padding: 60px 0;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .project-card {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 15px;
+            }
+
+            .project-thumbnail {
+                height: 150px;
+            }
+        }
+
+        /* Subtle animations */
+        @keyframes glow {
+            0% { text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700, 0 0 30px #ffd700; }
+            50% { text-shadow: 0 0 15px #ffd700, 0 0 25px #ffd700, 0 0 35px #ffd700; }
+            100% { text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700, 0 0 30px #ffd700; }
+        }
+
+        .company-name {
+            animation: glow 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="container">
+            <h1 class="company-name">BI6VAULT</h1>
+            <p class="tagline">Beyond Blocks. Execute Play.</p>
+            
+            <div class="contact-buttons">
+                <a href="mailto:bi6vault@gmail.com" class="btn">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.89 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                    </svg>
+                    Email Us
+                </a>
+                <a href="tel:619-806-3504" class="btn">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                    </svg>
+                    Call Us
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Projects Section -->
+    <section class="projects">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Projects</h2>
+                <div class="section-line"></div>
+            </div>
+            
+            <div class="projects-grid">
+                <div class="project-card">
+                    <h3 class="project-name" onclick="window.open('#', '_blank')">CryptoVault Platform</h3>
+                    <div class="project-thumbnail">
+                        <span>Blockchain Security Dashboard</span>
+                    </div>
+                    <p class="project-description">
+                        Advanced cryptocurrency management platform with multi-signature wallets and enterprise-grade security features.
+                    </p>
+                </div>
+                
+                <div class="project-card">
+                    <h3 class="project-name" onclick="window.open('#', '_blank')">DeFi Analytics Suite</h3>
+                    <div class="project-thumbnail">
+                        <span>Real-time DeFi Analytics</span>
+                    </div>
+                    <p class="project-description">
+                        Comprehensive analytics dashboard for decentralized finance protocols with real-time data visualization and risk assessment.
+                    </p>
+                </div>
+                
+                <div class="project-card">
+                    <h3 class="project-name" onclick="window.open('#', '_blank')">Smart Contract Auditor</h3>
+                    <div class="project-thumbnail">
+                        <span>Security Audit Interface</span>
+                    </div>
+                    <p class="project-description">
+                        Automated smart contract auditing tool with vulnerability detection and comprehensive security reporting for Ethereum and BSC.
+                    </p>
+                </div>
+                
+                <div class="project-card">
+                    <h3 class="project-name" onclick="window.open('#', '_blank')">NFT Marketplace</h3>
+                    <div class="project-thumbnail">
+                        <span>Digital Asset Trading</span>
+                    </div>
+                    <p class="project-description">
+                        Next-generation NFT marketplace with advanced filtering, lazy minting, and cross-chain compatibility for digital asset trading.
+                    </p>
+                </div>
+                
+                <div class="project-card">
+                    <h3 class="project-name" onclick="window.open('#', '_blank')">Blockchain Explorer</h3>
+                    <div class="project-thumbnail">
+                        <span>Transaction Visualization</span>
+                    </div>
+                    <p class="project-description">
+                        High-performance blockchain explorer with advanced search capabilities and transaction flow visualization for multiple networks.
+                    </p>
+                </div>
+                
+                <div class="project-card">
+                    <h3 class="project-name" onclick="window.open('#', '_blank')">Yield Farming Bot</h3>
+                    <div class="project-thumbnail">
+                        <span>Automated DeFi Strategies</span>
+                    </div>
+                    <p class="project-description">
+                        Intelligent yield farming automation bot with strategy optimization and risk management for maximizing DeFi returns.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="footer-text">© 2025 Bi6Vault. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
