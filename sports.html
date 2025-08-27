@@ -201,60 +201,24 @@
             animation: pulse 2s infinite;
         }
 
+        /* Added red LIVE tag styling */
+        .live-tag {
+            display: inline-block;
+            background: #ff4444;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-right: 8px;
+            text-transform: uppercase;
+            animation: pulse 2s infinite;
+        }
+
         @keyframes pulse {
             0% { opacity: 1; }
             50% { opacity: 0.5; }
             100% { opacity: 1; }
-        }
-
-        /* Search */
-        .search-container {
-            margin-bottom: 30px;
-        }
-
-        .search-input {
-            width: 100%;
-            max-width: 500px;
-            padding: 15px;
-            background: rgba(255, 215, 0, 0.1);
-            border: 2px solid #333;
-            border-radius: 10px;
-            color: #ffd700;
-            font-size: 1rem;
-            margin: 0 auto;
-            display: block;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: #ffd700;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-        }
-
-        .search-input::placeholder {
-            color: #666;
-        }
-
-        /* Loading */
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-        }
-
-        .spinner {
-            border: 3px solid #333;
-            border-top: 3px solid #ffd700;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
 
         /* Footer */
@@ -493,27 +457,33 @@
                 const homeTeam = competition.competitors.find(c => c.homeAway === 'home');
                 const awayTeam = competition.competitors.find(c => c.homeAway === 'away');
                 
+                // Better live status determination
+                const isLive = event.status.type.description === 'In Progress' || 
+                              event.status.type.state === 'in' ||
+                              event.status.type.name === 'STATUS_IN_PROGRESS';
+                
                 return {
                     id: `${sportType.toLowerCase()}_${event.id}`,
                     title: `${awayTeam.team.displayName} vs ${homeTeam.team.displayName}`,
                     sport: sportType,
                     time: event.status.type.description === 'Final' ? 'Finished' : 
-                          event.status.type.description === 'In Progress' ? 'Live' : 
+                          isLive ? 'Live' : 
                           new Date(event.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
                     viewers: `${Math.floor(Math.random() * 100 + 10)}.${Math.floor(Math.random() * 9)}K`,
                     quality: Math.random() > 0.5 ? '4K' : 'HD',
                     streamUrl: API_CONFIG.sampleStreams[index % API_CONFIG.sampleStreams.length],
-                    status: event.status.type.description
+                    status: event.status.type.description,
+                    isLive: isLive
                 };
             });
         }
 
         function getFallbackData() {
             return [
-                { id: 'demo_1', title: 'Lakers vs Warriors', sport: 'Basketball', time: 'Live', viewers: '45.2K', quality: 'HD', streamUrl: API_CONFIG.sampleStreams[0] },
-                { id: 'demo_2', title: 'Chiefs vs Bills', sport: 'Football', time: 'Live', viewers: '78.1K', quality: '4K', streamUrl: API_CONFIG.sampleStreams[1] },
-                { id: 'demo_3', title: 'Yankees vs Red Sox', sport: 'Baseball', time: 'Live', viewers: '23.5K', quality: 'HD', streamUrl: API_CONFIG.sampleStreams[2] },
-                { id: 'demo_4', title: 'Real Madrid vs Barcelona', sport: 'Soccer', time: 'Live', viewers: '156.7K', quality: '4K', streamUrl: API_CONFIG.sampleStreams[3] }
+                { id: 'demo_1', title: 'Lakers vs Warriors', sport: 'Basketball', time: 'Live', viewers: '45.2K', quality: 'HD', streamUrl: API_CONFIG.sampleStreams[0], isLive: true },
+                { id: 'demo_2', title: 'Chiefs vs Bills', sport: 'Football', time: 'Live', viewers: '78.1K', quality: '4K', streamUrl: API_CONFIG.sampleStreams[1], isLive: true },
+                { id: 'demo_3', title: 'Yankees vs Red Sox', sport: 'Baseball', time: '8:30 PM', viewers: '23.5K', quality: 'HD', streamUrl: API_CONFIG.sampleStreams[2], isLive: false },
+                { id: 'demo_4', title: 'Real Madrid vs Barcelona', sport: 'Soccer', time: 'Live', viewers: '156.7K', quality: '4K', streamUrl: API_CONFIG.sampleStreams[3], isLive: true }
             ];
         }
 
@@ -683,15 +653,15 @@
             if (!container) return;
             
             container.innerHTML = games.map(game => `
-                <div class="sport-card" onclick="watchGame(${game.id}, '${game.title}')">
+                <div class="sport-card" ${game.isLive !== false ? `onclick="watchGame('${game.id}', '${game.title}')"` : ''}>
                     <div class="sport-title">
-                        ${game.time === 'Live' ? '<span class="live-indicator"></span>' : ''}
+                        ${game.time === 'Live' ? '<span class="live-tag">live</span>' : ''}
                         ${game.title}
                     </div>
                     <div class="sport-info">
                         ${game.sport} • ${game.time} • ${game.viewers} viewers • ${game.quality}
                     </div>
-                    <button class="watch-btn">Watch Now</button>
+                    ${game.time === 'Live' ? '<button class="watch-btn">Watch Now</button>' : ''}
                 </div>
             `).join('');
         }
