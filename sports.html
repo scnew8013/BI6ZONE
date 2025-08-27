@@ -305,7 +305,7 @@
         <!-- Header -->
         <header class="header">
             <h1 class="logo">BI6SPORTZ</h1>
-            <p class="version">jericho's premium streaming service😉</p>
+            <p class="version">jericho's premium streaming service</p>
         </header>
 
         <!-- Navigation -->
@@ -401,13 +401,27 @@
         const API_CONFIG = {
             sportsDB: 'https://www.thesportsdb.com/api/v1/json/3',
             espn: 'https://site.api.espn.com/apis/site/v2/sports',
-            // Sample streaming URLs for demonstration
-            sampleStreams: [
-                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4'
-            ]
+            // Enhanced streaming URLs with HLS and multiple quality options
+            streamingSources: {
+                hls: [
+                    'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8',
+                    'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
+                    'https://demo-live.hexaglobe.net/hex_demo_live_stream/hex_demo_live_stream.m3u8',
+                    'https://multiplatform-f.akamaihd.net/i/multi/will/bunny/big_buck_bunny_,640x360_400,640x360_700,640x360_1000,950x540_1500,.f4v.csmil/master.m3u8'
+                ],
+                mp4: [
+                    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+                    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+                    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+                    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4'
+                ],
+                // Added YouTube embed support for legitimate sports content
+                youtube: [
+                    'https://www.youtube.com/embed/live_stream?channel=UCwgURKfUA7e0Z7_qE3TvBFQ',
+                    'https://www.youtube.com/embed/live_stream?channel=UCWJ2lWNubArHWmf3FIHbfcQ',
+                    'https://www.youtube.com/embed/live_stream?channel=UCiWLfSweyRNmLpgEHekhoAg'
+                ]
+            }
         };
 
         let currentVideo = null;
@@ -477,10 +491,17 @@
                               event.status.type.state === 'in' ||
                               event.status.type.name === 'STATUS_IN_PROGRESS';
                 
-                // Added game start time for countdown functionality
                 const gameDate = new Date(event.date);
                 const now = new Date();
                 const isUpcoming = gameDate > now && !isLive;
+                
+                // Enhanced streaming options with multiple formats and qualities
+                const streamingOptions = {
+                    hls: API_CONFIG.streamingSources.hls[index % API_CONFIG.streamingSources.hls.length],
+                    mp4: API_CONFIG.streamingSources.mp4[index % API_CONFIG.streamingSources.mp4.length],
+                    youtube: API_CONFIG.streamingSources.youtube[index % API_CONFIG.streamingSources.youtube.length],
+                    quality: ['4K', 'HD', '720p', '480p'][Math.floor(Math.random() * 4)]
+                };
                 
                 return {
                     id: `${sportType.toLowerCase()}_${event.id}`,
@@ -490,8 +511,8 @@
                           isLive ? 'Live' : 
                           gameDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
                     viewers: `${Math.floor(Math.random() * 100 + 10)}.${Math.floor(Math.random() * 9)}K`,
-                    quality: Math.random() > 0.5 ? '4K' : 'HD',
-                    streamUrl: API_CONFIG.sampleStreams[index % API_CONFIG.sampleStreams.length],
+                    quality: streamingOptions.quality,
+                    streaming: streamingOptions,
                     status: event.status.type.description,
                     isLive: isLive,
                     gameDate: gameDate,
@@ -501,14 +522,88 @@
         }
 
         function getFallbackData() {
-            // Added upcoming games with future dates for countdown demo
             const now = new Date();
             return [
-                { id: 'demo_1', title: 'Lakers vs Warriors', sport: 'Basketball', time: 'Live', viewers: '45.2K', quality: 'HD', streamUrl: API_CONFIG.sampleStreams[0], isLive: true, gameDate: now, isUpcoming: false },
-                { id: 'demo_2', title: 'Chiefs vs Bills', sport: 'Football', time: 'Live', viewers: '78.1K', quality: '4K', streamUrl: API_CONFIG.sampleStreams[1], isLive: true, gameDate: now, isUpcoming: false },
-                { id: 'demo_3', title: 'Yankees vs Red Sox', sport: 'Baseball', time: '8:30 PM', viewers: '23.5K', quality: 'HD', streamUrl: API_CONFIG.sampleStreams[2], isLive: false, gameDate: new Date(now.getTime() + 2 * 60 * 60 * 1000), isUpcoming: true },
-                { id: 'demo_4', title: 'Real Madrid vs Barcelona', sport: 'Soccer', time: 'Live', viewers: '156.7K', quality: '4K', streamUrl: API_CONFIG.sampleStreams[3], isLive: true, gameDate: now, isUpcoming: false },
-                { id: 'demo_5', title: 'Celtics vs Heat', sport: 'Basketball', time: '9:00 PM', viewers: '31.2K', quality: 'HD', streamUrl: API_CONFIG.sampleStreams[0], isLive: false, gameDate: new Date(now.getTime() + 4 * 60 * 60 * 1000), isUpcoming: true }
+                { 
+                    id: 'demo_1', 
+                    title: 'Lakers vs Warriors', 
+                    sport: 'Basketball', 
+                    time: 'Live', 
+                    viewers: '45.2K', 
+                    quality: 'HD', 
+                    streaming: {
+                        hls: API_CONFIG.streamingSources.hls[0],
+                        mp4: API_CONFIG.streamingSources.mp4[0],
+                        youtube: API_CONFIG.streamingSources.youtube[0]
+                    },
+                    isLive: true, 
+                    gameDate: now, 
+                    isUpcoming: false 
+                },
+                { 
+                    id: 'demo_2', 
+                    title: 'Chiefs vs Bills', 
+                    sport: 'Football', 
+                    time: 'Live', 
+                    viewers: '78.1K', 
+                    quality: '4K', 
+                    streaming: {
+                        hls: API_CONFIG.streamingSources.hls[1],
+                        mp4: API_CONFIG.streamingSources.mp4[1],
+                        youtube: API_CONFIG.streamingSources.youtube[1]
+                    },
+                    isLive: true, 
+                    gameDate: now, 
+                    isUpcoming: false 
+                },
+                { 
+                    id: 'demo_3', 
+                    title: 'Yankees vs Red Sox', 
+                    sport: 'Baseball', 
+                    time: '8:30 PM', 
+                    viewers: '23.5K', 
+                    quality: 'HD', 
+                    streaming: {
+                        hls: API_CONFIG.streamingSources.hls[2],
+                        mp4: API_CONFIG.streamingSources.mp4[2],
+                        youtube: API_CONFIG.streamingSources.youtube[2]
+                    },
+                    isLive: false, 
+                    gameDate: new Date(now.getTime() + 2 * 60 * 60 * 1000), 
+                    isUpcoming: true 
+                },
+                { 
+                    id: 'demo_4', 
+                    title: 'Real Madrid vs Barcelona', 
+                    sport: 'Soccer', 
+                    time: 'Live', 
+                    viewers: '156.7K', 
+                    quality: '4K', 
+                    streaming: {
+                        hls: API_CONFIG.streamingSources.hls[3],
+                        mp4: API_CONFIG.streamingSources.mp4[3],
+                        youtube: API_CONFIG.streamingSources.youtube[0]
+                    },
+                    isLive: true, 
+                    gameDate: now, 
+                    isUpcoming: false 
+                },
+                { 
+                    id: 'demo_5', 
+                    title: 'Celtics vs Heat', 
+                    sport: 'Basketball', 
+                    time: '9:00 PM', 
+                    viewers: '31.2K', 
+                    quality: 'HD', 
+                    streaming: {
+                        hls: API_CONFIG.streamingSources.hls[0],
+                        mp4: API_CONFIG.streamingSources.mp4[0],
+                        youtube: API_CONFIG.streamingSources.youtube[1]
+                    },
+                    isLive: false, 
+                    gameDate: new Date(now.getTime() + 4 * 60 * 60 * 1000), 
+                    isUpcoming: true 
+                }
             ];
         }
 
@@ -525,7 +620,7 @@
                                          type === 'error' ? '#ef4444' : '#ffd700';
         }
 
-        // Enhanced video player functionality
+        // Enhanced video player with multiple streaming formats and better functionality
         function watchGame(gameId, gameTitle) {
             const game = findGameById(gameId);
             if (!game) return;
@@ -540,21 +635,69 @@
             const videoPlaceholder = document.getElementById('videoPlaceholder');
             const videoSource = document.getElementById('videoSource');
             
-            if (game.streamUrl) {
-                // Load actual video stream
-                videoSource.src = game.streamUrl;
+            // Try HLS first, then fallback to MP4, then YouTube embed
+            if (game.streaming) {
+                // Try HLS streaming first (better for live content)
+                if (game.streaming.hls && videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+                    console.log('[v0] Loading HLS stream:', game.streaming.hls);
+                    videoSource.src = game.streaming.hls;
+                    videoSource.type = 'application/vnd.apple.mpegurl';
+                } else if (game.streaming.mp4) {
+                    console.log('[v0] Loading MP4 stream:', game.streaming.mp4);
+                    videoSource.src = game.streaming.mp4;
+                    videoSource.type = 'video/mp4';
+                } else {
+                    // Fallback to YouTube embed for legitimate content
+                    console.log('[v0] Loading YouTube embed:', game.streaming.youtube);
+                    videoElement.style.display = 'none';
+                    videoPlaceholder.innerHTML = `
+                        <iframe 
+                            width="100%" 
+                            height="100%" 
+                            src="${game.streaming.youtube}&autoplay=1&mute=1" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen
+                            style="border-radius: 8px;">
+                        </iframe>
+                    `;
+                    videoPlaceholder.style.display = 'block';
+                    document.getElementById('streamStatus').textContent = `Live Stream in ${game.quality}`;
+                    document.getElementById('videoModal').style.display = 'block';
+                    return;
+                }
+                
                 videoElement.load();
                 videoElement.style.display = 'block';
                 videoPlaceholder.style.display = 'none';
                 
-                document.getElementById('streamStatus').textContent = `Streaming in ${game.quality}`;
+                document.getElementById('streamStatus').textContent = `Streaming in ${game.quality} • Low Latency`;
                 document.getElementById('playBtn').textContent = '⏸ Pause';
                 
-                // Auto-play the video
-                videoElement.play().catch(e => {
-                    console.log('[v0] Autoplay prevented:', e);
+                // Enhanced autoplay with error handling
+                videoElement.play().then(() => {
+                    console.log('[v0] Stream started successfully');
+                    updateViewerCount(game);
+                }).catch(e => {
+                    console.log('[v0] Autoplay prevented, user interaction required:', e);
                     document.getElementById('playBtn').textContent = '▶ Play';
+                    document.getElementById('streamStatus').textContent = 'Click Play to start stream';
                 });
+                
+                // Add stream quality monitoring
+                videoElement.addEventListener('loadstart', () => {
+                    document.getElementById('streamStatus').textContent = 'Connecting to stream...';
+                });
+                
+                videoElement.addEventListener('canplay', () => {
+                    document.getElementById('streamStatus').textContent = `Live Stream • ${game.quality} Quality`;
+                });
+                
+                videoElement.addEventListener('error', (e) => {
+                    console.error('[v0] Stream error:', e);
+                    document.getElementById('streamStatus').textContent = 'Stream temporarily unavailable';
+                });
+                
             } else {
                 // Fallback display
                 videoPlaceholder.innerHTML = `
@@ -774,6 +917,38 @@
                 closeVideo();
             }
         });
+
+        // Added viewer count simulation for realism
+        function updateViewerCount(game) {
+            setInterval(() => {
+                if (currentVideo && currentVideo.id === game.id) {
+                    const baseViewers = parseInt(game.viewers.replace(/[^\d]/g, ''));
+                    const variation = Math.floor(Math.random() * 10 - 5); // +/- 5
+                    const newCount = Math.max(1, baseViewers + variation);
+                    const suffix = game.viewers.includes('K') ? 'K' : '';
+                    document.getElementById('viewerCount').textContent = `${newCount}${suffix} viewers`;
+                }
+            }, 5000); // Update every 5 seconds
+        }
+
+        // Enhanced quality switching functionality
+        function changeQuality() {
+            if (!currentVideo) return;
+            
+            const qualities = ['480p', '720p', 'HD', '4K'];
+            const currentQualityIndex = qualities.indexOf(currentVideo.quality);
+            const nextQualityIndex = (currentQualityIndex + 1) % qualities.length;
+            const newQuality = qualities[nextQualityIndex];
+            
+            currentVideo.quality = newQuality;
+            document.getElementById('qualityBtn').textContent = newQuality;
+            document.getElementById('streamStatus').textContent = `Switching to ${newQuality}...`;
+            
+            // Simulate quality change delay
+            setTimeout(() => {
+                document.getElementById('streamStatus').textContent = `Live Stream • ${newQuality} Quality`;
+            }, 1000);
+        }
     </script>
 </body>
 </html>
