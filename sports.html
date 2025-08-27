@@ -154,6 +154,12 @@
             border: 2px solid #333;
         }
 
+        .video-element {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+        }
+
         .video-placeholder {
             color: #666;
             font-size: 1.2rem;
@@ -260,6 +266,28 @@
             color: #666;
         }
 
+        /* API Status */
+        .api-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid #ffd700;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            z-index: 100;
+        }
+
+        .error-message {
+            color: #ff6b6b;
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 107, 107, 0.1);
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .logo {
@@ -282,6 +310,9 @@
     </style>
 </head>
 <body>
+    <div id="apiStatus" class="api-status">
+        <span id="statusText">Connecting to APIs...</span>
+    </div>
     <div class="container">
         <!-- Header -->
         <header class="header">
@@ -357,15 +388,24 @@
             <div style="position: relative; width: 90%; max-width: 800px; margin: 50px auto; background: #111; border-radius: 10px; padding: 20px;">
                 <button onclick="closeVideo()" style="position: absolute; top: 10px; right: 15px; background: #ffd700; color: #000; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">✕</button>
                 <div class="video-player">
+                    <div class="stream-info">
+                        <div id="gameTitle" style="color: #ffd700; font-weight: bold;">No game selected</div>
+                        <div id="viewerCount" style="color: #ccc; font-size: 0.9rem;">0 viewers</div>
+                    </div>
                     <div class="video-container">
-                        <div class="video-placeholder" id="videoContent">Select a game to start streaming</div>
+                        <video id="videoElement" class="video-element" controls style="display: none;">
+                            <source id="videoSource" src="" type="application/x-mpegURL">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div class="video-placeholder" id="videoPlaceholder">Select a game to start streaming</div>
                     </div>
                     <div class="video-controls">
                         <div>
-                            <button class="control-btn" onclick="playPause()">▶ Play</button>
-                            <button class="control-btn" onclick="changeQuality()">HD</button>
+                            <button class="control-btn" onclick="playPause()" id="playBtn">▶ Play</button>
+                            <button class="control-btn" onclick="changeQuality()" id="qualityBtn">HD</button>
+                            <button class="control-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
                         </div>
-                        <div id="gameTitle" style="color: #ffd700; font-weight: bold;">No game selected</div>
+                        <div style="color: #666; font-size: 0.8rem;" id="streamStatus">Ready to stream</div>
                     </div>
                 </div>
             </div>
@@ -378,33 +418,232 @@
     </div>
 
     <script>
-        // Mock sports data - In production, this would come from real APIs
-        const sportsData = {
-            live: [
-                { id: 1, title: "Lakers vs Warriors", sport: "Basketball", time: "Live", viewers: "45.2K", quality: "HD" },
-                { id: 2, title: "Chiefs vs Bills", sport: "Football", time: "Live", viewers: "78.1K", quality: "4K" },
-                { id: 3, title: "Yankees vs Red Sox", sport: "Baseball", time: "Live", viewers: "23.5K", quality: "HD" },
-                { id: 4, title: "Real Madrid vs Barcelona", sport: "Soccer", time: "Live", viewers: "156.7K", quality: "4K" }
-            ],
-            football: [
-                { id: 5, title: "Cowboys vs Giants", sport: "Football", time: "8:00 PM", viewers: "34.2K", quality: "HD" },
-                { id: 6, title: "Packers vs Bears", sport: "Football", time: "1:00 PM", viewers: "28.9K", quality: "HD" }
-            ],
-            basketball: [
-                { id: 7, title: "Celtics vs Heat", sport: "Basketball", time: "7:30 PM", viewers: "19.8K", quality: "HD" },
-                { id: 8, title: "Nuggets vs Suns", sport: "Basketball", time: "9:00 PM", viewers: "22.1K", quality: "4K" }
-            ],
-            baseball: [
-                { id: 9, title: "Dodgers vs Padres", sport: "Baseball", time: "10:00 PM", viewers: "15.3K", quality: "HD" },
-                { id: 10, title: "Astros vs Rangers", sport: "Baseball", time: "8:30 PM", viewers: "12.7K", quality: "HD" }
-            ],
-            soccer: [
-                { id: 11, title: "Manchester United vs Liverpool", sport: "Soccer", time: "3:00 PM", viewers: "89.4K", quality: "4K" },
-                { id: 12, title: "PSG vs Bayern Munich", sport: "Soccer", time: "4:00 PM", viewers: "67.2K", quality: "4K" }
+        // API Configuration
+        const API_CONFIG = {
+            sportsDB: 'https://www.thesportsdb.com/api/v1/json/3',
+            espn: 'https://site.api.espn.com/apis/site/v2/sports',
+            // Sample streaming URLs for demonstration
+            sampleStreams: [
+                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4'
             ]
         };
 
         let currentVideo = null;
+        let apiConnected = false;
+        let sportsData = { live: [], football: [], basketball: [], baseball: [], soccer: [] };
+
+        // Real API functions to fetch sports data
+        async function fetchLiveGames() {
+            try {
+                console.log('[v0] Fetching live games from APIs...');
+                updateApiStatus('Fetching live games...', 'loading');
+                
+                // Fetch from multiple sources
+                const [nflData, nbaData, mlbData, soccerData] = await Promise.allSettled([
+                    fetchESPNData('football/nfl'),
+                    fetchESPNData('basketball/nba'),
+                    fetchESPNData('baseball/mlb'),
+                    fetchESPNData('soccer/eng.1')
+                ]);
+
+                console.log('[v0] API responses received:', { nflData, nbaData, mlbData, soccerData });
+
+                // Process and combine data
+                const liveGames = [];
+                
+                if (nflData.status === 'fulfilled') {
+                    liveGames.push(...processESPNData(nflData.value, 'Football'));
+                }
+                if (nbaData.status === 'fulfilled') {
+                    liveGames.push(...processESPNData(nbaData.value, 'Basketball'));
+                }
+                if (mlbData.status === 'fulfilled') {
+                    liveGames.push(...processESPNData(mlbData.value, 'Baseball'));
+                }
+                if (soccerData.status === 'fulfilled') {
+                    liveGames.push(...processESPNData(soccerData.value, 'Soccer'));
+                }
+
+                sportsData.live = liveGames;
+                updateApiStatus(`Connected - ${liveGames.length} games loaded`, 'success');
+                apiConnected = true;
+                
+                return liveGames;
+            } catch (error) {
+                console.error('[v0] Error fetching live games:', error);
+                updateApiStatus('API Error - Using demo data', 'error');
+                return getFallbackData();
+            }
+        }
+
+        async function fetchESPNData(sport) {
+            const response = await fetch(`${API_CONFIG.espn}/${sport}/scoreboard`);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            return await response.json();
+        }
+
+        function processESPNData(data, sportType) {
+            if (!data.events) return [];
+            
+            return data.events.slice(0, 5).map((event, index) => {
+                const competition = event.competitions[0];
+                const homeTeam = competition.competitors.find(c => c.homeAway === 'home');
+                const awayTeam = competition.competitors.find(c => c.homeAway === 'away');
+                
+                return {
+                    id: `${sportType.toLowerCase()}_${event.id}`,
+                    title: `${awayTeam.team.displayName} vs ${homeTeam.team.displayName}`,
+                    sport: sportType,
+                    time: event.status.type.description === 'Final' ? 'Finished' : 
+                          event.status.type.description === 'In Progress' ? 'Live' : 
+                          new Date(event.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                    viewers: `${Math.floor(Math.random() * 100 + 10)}.${Math.floor(Math.random() * 9)}K`,
+                    quality: Math.random() > 0.5 ? '4K' : 'HD',
+                    streamUrl: API_CONFIG.sampleStreams[index % API_CONFIG.sampleStreams.length],
+                    status: event.status.type.description
+                };
+            });
+        }
+
+        function getFallbackData() {
+            return [
+                { id: 'demo_1', title: 'Lakers vs Warriors', sport: 'Basketball', time: 'Live', viewers: '45.2K', quality: 'HD', streamUrl: API_CONFIG.sampleStreams[0] },
+                { id: 'demo_2', title: 'Chiefs vs Bills', sport: 'Football', time: 'Live', viewers: '78.1K', quality: '4K', streamUrl: API_CONFIG.sampleStreams[1] },
+                { id: 'demo_3', title: 'Yankees vs Red Sox', sport: 'Baseball', time: 'Live', viewers: '23.5K', quality: 'HD', streamUrl: API_CONFIG.sampleStreams[2] },
+                { id: 'demo_4', title: 'Real Madrid vs Barcelona', sport: 'Soccer', time: 'Live', viewers: '156.7K', quality: '4K', streamUrl: API_CONFIG.sampleStreams[3] }
+            ];
+        }
+
+        function updateApiStatus(message, type) {
+            const statusElement = document.getElementById('statusText');
+            const statusContainer = document.getElementById('apiStatus');
+            
+            statusElement.textContent = message;
+            
+            // Update status color based on type
+            statusContainer.style.borderColor = type === 'success' ? '#4ade80' : 
+                                               type === 'error' ? '#ef4444' : '#ffd700';
+            statusContainer.style.color = type === 'success' ? '#4ade80' : 
+                                         type === 'error' ? '#ef4444' : '#ffd700';
+        }
+
+        // Enhanced video player functionality
+        function watchGame(gameId, gameTitle) {
+            const game = findGameById(gameId);
+            if (!game) return;
+            
+            console.log('[v0] Starting stream for game:', game);
+            
+            currentVideo = game;
+            document.getElementById('gameTitle').textContent = gameTitle;
+            document.getElementById('viewerCount').textContent = `${game.viewers} viewers`;
+            
+            const videoElement = document.getElementById('videoElement');
+            const videoPlaceholder = document.getElementById('videoPlaceholder');
+            const videoSource = document.getElementById('videoSource');
+            
+            if (game.streamUrl) {
+                // Load actual video stream
+                videoSource.src = game.streamUrl;
+                videoElement.load();
+                videoElement.style.display = 'block';
+                videoPlaceholder.style.display = 'none';
+                
+                document.getElementById('streamStatus').textContent = `Streaming in ${game.quality}`;
+                document.getElementById('playBtn').textContent = '⏸ Pause';
+                
+                // Auto-play the video
+                videoElement.play().catch(e => {
+                    console.log('[v0] Autoplay prevented:', e);
+                    document.getElementById('playBtn').textContent = '▶ Play';
+                });
+            } else {
+                // Fallback display
+                videoPlaceholder.innerHTML = `
+                    <div style="color: #ffd700; text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">🏆</div>
+                        <div>Now Streaming: ${gameTitle}</div>
+                        <div style="color: #666; margin-top: 10px; font-size: 0.9rem;">
+                            Premium ${game.quality} Stream • Low Latency
+                        </div>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('videoModal').style.display = 'block';
+        }
+
+        function findGameById(gameId) {
+            const allGames = Object.values(sportsData).flat();
+            return allGames.find(game => game.id === gameId);
+        }
+
+        function playPause() {
+            const videoElement = document.getElementById('videoElement');
+            const playBtn = document.getElementById('playBtn');
+            
+            if (videoElement.style.display !== 'none') {
+                if (videoElement.paused) {
+                    videoElement.play();
+                    playBtn.textContent = '⏸ Pause';
+                } else {
+                    videoElement.pause();
+                    playBtn.textContent = '▶ Play';
+                }
+            }
+        }
+
+        function toggleFullscreen() {
+            const videoElement = document.getElementById('videoElement');
+            
+            if (videoElement.requestFullscreen) {
+                videoElement.requestFullscreen();
+            } else if (videoElement.webkitRequestFullscreen) {
+                videoElement.webkitRequestFullscreen();
+            } else if (videoElement.msRequestFullscreen) {
+                videoElement.msRequestFullscreen();
+            }
+        }
+
+        function closeVideo() {
+            const videoElement = document.getElementById('videoElement');
+            const videoPlaceholder = document.getElementById('videoPlaceholder');
+            
+            videoElement.pause();
+            videoElement.style.display = 'none';
+            videoPlaceholder.style.display = 'flex';
+            videoPlaceholder.textContent = 'Select a game to start streaming';
+            
+            document.getElementById('videoModal').style.display = 'none';
+            currentVideo = null;
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('[v0] Initializing sports streaming app...');
+            
+            // Load live games from APIs
+            const liveGames = await fetchLiveGames();
+            displayGames(liveGames, document.getElementById('liveGames'));
+            
+            // Load other sports categories
+            sportsData.football = liveGames.filter(game => game.sport === 'Football');
+            sportsData.basketball = liveGames.filter(game => game.sport === 'Basketball');
+            sportsData.baseball = liveGames.filter(game => game.sport === 'Baseball');
+            sportsData.soccer = liveGames.filter(game => game.sport === 'Soccer');
+            
+            // Set up periodic refresh for live data
+            setInterval(async () => {
+                if (document.getElementById('live').classList.contains('active')) {
+                    console.log('[v0] Refreshing live games...');
+                    const refreshedGames = await fetchLiveGames();
+                    displayGames(refreshedGames, document.getElementById('liveGames'));
+                }
+            }, 30000); // Refresh every 30 seconds
+        });
 
         // Show section function
         function showSection(sectionName) {
@@ -457,47 +696,6 @@
             `).join('');
         }
 
-        // Watch game function
-        function watchGame(gameId, gameTitle) {
-            currentVideo = { id: gameId, title: gameTitle };
-            document.getElementById('gameTitle').textContent = gameTitle;
-            document.getElementById('videoContent').innerHTML = `
-                <div style="color: #ffd700; text-align: center;">
-                    <div style="font-size: 2rem; margin-bottom: 10px;">🏆</div>
-                    <div>Now Streaming: ${gameTitle}</div>
-                    <div style="color: #666; margin-top: 10px; font-size: 0.9rem;">
-                        Premium HD Stream • Low Latency
-                    </div>
-                </div>
-            `;
-            document.getElementById('videoModal').style.display = 'block';
-        }
-
-        // Close video
-        function closeVideo() {
-            document.getElementById('videoModal').style.display = 'none';
-            currentVideo = null;
-        }
-
-        // Play/Pause function
-        function playPause() {
-            const btn = event.target;
-            if (btn.textContent.includes('Play')) {
-                btn.textContent = '⏸ Pause';
-            } else {
-                btn.textContent = '▶ Play';
-            }
-        }
-
-        // Change quality
-        function changeQuality() {
-            const btn = event.target;
-            const qualities = ['HD', '4K', 'SD'];
-            const currentIndex = qualities.indexOf(btn.textContent);
-            const nextIndex = (currentIndex + 1) % qualities.length;
-            btn.textContent = qualities[nextIndex];
-        }
-
         // Search functionality
         document.getElementById('liveSearch')?.addEventListener('input', function(e) {
             const query = e.target.value.toLowerCase();
@@ -516,16 +714,6 @@
                 game.sport.toLowerCase().includes(query)
             );
             displayGames(filteredGames, document.getElementById('searchResults'));
-        });
-
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', function() {
-            loadSectionData('live');
-            
-            // Simulate API calls with loading states
-            setTimeout(() => {
-                loadSectionData('live');
-            }, 1000);
         });
 
         // Close modal when clicking outside
