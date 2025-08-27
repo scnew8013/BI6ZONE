@@ -215,6 +215,30 @@
             animation: pulse 2s infinite;
         }
 
+        /* Added countdown timer styling */
+        .countdown-timer {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid #ffd700;
+            border-radius: 5px;
+            padding: 8px 12px;
+            margin-top: 10px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #ffd700;
+        }
+
+        .countdown-label {
+            font-size: 0.7rem;
+            color: #888;
+            margin-bottom: 4px;
+        }
+
+        .countdown-time {
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
         @keyframes pulse {
             0% { opacity: 1; }
             50% { opacity: 0.5; }
@@ -286,25 +310,24 @@
 
         <!-- Navigation -->
         <nav class="nav">
-            <div class="nav-item active" onclick="showSection('live')">live</div>
+            <div class="nav-item active" onclick="showSection('all')">all</div>
             <div class="nav-item" onclick="showSection('football')">football</div>
             <div class="nav-item" onclick="showSection('basketball')">basketball</div>
             <div class="nav-item" onclick="showSection('baseball')">baseball</div>
             <div class="nav-item" onclick="showSection('soccer')">soccer</div>
-            <div class="nav-item" onclick="showSection('search')">search</div>
         </nav>
 
         <!-- Main Content -->
         <main class="main-content">
             <!-- Live Section -->
-            <section id="live" class="section active">
+            <section id="all" class="section active">
                 <div class="search-container">
-                    <input type="text" class="search-input" placeholder="Search live games..." id="liveSearch">
+                    <input type="text" class="search-input" placeholder="Search all games..." id="allSearch">
                 </div>
-                <div id="liveGames" class="sports-grid">
+                <div id="allGames" class="sports-grid">
                     <div class="loading">
                         <div class="spinner"></div>
-                        Loading live games...
+                        Loading all games...
                     </div>
                 </div>
             </section>
@@ -336,14 +359,6 @@
                     <input type="text" class="search-input" placeholder="Search soccer games...">
                 </div>
                 <div id="soccerGames" class="sports-grid"></div>
-            </section>
-
-            <!-- Search Section -->
-            <section id="search" class="section">
-                <div class="search-container">
-                    <input type="text" class="search-input" placeholder="Search all sports..." id="globalSearch">
-                </div>
-                <div id="searchResults" class="sports-grid"></div>
             </section>
         </main>
 
@@ -397,7 +412,7 @@
 
         let currentVideo = null;
         let apiConnected = false;
-        let sportsData = { live: [], football: [], basketball: [], baseball: [], soccer: [] };
+        let sportsData = { all: [], football: [], basketball: [], baseball: [], soccer: [] };
 
         // Real API functions to fetch sports data
         async function fetchLiveGames() {
@@ -431,7 +446,7 @@
                     liveGames.push(...processESPNData(soccerData.value, 'Soccer'));
                 }
 
-                sportsData.live = liveGames;
+                sportsData.all = liveGames;
                 updateApiStatus(`Connected - ${liveGames.length} games loaded`, 'success');
                 apiConnected = true;
                 
@@ -462,28 +477,38 @@
                               event.status.type.state === 'in' ||
                               event.status.type.name === 'STATUS_IN_PROGRESS';
                 
+                // Added game start time for countdown functionality
+                const gameDate = new Date(event.date);
+                const now = new Date();
+                const isUpcoming = gameDate > now && !isLive;
+                
                 return {
                     id: `${sportType.toLowerCase()}_${event.id}`,
                     title: `${awayTeam.team.displayName} vs ${homeTeam.team.displayName}`,
                     sport: sportType,
                     time: event.status.type.description === 'Final' ? 'Finished' : 
                           isLive ? 'Live' : 
-                          new Date(event.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                          gameDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
                     viewers: `${Math.floor(Math.random() * 100 + 10)}.${Math.floor(Math.random() * 9)}K`,
                     quality: Math.random() > 0.5 ? '4K' : 'HD',
                     streamUrl: API_CONFIG.sampleStreams[index % API_CONFIG.sampleStreams.length],
                     status: event.status.type.description,
-                    isLive: isLive
+                    isLive: isLive,
+                    gameDate: gameDate,
+                    isUpcoming: isUpcoming
                 };
             });
         }
 
         function getFallbackData() {
+            // Added upcoming games with future dates for countdown demo
+            const now = new Date();
             return [
-                { id: 'demo_1', title: 'Lakers vs Warriors', sport: 'Basketball', time: 'Live', viewers: '45.2K', quality: 'HD', streamUrl: API_CONFIG.sampleStreams[0], isLive: true },
-                { id: 'demo_2', title: 'Chiefs vs Bills', sport: 'Football', time: 'Live', viewers: '78.1K', quality: '4K', streamUrl: API_CONFIG.sampleStreams[1], isLive: true },
-                { id: 'demo_3', title: 'Yankees vs Red Sox', sport: 'Baseball', time: '8:30 PM', viewers: '23.5K', quality: 'HD', streamUrl: API_CONFIG.sampleStreams[2], isLive: false },
-                { id: 'demo_4', title: 'Real Madrid vs Barcelona', sport: 'Soccer', time: 'Live', viewers: '156.7K', quality: '4K', streamUrl: API_CONFIG.sampleStreams[3], isLive: true }
+                { id: 'demo_1', title: 'Lakers vs Warriors', sport: 'Basketball', time: 'Live', viewers: '45.2K', quality: 'HD', streamUrl: API_CONFIG.sampleStreams[0], isLive: true, gameDate: now, isUpcoming: false },
+                { id: 'demo_2', title: 'Chiefs vs Bills', sport: 'Football', time: 'Live', viewers: '78.1K', quality: '4K', streamUrl: API_CONFIG.sampleStreams[1], isLive: true, gameDate: now, isUpcoming: false },
+                { id: 'demo_3', title: 'Yankees vs Red Sox', sport: 'Baseball', time: '8:30 PM', viewers: '23.5K', quality: 'HD', streamUrl: API_CONFIG.sampleStreams[2], isLive: false, gameDate: new Date(now.getTime() + 2 * 60 * 60 * 1000), isUpcoming: true },
+                { id: 'demo_4', title: 'Real Madrid vs Barcelona', sport: 'Soccer', time: 'Live', viewers: '156.7K', quality: '4K', streamUrl: API_CONFIG.sampleStreams[3], isLive: true, gameDate: now, isUpcoming: false },
+                { id: 'demo_5', title: 'Celtics vs Heat', sport: 'Basketball', time: '9:00 PM', viewers: '31.2K', quality: 'HD', streamUrl: API_CONFIG.sampleStreams[0], isLive: false, gameDate: new Date(now.getTime() + 4 * 60 * 60 * 1000), isUpcoming: true }
             ];
         }
 
@@ -591,13 +616,80 @@
             currentVideo = null;
         }
 
+        // Added countdown timer functionality
+        function formatCountdown(targetDate) {
+            const now = new Date();
+            const diff = targetDate - now;
+            
+            if (diff <= 0) return null;
+            
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            return {
+                hours: hours.toString().padStart(2, '0'),
+                minutes: minutes.toString().padStart(2, '0'),
+                seconds: seconds.toString().padStart(2, '0'),
+                total: diff
+            };
+        }
+
+        function updateCountdowns() {
+            document.querySelectorAll('.countdown-timer').forEach(timer => {
+                const gameId = timer.dataset.gameId;
+                const game = findGameById(gameId);
+                
+                if (game && game.isUpcoming) {
+                    const countdown = formatCountdown(game.gameDate);
+                    
+                    if (countdown && countdown.total > 0) {
+                        timer.querySelector('.countdown-time').textContent = 
+                            `${countdown.hours}:${countdown.minutes}:${countdown.seconds}`;
+                    } else {
+                        // Game should be starting, refresh the page data
+                        timer.innerHTML = '<div class="countdown-time" style="color: #4ade80;">Starting Soon!</div>';
+                    }
+                }
+            });
+        }
+
+        // Display games
+        function displayGames(games, container) {
+            if (!container) return;
+            
+            container.innerHTML = games.map(game => `
+                <div class="sport-card" ${game.isLive ? `onclick="watchGame('${game.id}', '${game.title}')"` : ''}>
+                    <div class="sport-title">
+                        ${game.time === 'Live' ? '<span class="live-tag">live</span>' : ''}
+                        ${game.title}
+                    </div>
+                    <div class="sport-info">
+                        ${game.sport} • ${game.time} • ${game.viewers} viewers • ${game.quality}
+                    </div>
+                    ${game.isUpcoming ? `
+                        <div class="countdown-timer" data-game-id="${game.id}">
+                            <div class="countdown-label">Starts in:</div>
+                            <div class="countdown-time">--:--:--</div>
+                        </div>
+                    ` : ''}
+                    ${game.isLive ? '<button class="watch-btn">Watch Now</button>' : ''}
+                </div>
+            `).join('');
+            
+            // Start countdown timers after rendering
+            if (games.some(game => game.isUpcoming)) {
+                updateCountdowns();
+            }
+        }
+
         // Initialize the page
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('[v0] Initializing sports streaming app...');
             
             // Load live games from APIs
             const liveGames = await fetchLiveGames();
-            displayGames(liveGames, document.getElementById('liveGames'));
+            displayGames(liveGames, document.getElementById('allGames'));
             
             // Load other sports categories
             sportsData.football = liveGames.filter(game => game.sport === 'Football');
@@ -605,12 +697,15 @@
             sportsData.baseball = liveGames.filter(game => game.sport === 'Baseball');
             sportsData.soccer = liveGames.filter(game => game.sport === 'Soccer');
             
+            // Set up countdown timer updates every second
+            setInterval(updateCountdowns, 1000);
+            
             // Set up periodic refresh for live data
             setInterval(async () => {
-                if (document.getElementById('live').classList.contains('active')) {
+                if (document.getElementById('all').classList.contains('active')) {
                     console.log('[v0] Refreshing live games...');
                     const refreshedGames = await fetchLiveGames();
-                    displayGames(refreshedGames, document.getElementById('liveGames'));
+                    displayGames(refreshedGames, document.getElementById('allGames'));
                 }
             }, 30000); // Refresh every 30 seconds
         });
@@ -643,47 +738,19 @@
             
             if (sportsData[section]) {
                 displayGames(sportsData[section], container);
-            } else if (section === 'live') {
-                displayGames(sportsData.live, container);
+            } else if (section === 'all') {
+                displayGames(sportsData.all, container);
             }
         }
 
-        // Display games
-        function displayGames(games, container) {
-            if (!container) return;
-            
-            container.innerHTML = games.map(game => `
-                <div class="sport-card" ${game.isLive !== false ? `onclick="watchGame('${game.id}', '${game.title}')"` : ''}>
-                    <div class="sport-title">
-                        ${game.time === 'Live' ? '<span class="live-tag">live</span>' : ''}
-                        ${game.title}
-                    </div>
-                    <div class="sport-info">
-                        ${game.sport} • ${game.time} • ${game.viewers} viewers • ${game.quality}
-                    </div>
-                    ${game.time === 'Live' ? '<button class="watch-btn">Watch Now</button>' : ''}
-                </div>
-            `).join('');
-        }
-
         // Search functionality
-        document.getElementById('liveSearch')?.addEventListener('input', function(e) {
+        document.getElementById('allSearch')?.addEventListener('input', function(e) {
             const query = e.target.value.toLowerCase();
-            const filteredGames = sportsData.live.filter(game => 
+            const filteredGames = sportsData.all.filter(game => 
                 game.title.toLowerCase().includes(query) || 
                 game.sport.toLowerCase().includes(query)
             );
-            displayGames(filteredGames, document.getElementById('liveGames'));
-        });
-
-        document.getElementById('globalSearch')?.addEventListener('input', function(e) {
-            const query = e.target.value.toLowerCase();
-            const allGames = Object.values(sportsData).flat();
-            const filteredGames = allGames.filter(game => 
-                game.title.toLowerCase().includes(query) || 
-                game.sport.toLowerCase().includes(query)
-            );
-            displayGames(filteredGames, document.getElementById('searchResults'));
+            displayGames(filteredGames, document.getElementById('allGames'));
         });
 
         // Close modal when clicking outside
