@@ -616,23 +616,31 @@
             currentVideo = null;
         }
 
-        // Added countdown timer functionality
+        // Enhanced countdown timer functionality
         function formatCountdown(targetDate) {
             const now = new Date();
             const diff = targetDate - now;
             
             if (diff <= 0) return null;
             
-            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((diff % (1000 * 60)) / 1000);
             
-            return {
-                hours: hours.toString().padStart(2, '0'),
-                minutes: minutes.toString().padStart(2, '0'),
-                seconds: seconds.toString().padStart(2, '0'),
-                total: diff
-            };
+            // If over 24 hours, show days, hours, minutes
+            if (diff > 24 * 60 * 60 * 1000) {
+                return {
+                    display: `${days}d ${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m`,
+                    total: diff
+                };
+            } else {
+                // If under 24 hours, show hours, minutes, seconds
+                return {
+                    display: `${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`,
+                    total: diff
+                };
+            }
         }
 
         function updateCountdowns() {
@@ -644,8 +652,8 @@
                     const countdown = formatCountdown(game.gameDate);
                     
                     if (countdown && countdown.total > 0) {
-                        timer.querySelector('.countdown-time').textContent = 
-                            `${countdown.hours}:${countdown.minutes}:${countdown.seconds}`;
+                        // Updated to use the new display format with proper labels
+                        timer.querySelector('.countdown-time').textContent = countdown.display;
                     } else {
                         // Game should be starting, refresh the page data
                         timer.innerHTML = '<div class="countdown-time" style="color: #4ade80;">Starting Soon!</div>';
