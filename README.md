@@ -70,7 +70,7 @@ You can deploy your own version of **BI6ZONE** quickly by forking and hosting th
 
 ## 💡 Notes
 
-* 🔐 For best results, use in a **private browsing session** (Incognito/Guest mode).
+* 🔐 For best results, use in a **open blank page** (Similar to Incognito mode). Use by clicking **Open blank** in main menu of BI6ZONE.
 * 📚 This repository is intended for **educational and personal purposes only**.
 * ⚠️ Exercise caution when using on restricted networks as activity may be monitored.
 
