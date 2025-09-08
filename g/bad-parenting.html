@@ -1,37 +1,6 @@
-
-
+<!DOCTYPE html>
 <html lang="en-us">
-  <script src="/assets/js/panic-core.js" defer></script>
   <head>
-    <style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    width: 100%;
-    background: #222;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-  }
-
-  #unity-container {
-    width: 100%;
-    max-width: 960px;
-    height: auto;
-    aspect-ratio: 16 / 10;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  #unity-canvas {
-    width: 100%;
-    height: auto;
-  }
-</style>
-
     <base href="https://rawcdn.githack.com/genizy/google-class/98d73056bfa9d476eb9fb3df8eaf418fba6d6f01/bad-parenting/">
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -48,6 +17,7 @@
           <div id="unity-progress-bar-full"></div>
         </div>
       </div>
+      <div id="unity-warning"> </div>
       <div id="unity-footer">
         <div id="unity-webgl-logo"></div>
         <div id="unity-fullscreen-button"></div>
@@ -61,9 +31,25 @@
       var loadingBar = document.querySelector("#unity-loading-bar");
       var progressBarFull = document.querySelector("#unity-progress-bar-full");
       var fullscreenButton = document.querySelector("#unity-fullscreen-button");
-        function unityShowBanner(msg, type) {
-            // no need for errors
+      var warningBanner = document.querySelector("#unity-warning");
+
+      function unityShowBanner(msg, type) {
+        function updateBannerVisibility() {
+          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
         }
+        var div = document.createElement('div');
+        div.innerHTML = msg;
+        warningBanner.appendChild(div);
+        if (type == 'error') div.style = 'background: red; padding: 10px;';
+        else {
+          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+          setTimeout(function() {
+            warningBanner.removeChild(div);
+            updateBannerVisibility();
+          }, 5000);
+        }
+        updateBannerVisibility();
+      }
 
       var buildUrl = "Build";
       var loaderUrl = buildUrl + "/Build.loader.js";
@@ -84,6 +70,9 @@
         document.getElementsByTagName('head')[0].appendChild(meta);
         container.className = "unity-mobile";
         canvas.className = "unity-mobile";
+      } else {
+        canvas.style.width = "960px";
+        canvas.style.height = "600px";
       }
 
       loadingBar.style.display = "block";
@@ -108,26 +97,3 @@
     </script>
   </body>
 </html>
-      <style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    width: 100%;
-    background: #222; /* optional background */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  #unity-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-</style>
-
-
-<script defer data-domain="html.cafe" src="https://milkymouse.com/js/script.js"></script>
-
-   
