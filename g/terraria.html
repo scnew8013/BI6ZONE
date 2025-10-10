@@ -4,17 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Terraria Web Port</title>
-  <script>
-    window.addEventListener('load', () => {
-      // 1. Open Google Drive folder in a new tab
-      window.open("https://drive.google.com/drive/folders/XXXXXXXXXXXXXXX", "_blank");
+</head>
+<body style="display:flex;justify-content:center;align-items:center;height:100vh;">
+  <button id="launch" style="padding:15px 25px;font-size:18px;border:none;border-radius:10px;background:#4caf50;color:white;cursor:pointer;">
+    Launch Terraria Web Port
+  </button>
 
-      // 2. Redirect current page to your game
+  <script>
+    document.getElementById('launch').addEventListener('click', () => {
+      window.open("https://drive.google.com/file/d/1q2WYyMQIdG2d9t4Bc7gyDJRkM4yKFHlD/view", "_blank");
       window.location.href = "https://terraria-web-port.netlify.app/";
     });
   </script>
-</head>
-<body>
-  <p>Redirecting you to the Terraria Web Port...</p>
 </body>
 </html>
