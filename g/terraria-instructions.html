@@ -1,116 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Terraria Web Port Instructions</title>
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
-    body {
+    html,body {
+      height: 100%;
       margin: 0;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
       font-family: 'Press Start 2P', cursive;
-      text-align: center;
-      color: #c9ffc9;
-      text-shadow: 2px 2px 4px #000;
-      overflow-y: auto;
-      overflow-x: hidden;
-      position: relative;
-      padding: 40px 10px;
+      background: #071012;
+      color: #dfffdc;
     }
 
-    /* Terraria background image */
+    /* full-screen terraria background */
     #bg {
       position: fixed;
-      top: 0;
-      left: 0;
+      inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      z-index: -1;
+      z-index: 0;
+      opacity: 0.95;
+    }
+
+    .page {
+      position: relative;
+      z-index: 2;
+      min-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+
+    /* wooden board frame */
+    .board {
+      width: min(920px, 96%);
+      background: linear-gradient(180deg, #6b3f1f 0%, #5a3519 40%, #4c2b14 100%);
+      border: 6px solid #2c1709;
+      border-radius: 14px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.6), inset 0 3px 0 rgba(255,255,255,0.02);
+      padding: 22px;
+      overflow: auto;
     }
 
     h1 {
+      margin: 0 0 18px 0;
+      font-size: 18px;
       color: #9cff9c;
+      text-align: center;
       text-shadow: 2px 2px 0 #000;
-      font-size: 20px;
-      margin-bottom: 25px;
     }
 
-    .sign {
-      background: url('https://files.catbox.moe/7udwxm.png') center/cover no-repeat;
-      border: 4px solid #4b2e05;
-      border-radius: 12px;
-      padding: 15px 20px;
-      margin: 10px 0;
-      max-width: 750px;
+    /* each slat: wood-colored panel */
+    .slat {
+      background:
+        repeating-linear-gradient(
+          0deg,
+          rgba(0,0,0,0.04) 0px,
+          rgba(0,0,0,0.04) 4px,
+          rgba(255,255,255,0.015) 4px,
+          rgba(255,255,255,0.015) 8px
+        ),
+        linear-gradient(180deg, #d1a26b 0%, #a76f3f 40%, #8b5b36 100%);
+      border: 3px solid #3f230f;
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin: 10px auto;
+      max-width: 880px;
       color: #fff;
-      text-shadow: 1px 1px 2px #000;
-      box-shadow: 0 4px 0 #2d1a03;
+      line-height: 1.55;
+      font-size: 12px;
+      box-shadow: 0 6px 0 rgba(0,0,0,0.4);
+      position: relative;
+
+      /* start hidden for animation */
       opacity: 0;
-      transform: translateY(20px);
-      animation: fadeIn 0.8s forwards;
+      transform: translateY(18px);
+      animation: fadeInUp 0.7s forwards;
     }
 
-    .sign span {
-      display: block;
-      font-size: 12px;
-      line-height: 1.6;
+    /* little "nail" decor */
+    .slat::before, .slat::after {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #e9d6b7, #4a341f 60%);
+      position: absolute;
+      top: 10px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
+    }
+    .slat::before { left: 10px; }
+    .slat::after  { right: 10px; }
+
+    @keyframes fadeInUp {
+      to { opacity: 1; transform: translateY(0); }
     }
 
     footer {
-      margin-top: 30px;
-      font-size: 10px;
+      margin-top: 18px;
+      text-align: center;
       color: #b6ffb6;
+      font-size: 10px;
       text-shadow: 1px 1px 2px #000;
     }
 
-    @keyframes fadeIn {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    /* allow comfortable scrolling on small screens */
+    @media (max-height: 700px) {
+      .board { padding: 14px; }
+      .slat { padding: 12px; }
     }
   </style>
 </head>
 <body>
-  <!-- Terraria background -->
+  <!-- page background -->
   <img id="bg" src="https://files.catbox.moe/7udwxm.png" alt="Terraria background">
 
-  <h1>HOW TO PLAY (its not as easy as you think)</h1>
+  <div class="page">
+    <div class="board" role="document" aria-label="Terraria instructions">
 
-  <div class="sign"><span>Step 1️⃣: So once you click the "Launch Terrarai Web Port" button, 2 tabs will open. There will be a drive link (Content.zip - Google Drive) tab and the main game tab (Terrariun).</span></div>
+      <h1>HOW TO PLAY (its not as easy as you think)</h1>
 
-  <div class="sign"><span>Step 2️⃣: Your going to first download the Content.zip folder from the drive link and your gonna extract it.</span></div>
+      <div class="slat"><span>Step 1️⃣: So once you click the "Launch Terrarai Web Port" button, 2 tabs will open. There will be a drive link (Content.zip - Google Drive) tab and the main game tab (Terrariun).</span></div>
 
-  <div class="sign"><span>Step 3️⃣: Next, your gonna go to the Terraria game tab and your gonna click "Copy local assets".</span></div>
+      <div class="slat"><span>Step 2️⃣: Your going to first download the Content.zip folder from the drive link and your gonna extract it.</span></div>
 
-  <div class="sign"><span>Step 4️⃣: Then your gonna click "Select Terraria Content directory" and choose the "Content" folder you extracted earlier.</span></div>
+      <div class="slat"><span>Step 3️⃣: Next, your gonna go to the Terraria game tab and your gonna click "Copy local assets".</span></div>
 
-  <div class="sign"><span>Step 5️⃣: Next your gonna wait for the green bar to load and then once its loading, it may or may not show something similar to "game not playing".</span></div>
+      <div class="slat"><span>Step 4️⃣: Then your gonna click "Select Terraria Content directory" and choose the "Content" folder you extracted earlier.</span></div>
 
-  <div class="sign"><span>Step 6️⃣: So if you do end up seeing this, click the "Play" button on the top right corner.</span></div>
+      <div class="slat"><span>Step 5️⃣: Next your gonna wait for the green bar to load and then once its loading, it may or may not show something similar to "game not playing".</span></div>
 
-  <div class="sign"><span>Step 7️⃣: Then lastly, wait for the game to load and play fullscreen (which is reccommended) and enjoy!</span></div>
+      <div class="slat"><span>Step 6️⃣: So if you do end up seeing this, click the "Play" button on the top right corner.</span></div>
 
-  <footer>© Re-Logic Fan Port • For educational use only</footer>
+      <div class="slat"><span>Step 7️⃣: Then lastly, wait for the game to load and play fullscreen (which is reccommended) and enjoy!</span></div>
+
+      <footer>© Re-Logic Fan Port • For educational use only</footer>
+    </div>
+  </div>
 
   <script>
-    // Animate signs one by one
-    const signs = document.querySelectorAll('.sign');
-    signs.forEach((sign, i) => {
-      sign.style.animationDelay = `${i * 0.4}s`;
-    });
+    // stagger the slat animations so they fade in one-by-one
+    const slats = document.querySelectorAll('.slat');
+    slats.forEach((s,i) => s.style.animationDelay = `${i * 0.35}s`);
   </script>
 </body>
 </html>
