@@ -3,18 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Terraria Web Port</title>
-</head>
-<body style="display:flex;justify-content:center;align-items:center;height:100vh;">
-  <button id="launch" style="padding:15px 25px;font-size:18px;border:none;border-radius:10px;background:#4caf50;color:white;cursor:pointer;">
-    Launch Terraria Web Port
-  </button>
-
+  <title>Terraria Web Port Launcher</title>
   <script>
-    document.getElementById('launch').addEventListener('click', () => {
+    window.addEventListener('load', () => {
+      // 1. Open the Google Drive file in a new tab
       window.open("https://drive.google.com/file/d/1q2WYyMQIdG2d9t4Bc7gyDJRkM4yKFHlD/view", "_blank");
-      window.location.href = "https://terraria-web-port.netlify.app/";
+
+      // 2. Open the Terraria web port site in a new tab
+      window.open("https://terraria-web-port.netlify.app/", "_blank");
+
+      // 3. Redirect the current tab to your instructions page
+      window.location.href = "terraria-instructions.html";
     });
   </script>
+</head>
+<body>
+  <p>Opening Terraria Web Port...</p>
 </body>
 </html>
