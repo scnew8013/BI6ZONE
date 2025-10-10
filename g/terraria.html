@@ -6,13 +6,13 @@
   <title>Terraria Web Port Launcher</title>
   <script>
     window.addEventListener('load', () => {
-      // 1. Open instructions page in new tab
-      window.open("terraria-instructions.html", "_blank");
-
-      // 2. Open Google Drive file in new tab
+      // 1. Open Google Drive file first (so it stays in the background)
       window.open("https://drive.google.com/file/d/1q2WYyMQIdG2d9t4Bc7gyDJRkM4yKFHlD/view", "_blank");
 
-      // 3. Redirect current (main) tab to Terraria Web Port site
+      // 2. Open instructions page second (background)
+      window.open("terraria-instructions.html", "_blank");
+
+      // 3. Finally, make the current tab go to the game — stays as main visible one
       window.location.href = "https://terraria-web-port.netlify.app/";
     });
   </script>
