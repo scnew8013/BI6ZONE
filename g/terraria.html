@@ -1,40 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terraria</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terraria Web Port</title>
+  <script>
+    window.addEventListener('load', () => {
+      // 1. Open Google Drive folder in a new tab
+      window.open("https://drive.google.com/drive/folders/XXXXXXXXXXXXXXX", "_blank");
 
-    <!-- Favicon -->
-    <link rel="icon" href="https://files.catbox.moe/m1zg0c.ico" type="image/x-icon">
-
-    <style>
-        /* Style for full-page embedding */
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        iframe {
-            border: none;
-            width: 100%;
-            height: 100%;
-        }
-    </style>
+      // 2. Redirect current page to your game
+      window.location.href = "https://terraria-web-port.netlify.app/";
+    });
+  </script>
 </head>
 <body>
-    <iframe src="https://terraria-web-port.netlify.app/" title="Terraria"></iframe>
+  <p>Redirecting you to the Terraria Web Port...</p>
 </body>
 </html>
-
-<script>
-window.addEventListener('load', () => {
-  // Google Drive link for your downloadable files
-  const driveLink = "https://drive.google.com/file/d/1q2WYyMQIdG2d9t4Bc7gyDJRkM4yKFHlD/view";
-  
-  // Opens the link in a new tab (user-visible, so browsers won't block it)
-  window.open(driveLink, '_blank');
-});
-</script>
