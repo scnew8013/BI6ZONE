@@ -4,20 +4,109 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Terraria Web Port Launcher</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-family: 'Press Start 2P', cursive;
+      text-align: center;
+      text-shadow: 2px 2px 5px #000;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Background image */
+    #bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+
+    h1 {
+      font-size: 20px;
+      margin-bottom: 15px;
+      color: #9cff9c;
+      text-shadow: 2px 2px 0 #000;
+    }
+
+    p {
+      font-size: 12px;
+      max-width: 400px;
+      margin: 0 auto 20px;
+      line-height: 1.4;
+      color: #c9ffc9;
+      text-shadow: 1px 1px 2px #000;
+    }
+
+    button {
+      padding: 15px 25px;
+      font-size: 14px;
+      border: 3px solid #2e6f2e;
+      border-radius: 8px;
+      background: linear-gradient(to bottom, #4caf50, #2e7d32);
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #1b5e20;
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    button:hover {
+      background: linear-gradient(to bottom, #5cd65c, #388e3c);
+      transform: translateY(-3px);
+    }
+
+    button:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #1b5e20;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 10px;
+      font-size: 10px;
+      color: #b6ffb6;
+      text-shadow: 1px 1px 2px #000;
+    }
+  </style>
+</head>
+<body>
+  <!-- Terraria background image -->
+  <img id="bg" src="https://files.catbox.moe/7udwxm.png" alt="Terraria background">
+
+  <h1>Terraria Web Port</h1>
+  <p>Click below to launch the Terraria Web Port.<br>Setup files and instructions will open in new tabs.</p>
+
+  <button id="launch">Launch Terraria Web Port</button>
+
+  <footer>© Re-Logic Fan Port • For educational use only</footer>
+
   <script>
-    window.addEventListener('load', () => {
-      // 1. Open Google Drive file first (so it stays in the background)
+    document.getElementById('launch').addEventListener('click', () => {
+      // Open Google Drive file (background)
       window.open("https://drive.google.com/file/d/1q2WYyMQIdG2d9t4Bc7gyDJRkM4yKFHlD/view", "_blank");
 
-      // 2. Open instructions page second (background)
+      // Open instructions (background)
       window.open("terraria-instructions.html", "_blank");
 
-      // 3. Finally, make the current tab go to the game — stays as main visible one
+      // Redirect main tab to Terraria Web Port
       window.location.href = "https://terraria-web-port.netlify.app/";
     });
   </script>
-</head>
-<body>
-  <p>Launching Terraria Web Port...</p>
 </body>
 </html>
