@@ -1,1 +1,116 @@
-HOW TO PLAY (its not as easy as you think): So once you click the "Launch Terrarai Web Port" button, 2 tabs will open. There will be a drive link (Content.zip - Google Drive) tab and the main game tab (Terrariun). Your going to first download the Content.zip folder from the drive link and your gonna extract it. Next, your gonna go to the Terraria game tab and your gonna click "Copy local assets". Then your gonna click "Select Terraria Content directory" and choose the "Content" folder you extracted earlier. Next your gonna wait for the green bar to load and then once its loading, it may or may not show something similar to "game not playing". So if you do end up seeing this, click the "Play" button on the top right corner. Then lastly, wait for the game to load and play fullscreen (which is reccommended) and enjoy!
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terraria Web Port Instructions</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Press Start 2P', cursive;
+      text-align: center;
+      color: #c9ffc9;
+      text-shadow: 2px 2px 4px #000;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: relative;
+      padding: 40px 10px;
+    }
+
+    /* Terraria background image */
+    #bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+
+    h1 {
+      color: #9cff9c;
+      text-shadow: 2px 2px 0 #000;
+      font-size: 20px;
+      margin-bottom: 25px;
+    }
+
+    .sign {
+      background: url('https://files.catbox.moe/7udwxm.png') center/cover no-repeat;
+      border: 4px solid #4b2e05;
+      border-radius: 12px;
+      padding: 15px 20px;
+      margin: 10px 0;
+      max-width: 750px;
+      color: #fff;
+      text-shadow: 1px 1px 2px #000;
+      box-shadow: 0 4px 0 #2d1a03;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeIn 0.8s forwards;
+    }
+
+    .sign span {
+      display: block;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    footer {
+      margin-top: 30px;
+      font-size: 10px;
+      color: #b6ffb6;
+      text-shadow: 1px 1px 2px #000;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Terraria background -->
+  <img id="bg" src="https://files.catbox.moe/7udwxm.png" alt="Terraria background">
+
+  <h1>HOW TO PLAY (its not as easy as you think)</h1>
+
+  <div class="sign"><span>Step 1️⃣: So once you click the "Launch Terrarai Web Port" button, 2 tabs will open. There will be a drive link (Content.zip - Google Drive) tab and the main game tab (Terrariun).</span></div>
+
+  <div class="sign"><span>Step 2️⃣: Your going to first download the Content.zip folder from the drive link and your gonna extract it.</span></div>
+
+  <div class="sign"><span>Step 3️⃣: Next, your gonna go to the Terraria game tab and your gonna click "Copy local assets".</span></div>
+
+  <div class="sign"><span>Step 4️⃣: Then your gonna click "Select Terraria Content directory" and choose the "Content" folder you extracted earlier.</span></div>
+
+  <div class="sign"><span>Step 5️⃣: Next your gonna wait for the green bar to load and then once its loading, it may or may not show something similar to "game not playing".</span></div>
+
+  <div class="sign"><span>Step 6️⃣: So if you do end up seeing this, click the "Play" button on the top right corner.</span></div>
+
+  <div class="sign"><span>Step 7️⃣: Then lastly, wait for the game to load and play fullscreen (which is reccommended) and enjoy!</span></div>
+
+  <footer>© Re-Logic Fan Port • For educational use only</footer>
+
+  <script>
+    // Animate signs one by one
+    const signs = document.querySelectorAll('.sign');
+    signs.forEach((sign, i) => {
+      sign.style.animationDelay = `${i * 0.4}s`;
+    });
+  </script>
+</body>
+</html>
