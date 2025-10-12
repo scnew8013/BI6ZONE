@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games - BI6ZONE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', monospace;
+            background: #000;
+            color: #d4af37;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Background Effects */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .glow-ring {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+        }
+
+        .glow-1 {
+            top: 25%;
+            left: 25%;
+            width: 400px;
+            height: 400px;
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .glow-2 {
+            bottom: 25%;
+            right: 25%;
+            width: 400px;
+            height: 400px;
+            background: rgba(212, 175, 55, 0.08);
+        }
+
+        .glow-3 {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 800px;
+            background: rgba(212, 175, 55, 0.05);
+            filter: blur(120px);
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 0.75rem;
+            color: #d4af37;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .back-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: #d4af37;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #d4af37;
+            text-shadow: 0 0 30px #d4af37, 0 0 60px #d4af37;
+            letter-spacing: 0.2em;
+            margin-bottom: 2rem;
+            animation: glow-pulse 2s ease-in-out infinite alternate;
+        }
+
+        .typewriter {
+            border-right: 2px solid #d4af37;
+            animation: typewriter 4s steps(5) 1s infinite, blink 1s step-end infinite;
+            white-space: nowrap;
+            overflow: hidden;
+            width: 5ch;
+            margin: 0 auto;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            width: 300px;
+            height: 3.5rem;
+            padding: 0 1rem 0 3rem;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 0.75rem;
+            color: #d4af37;
+            font-size: 1rem;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(212, 175, 55, 0.6);
+        }
+
+        .select-container {
+            position: relative;
+        }
+
+        .select {
+            height: 3.5rem;
+            padding: 0 2.5rem 0 1rem;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 0.75rem;
+            color: #d4af37;
+            font-size: 1rem;
+            font-family: 'Orbitron', monospace;
+            cursor: pointer;
+            appearance: none;
+        }
+
+        .select:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Games Grid */
+        .games-grid {
+            display: grid;
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+        }
+
+        .grid-mobile { grid-template-columns: 1fr; }
+        .grid-tablet { grid-template-columns: repeat(2, 1fr); }
+        .grid-desktop { grid-template-columns: repeat(3, 1fr); }
+
+        /* Game Card */
+        .rectangle-container {
+            /* Container styles if needed */
+        }
+
+        .rectangle {
+            position: relative;
+            background: rgba(212, 175, 55, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            transition: all 0.5s ease;
+            cursor: pointer;
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .rectangle:hover {
+            border-color: #d4af37;
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+        }
+
+        .rectangle img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .rectangle:hover img {
+            transform: scale(1.1);
+        }
+
+        .game-name {
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.8);
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            height: 50px;
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #d4af37;
+            text-transform: lowercase;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem 0;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            margin-top: 2rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: #d4af37;
+            text-decoration: none;
+            position: relative;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .footer-link::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            bottom: -2px;
+            left: 0;
+            background-color: #d4af37;
+            transform: scaleX(0);
+            transform-origin: bottom right;
+            transition: transform 0.3s ease;
+        }
+
+        .footer-link:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+
+        .footer-link:hover {
+            text-shadow: 0 0 10px #d4af37;
+        }
+
+        /* Animations */
+        @keyframes glow-pulse {
+            0% { text-shadow: 0 0 20px #d4af37, 0 0 40px #d4af37; }
+            100% { text-shadow: 0 0 30px #d4af37, 0 0 60px #d4af37, 0 0 90px #d4af37; }
+        }
+
+        @keyframes typewriter {
+            from { width: 0; }
+            to { width: 5ch; }
+        }
+
+        @keyframes blink {
+            from, to { border-color: transparent; }
+            50% { border-color: #d4af37; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .title { font-size: 2.5rem; }
+            .search-input { width: 250px; }
+            .controls { gap: 1rem; }
+            .footer-links { gap: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="background">
+        <div class="glow-ring glow-1"></div>
+        <div class="glow-ring glow-2"></div>
+        <div class="glow-ring glow-3"></div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <a href="main.html" class="back-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9,22 9,12 15,12 15,22"/>
+                </svg>
+                Back to Homepage
+            </a>
+            
+            <h1 class="title">
+                <span class="typewriter">FNF Series</span>
+            </h1>
+
+            <div class="controls">
+                <div class="search-container">
+                    <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="M21 21l-4.35-4.35"/>
+                    </svg>
+                    <input type="text" class="search-input" placeholder="Search games..." id="searchInput">
+                </div>
+
+                <div class="select-container">
+                    <select class="select" id="categorySelect">
+                        <option value="all">All</option>
+                        <option value="pc">PC</option>
+                        <option value="mobile">Mobile</option>
+                    </select>
+                </div>
+
+                <div class="select-container">
+                    <select class="select" id="gridSelect">
+                        <option value="auto">Auto Grid</option>
+                        <option value="mobile">Mobile (1 col)</option>
+                        <option value="tablet">Tablet (2 col)</option>
+                        <option value="desktop">Desktop (3 col)</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="games-grid grid-desktop" id="gamesGrid">
+                <!-- Manual game cards - add each game here -->
+                
+                <!-- Game cards -->
+                <div class="rectangle-container">
+                    <div class="rectangle" data-category="pc" onclick="window.location.href='/g/fnf/original.html'">
+                        <img src="" alt="Original">
+                        <div class="game-name">Original</div>
+                    </div>
+                </div>
+
+              <div class="rectangle-container">
+                    <div class="rectangle" data-category="pc" onclick="window.location.href='/g/fnf/b-sides.html'">
+                        <img src="" alt="B-Sides">
+                        <div class="game-name">B-Sides</div>
+                    </div>
+                </div>
+
+              <div class="rectangle-container">
+                    <div class="rectangle" data-category="pc" onclick="window.location.href='/g/fnf/hit-single-real.html'">
+                        <img src="" alt="Hit Single Real">
+                        <div class="game-name">Hit Single Real</div>
+                    </div>
+                </div>
+
+              <div class="rectangle-container">
+                    <div class="rectangle" data-category="pc" onclick="window.location.href='/g/fnf/indie-cross.html'">
+                        <img src="" alt="Indie Cross">
+                        <div class="game-name">Indie Cross</div>
+                    </div>
+                </div>
+
+              <div class="rectangle-container">
+                    <div class="rectangle" data-category="pc" onclick="window.location.href='/g/fnf/mario-madness.html'">
+                        <img src="" alt="Mario Madness">
+                        <div class="game-name">Mario Madness</div>
+                    </div>
+                </div>
+                <!-- Add more games here -->
+                
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-links">
+                <a href="pp.html" class="footer-link">privacy policy</a>
+                <a href="ul.html" class="footer-link">update log</a>
+                <a href="/faq/index.html" class="footer-link">faq</a>
+                <a id="openBlankList" class="footer-link">open blank</a>
+                <a href="https://github.com/bi66ie619" target="_blank" class="footer-link">github</a>
+                <a href="https://docs.google.com/forms/d/1t52FBl9fUIm6ftWzFQTSw4dutoIOP1rTe8AnQ4cg1pY/viewform?edit_requested=true" target="_blank" class="footer-link">support</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Get elements
+        const searchInput = document.getElementById('searchInput');
+        const categorySelect = document.getElementById('categorySelect');
+        const gridSelect = document.getElementById('gridSelect');
+        const gamesGrid = document.getElementById('gamesGrid');
+        const gameCards = document.querySelectorAll('.rectangle-container');
+
+        // Search functionality
+        searchInput.addEventListener('input', filterGames);
+        categorySelect.addEventListener('change', filterGames);
+        gridSelect.addEventListener('change', changeGrid);
+
+        function filterGames() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const category = categorySelect.value;
+
+            gameCards.forEach(container => {
+                const gameCard = container.querySelector('.rectangle');
+                const gameName = gameCard.querySelector('.game-name').textContent.toLowerCase();
+                const gameCategory = gameCard.dataset.category || 'mobile'; // default to mobile
+
+                const matchesSearch = gameName.includes(searchTerm);
+                const matchesCategory = category === 'all' || gameCategory === category;
+
+                if (matchesSearch && matchesCategory) {
+                    container.style.display = 'block';
+                } else {
+                    container.style.display = 'none';
+                }
+            });
+        }
+
+        function changeGrid() {
+            const gridType = gridSelect.value;
+            
+            // Remove all grid classes
+            gamesGrid.classList.remove('grid-mobile', 'grid-tablet', 'grid-desktop');
+            
+            // Add appropriate grid class
+            if (gridType === 'auto') {
+                gamesGrid.classList.add('grid-desktop'); // default to desktop
+            } else {
+                gamesGrid.classList.add(`grid-${gridType}`);
+            }
+        }
+
+        // Auto grid functionality (responsive)
+        function handleAutoGrid() {
+            if (gridSelect.value === 'auto') {
+                const width = window.innerWidth;
+                gamesGrid.classList.remove('grid-mobile', 'grid-tablet', 'grid-desktop');
+                
+                if (width <= 768) {
+                    gamesGrid.classList.add('grid-mobile');
+                } else if (width <= 1024) {
+                    gamesGrid.classList.add('grid-tablet');
+                } else {
+                    gamesGrid.classList.add('grid-desktop');
+                }
+            }
+        }
+
+        // Listen for window resize for auto grid
+        window.addEventListener('resize', handleAutoGrid);
+        
+        // Initial auto grid setup
+        handleAutoGrid();
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var openBlankLink = document.getElementById('openBlankLink');
+        
+            openBlankLink.addEventListener('click', function(event) {
+                event.preventDefault();
+        
+                var newTab = window.open('about:blank', '_blank');
+        
+                if (newTab) {
+                    var newTabBody = newTab.document.body;
+                    newTabBody.style.padding = '0';
+                    newTabBody.style.margin = '0';
+                    newTabBody.style.border = 'hidden';
+        
+                    var iframe = document.createElement('iframe');
+                    iframe.src = window.location.href;
+                    iframe.style.width = '100%';
+                    iframe.style.height = '100%';
+                    iframe.style.border = 'hidden';
+
+                    iframe.onload = function() {
+                        var links = iframe.contentDocument.querySelectorAll('a[target="_blank"]');
+                        links.forEach(function(link) {
+                            link.addEventListener('click', function(event) {
+                                event.preventDefault();
+                                iframe.contentWindow.location.href = link.href;
+                            });
+                        });
+                    };
+        
+                    newTab.document.body.appendChild(iframe);
+                } else {
+                    alert("couldn't manage to open a new tab :(");
+                }
+            });
+        });
+        </script>
+</body>
+</html>
