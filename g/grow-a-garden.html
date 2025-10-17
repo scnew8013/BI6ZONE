@@ -11,25 +11,39 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      overflow: hidden; /* disable page scroll */
-      background-color: #000; /* optional: black background behind game */
+      overflow: hidden;
+      background-color: #000;
     }
 
-    iframe {
-      border: none;
+    .game-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100vw;
       height: 100vh;
       overflow: hidden;
-      display: block;
+    }
+
+    iframe {
+      position: absolute;
+      top: -260px; /* move iframe upward to hide the site header */
+      left: 0;
+      width: 100vw;
+      height: 180vh; /* increase height so game fits in cropped view */
+      border: none;
+      transform: scale(1.05); /* slightly zoom in to remove borders */
+      transform-origin: top center;
     }
   </style>
 </head>
 <body>
-  <iframe 
-    src="https://duck.theducklair.com/class/Grow-A-Garden"
-    title="Grow A Garden"
-    scrolling="no"        <!-- disables iframe scroll -->
-    allowfullscreen>
-  </iframe>
+  <div class="game-wrapper">
+    <iframe
+      src="https://duck.theducklair.com/class/Grow-A-Garden"
+      title="Grow A Garden"
+      scrolling="no"
+      allowfullscreen>
+    </iframe>
+  </div>
 </body>
 </html>
