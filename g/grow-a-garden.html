@@ -26,13 +26,13 @@
 
     iframe {
       position: absolute;
-      top: -260px; /* move iframe upward to hide the site header */
-      left: 0;
-      width: 100vw;
-      height: 180vh; /* increase height so game fits in cropped view */
+      top: -420px;       /* raise the iframe to hide header & upvote bar */
+      left: -260px;      /* shift left to hide sidebar ads */
+      width: 160vw;      /* widen viewport to fill after shifting */
+      height: 220vh;     /* increase height to cover all gameplay area */
       border: none;
-      transform: scale(1.05); /* slightly zoom in to remove borders */
-      transform-origin: top center;
+      transform: scale(1.15); /* zoom into the playable area */
+      transform-origin: top left;
     }
   </style>
 </head>
