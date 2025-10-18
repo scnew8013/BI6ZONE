@@ -7,43 +7,29 @@
   <link rel="icon" href="https://files.catbox.moe/m1zg0c.ico" type="image/x-icon">
 
   <style>
-    html, body {
+    body {
       margin: 0;
-      padding: 0;
-      height: 100%;
       overflow: hidden;
-      background-color: #000;
-    }
-
-    .game-wrapper {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
+      background: #000;
     }
 
     iframe {
       position: absolute;
-      top: -420px;       /* move UP (negative) or DOWN (positive) */
-      left: -565px;      /* move LEFT (negative) or RIGHT (positive) */
-      width: 150vw;      /* how wide the frame is (bigger helps after shifting) */
-      height: -150vh;     /* how tall the frame is (bigger covers more of the game) */
+      top: -400px;    /* move up/down */
+      left: -250px;   /* move left/right */
+      width: 160vw;   /* increase to show more horizontally */
+      height: 200vh;  /* increase to show more vertically */
       border: none;
-      transform: scale(1.15); /* zoom into the playable area */
+      transform: scale(1.2); /* zoom in/out (1 = normal, 1.2 = zoomed in) */
       transform-origin: top left;
     }
   </style>
 </head>
 <body>
-  <div class="game-wrapper">
-    <iframe
-      src="https://duck.theducklair.com/class/Grow-A-Garden"
-      title="Grow A Garden"
-      scrolling="no"
-      allowfullscreen>
-    </iframe>
-  </div>
+  <iframe 
+    src="https://duck.theducklair.com/class/Grow-A-Garden"
+    title="Grow A Garden"
+    allowfullscreen>
+  </iframe>
 </body>
 </html>
